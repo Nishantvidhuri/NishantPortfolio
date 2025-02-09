@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import Icons
 import ProjectDetails from "./ProjectDetails"; // Import the modal component
@@ -35,7 +35,10 @@ function Projectsuggestions() {
   // While Dragging
   const onDrag = (e) => {
     if (!isDragging) return;
-    e.preventDefault();
+
+    // Prevent default only if dragging (fix for passive event issue)
+    if (e.cancelable) e.preventDefault();
+
     const x = e.pageX || e.touches[0].pageX;
     const walk = (x - startX) * 1.5; // Increase scroll sensitivity
     scrollRef.current.scrollLeft = scrollLeft - walk;
@@ -46,8 +49,20 @@ function Projectsuggestions() {
     setIsDragging(false);
   };
 
+  // Prevent Passive Event Error by manually setting `passive: false`
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    el.addEventListener("touchmove", onDrag, { passive: false });
+
+    return () => {
+      el.removeEventListener("touchmove", onDrag);
+    };
+  }, [isDragging]);
+
   return (
-    <div className="bg-[#141414] group py-5 w-full relative">
+    <div className="bg-[#141414] group py-0 sm:py-5 w-full relative">
       <h1 className="ml-10 pt-3 pb-3 text-xl font-[Poppins] text-white">
         Today's Top Picks For You
       </h1>
@@ -71,7 +86,6 @@ function Projectsuggestions() {
           onMouseUp={stopDrag}
           onMouseLeave={stopDrag}
           onTouchStart={startDrag}
-          onTouchMove={onDrag}
           onTouchEnd={stopDrag}
         >
           <div className="flex gap-4 sm:gap-2 flex-nowrap min-w-max">

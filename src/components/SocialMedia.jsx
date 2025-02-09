@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight, FaGithub, FaLinkedin, FaInstagram, FaDiscord, FaEnvelope, FaPhone } from "react-icons/fa";
 
 const socialMediaLinks = [
@@ -16,7 +16,7 @@ function SocialMedia() {
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
 
-  const scrollAmount = window.innerWidth <= 640 ? 200 : 320; // Adjust for responsiveness
+  const scrollAmount = window.innerWidth <= 640 ? 200 : 320;
 
   const scrollLeftHandler = () => {
     if (scrollRef.current) {
@@ -40,7 +40,10 @@ function SocialMedia() {
   // While Dragging
   const onDrag = (e) => {
     if (!isDragging) return;
-    e.preventDefault();
+
+    // Prevent default only if dragging (fix for passive event issue)
+    if (e.cancelable) e.preventDefault();
+
     const x = e.pageX || e.touches[0].pageX;
     const walk = (x - startX) * 1.5; // Increase scroll sensitivity
     scrollRef.current.scrollLeft = scrollLeft - walk;
@@ -50,6 +53,18 @@ function SocialMedia() {
   const stopDrag = () => {
     setIsDragging(false);
   };
+
+  // Prevent Passive Event Error by manually setting `passive: false`
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    el.addEventListener("touchmove", onDrag, { passive: false });
+
+    return () => {
+      el.removeEventListener("touchmove", onDrag);
+    };
+  }, [isDragging]);
 
   return (
     <div className="bg-[#141414] group py-5 relative w-full overflow-hidden">
@@ -75,7 +90,6 @@ function SocialMedia() {
           onMouseUp={stopDrag}
           onMouseLeave={stopDrag}
           onTouchStart={startDrag}
-          onTouchMove={onDrag}
           onTouchEnd={stopDrag}
         >
           <div className="flex gap-2 whitespace-nowrap">
