@@ -89,7 +89,7 @@ function Technologies() {
       onMouseEnter={() => setShowArrows(true)} // Show arrows on hover
       onMouseLeave={() => setShowArrows(false)} // Hide arrows when mouse leaves
     >
-      <h1 className="ml-4 sm:ml-10 pt-3 pb-3 text-lg sm:text-xl font-[Poppins] text-white">
+      <h1 className="ml-4 sm:ml-10 pb-3 text-lg sm:text-xl font-[Poppins] text-white">
         Technologies I Worked On
       </h1>
 

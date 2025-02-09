@@ -70,7 +70,7 @@ function SocialMedia() {
       onMouseEnter={() => setShowArrows(true)} // Show arrows on hover (desktop)
       onMouseLeave={() => setShowArrows(false)} // Hide arrows when mouse leaves
     >
-      <h1 className="ml-4 sm:ml-10 pt-3 pb-3 text-lg sm:text-xl font-[Poppins] text-white">
+      <h1 className="ml-4 sm:ml-10 pb-3 text-lg sm:text-xl font-[Poppins] text-white">
         Connect With Me
       </h1>
 

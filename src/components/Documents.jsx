@@ -72,7 +72,7 @@ function Documents() {
       onMouseEnter={() => setShowArrows(true)}
       onMouseLeave={() => setShowArrows(false)}
     >
-      <h1 className="ml-4 sm:ml-10 pt-3 pb-3 text-lg sm:text-xl font-[Poppins] text-white">
+      <h1 className="ml-4 sm:ml-10  pb-3 text-lg sm:text-xl font-[Poppins] text-white">
         My Documents
       </h1>
 

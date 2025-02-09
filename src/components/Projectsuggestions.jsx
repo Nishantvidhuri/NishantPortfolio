@@ -69,7 +69,7 @@ function Projectsuggestions() {
       </h1>
 
       {/* Desktop View */}
-      <div className="hidden sm:block relative flex items-center ">
+      <div className="hidden sm:block relative  items-center ">
         {/* Scroll Left Button (Visible on Desktop) */}
         <button
           className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 h-40 w-[72px] opacity-0 group-hover:opacity-100 z-50 text-white hover:bg-black/50 transition-opacity duration-300 flex items-center justify-center"
