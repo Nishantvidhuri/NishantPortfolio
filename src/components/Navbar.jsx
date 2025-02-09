@@ -57,9 +57,9 @@ function Navbar() {
           <div className="flex font-bold text-sm !text-[#D5D5D5] gap-5">
             <Link to="/developer" className="hover:text-white transition duration-300">Home</Link>
             <Link to="/projects" className="hover:text-white transition duration-300">My Projects</Link>
-            <Link to="/skills" className="hover:text-white transition duration-300">My Skills</Link>
+            
             <Link to="/about" className="hover:text-white transition duration-300">About Me</Link>
-            <Link to="/contact" className="hover:text-white transition duration-300">Contact Me</Link>
+           
             <Link to="https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing" className="hover:text-white transition duration-300">My Resume</Link>
           </div>
         </div>

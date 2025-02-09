@@ -4,6 +4,7 @@ import Intropage from "./components/IntroPage";
 import Developer from "./pages/Developer";
 import Hr from "./pages/Hr";
 import { ProjectProvider } from "./context/ProjectContext";
+import MyProjects from "./pages/MyProjects";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Intropage />} />
           <Route path="/developer" element={<Developer />} />
           <Route path="/hr" element={<Hr />} />
+          <Route path="/projects" element={<MyProjects />} />
         </Routes>
       </div>
     </ProjectProvider>
