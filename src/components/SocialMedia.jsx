@@ -2,12 +2,12 @@ import React, { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight, FaGithub, FaLinkedin, FaInstagram, FaDiscord, FaEnvelope, FaPhone } from "react-icons/fa";
 
 const socialMediaLinks = [
-  { name: "Email", icon: <FaEnvelope size={40} />, link: "mailto:nisahntvidhuri0987@gmail.com" },
-  { name: "LinkedIn", icon: <FaLinkedin size={40} />, link: "https://www.linkedin.com/in/nishant-vidhuri-092a63124/" },
-  { name: "Phone", icon: <FaPhone size={40} />, link: "tel:+91 9871202673" },
-  { name: "GitHub", icon: <FaGithub size={40} />, link: "https://github.com/Nishantvidhuri" },
-  { name: "Instagram", icon: <FaInstagram size={40} />, link: "https://www.instagram.com/nishantvidhuriii" },
-  { name: "Discord", icon: <FaDiscord size={40} />, link: "https://discord.com/users/nishantvidhuri_77577" }
+  { name: "Email", icon: <FaEnvelope />, link: "mailto:nisahntvidhuri0987@gmail.com" },
+  { name: "LinkedIn", icon: <FaLinkedin />, link: "https://www.linkedin.com/in/nishant-vidhuri-092a63124/" },
+  { name: "Phone", icon: <FaPhone />, link: "tel:+91 9871202673" },
+  { name: "GitHub", icon: <FaGithub />, link: "https://github.com/Nishantvidhuri" },
+  { name: "Instagram", icon: <FaInstagram />, link: "https://www.instagram.com/nishantvidhuriii" },
+  { name: "Discord", icon: <FaDiscord />, link: "https://discord.com/users/nishantvidhuri_77577" }
 ];
 
 function SocialMedia() {
@@ -15,6 +15,7 @@ function SocialMedia() {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [showArrows, setShowArrows] = useState(false);
 
   const scrollAmount = window.innerWidth <= 640 ? 200 : 320;
 
@@ -40,12 +41,10 @@ function SocialMedia() {
   // While Dragging
   const onDrag = (e) => {
     if (!isDragging) return;
-
-    // Prevent default only if dragging (fix for passive event issue)
     if (e.cancelable) e.preventDefault();
 
     const x = e.pageX || e.touches[0].pageX;
-    const walk = (x - startX) * 1.5; // Increase scroll sensitivity
+    const walk = (x - startX) * 1.5;
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -54,7 +53,6 @@ function SocialMedia() {
     setIsDragging(false);
   };
 
-  // Prevent Passive Event Error by manually setting `passive: false`
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -67,24 +65,30 @@ function SocialMedia() {
   }, [isDragging]);
 
   return (
-    <div className="bg-[#141414] group py-5 relative w-full overflow-hidden">
+    <div
+      className="bg-[#141414] py-5 relative w-full"
+      onMouseEnter={() => setShowArrows(true)} // Show arrows on hover (desktop)
+      onMouseLeave={() => setShowArrows(false)} // Hide arrows when mouse leaves
+    >
       <h1 className="ml-4 sm:ml-10 pt-3 pb-3 text-lg sm:text-xl font-[Poppins] text-white">
         Connect With Me
       </h1>
 
       <div className="relative flex items-center">
-        {/* Scroll Left Button (Visible on Desktop) */}
+        {/* Scroll Left Button (Only visible on desktop and when hovered) */}
         <button
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 h-32 w-12 sm:h-40 sm:w-[72px] opacity-0 group-hover:opacity-100 z-50 text-white hover:bg-black/50 transition-opacity duration-300 flex items-center justify-center hidden md:flex"
+          className={`absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 p-3 h-12 w-12 sm:h-16 sm:w-16 z-50 text-white hover:bg-black/80 transition-all duration-300 rounded-full hidden sm:flex items-center justify-center ${
+            showArrows ? "opacity-100" : "opacity-0"
+          }`}
           onClick={scrollLeftHandler}
         >
-          <FaChevronLeft className="transition-transform duration-300 hover:scale-125" size={30} />
+          <FaChevronLeft className="transition-transform duration-300 hover:scale-125" size={25} />
         </button>
 
         {/* Scrollable Social Media Container */}
         <div
           ref={scrollRef}
-          className="overflow-hidden pl-4 sm:pl-10 w-full cursor-grab active:cursor-grabbing"
+          className="overflow-hidden px-4 sm:px-10 w-full cursor-grab active:cursor-grabbing"
           onMouseDown={startDrag}
           onMouseMove={onDrag}
           onMouseUp={stopDrag}
@@ -92,17 +96,19 @@ function SocialMedia() {
           onTouchStart={startDrag}
           onTouchEnd={stopDrag}
         >
-          <div className="flex gap-2 whitespace-nowrap">
+          <div className="flex gap-4 whitespace-nowrap">
             {socialMediaLinks.map((platform, index) => (
               <a
                 key={index}
                 href={platform.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative w-40 sm:w-80 h-32 sm:h-40 flex-shrink-0 bg-gray-900 rounded-md flex flex-col items-center justify-center cursor-pointer hover:bg-gray-800 transition"
+                className="relative border border-gray-700 rounded-md w-40 sm:w-80 h-32 sm:h-40 flex-shrink-0 flex flex-col items-center justify-center cursor-pointer"
               >
-                <div className="text-white">{platform.icon}</div>
-                <span className="font-[Nunito] text-sm sm:text-xl text-white font-bold mt-2">
+                {/* Icon - Corrected Sizes for Mobile & PC */}
+                <div className="text-white text-4xl sm:text-6xl">{platform.icon}</div>
+
+                <span className="text-xs sm:text-sm text-white font-semibold mt-2">
                   {platform.name}
                 </span>
               </a>
@@ -110,12 +116,14 @@ function SocialMedia() {
           </div>
         </div>
 
-        {/* Scroll Right Button (Visible on Desktop) */}
+        {/* Scroll Right Button (Only visible on desktop and when hovered) */}
         <button
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 h-32 w-12 sm:h-40 sm:w-[72px] opacity-0 group-hover:opacity-100 z-50 text-white hover:bg-black/50 transition-opacity duration-300 flex items-center justify-center hidden md:flex"
+          className={`absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 p-3 h-12 w-12 sm:h-16 sm:w-16 z-50 text-white hover:bg-black/80 transition-all duration-300 rounded-full hidden sm:flex items-center justify-center ${
+            showArrows ? "opacity-100" : "opacity-0"
+          }`}
           onClick={scrollRightHandler}
         >
-          <FaChevronRight className="transition-transform duration-300 hover:scale-125" size={30} />
+          <FaChevronRight className="transition-transform duration-300 hover:scale-125" size={25} />
         </button>
       </div>
     </div>
