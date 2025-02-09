@@ -123,14 +123,14 @@ function FirstSectionHome() {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="absolute top-16 left-8 flex gap-4 text-xl">
-          <button className="w-30 py-0.5 border-2 rounded-full border-gray-300 text-gray-300">
+        <div className="absolute top-16 left-4 w-full  flex gap-4 text-xl">
+          <button className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300">
             Projects
           </button>
-          <button className="w-30 py-0.5 border-2 rounded-full border-gray-300 text-gray-300">
+          <button className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300">
             Skills
           </button>
-          <button className="w-30 py-0.5 border-2 rounded-full border-gray-300 text-gray-300">
+          <button className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300">
             Resume
           </button>
         </div>
