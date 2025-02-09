@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+// ✅ Import Images Directly (Fix Image Issue)
+import Logo from "../assets/logo.png";
+import DeveloperImg from "../assets/developer.png";
+import HrImg from "../assets/hr.png";
+
 function Navbar() {
   const [count, setCount] = useState(3);
   const [scrolled, setScrolled] = useState(false);
@@ -8,11 +13,7 @@ function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 50);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -28,50 +29,24 @@ function Navbar() {
       {/* For PC Screens */}
       <div className="hidden md:flex px-5 py-2 justify-between items-center">
         <div className="flex gap-8 items-center">
-          <img className="w-32 h-10" src="/src/assets/logo.png" alt="Logo" />
+          <img className="w-32 h-10" src={Logo} alt="Logo" />
           <div className="flex font-bold text-sm !text-[#D5D5D5] gap-5">
-            <Link to="/developer" className="hover:text-white transition duration-300">
-              Home
-            </Link>
-            <Link to="/projects" className="hover:text-white transition duration-300">
-              My Projects
-            </Link>
-            <Link to="/skills" className="hover:text-white transition duration-300">
-              My Skills
-            </Link>
-            <Link to="/about" className="hover:text-white transition duration-300">
-              About Me
-            </Link>
-            <Link to="/contact" className="hover:text-white transition duration-300">
-              Contact Me
-            </Link>
-            <Link to="/resume" className="hover:text-white transition duration-300">
-              My Resume
-            </Link>
+            <Link to="/developer" className="hover:text-white transition duration-300">Home</Link>
+            <Link to="/projects" className="hover:text-white transition duration-300">My Projects</Link>
+            <Link to="/skills" className="hover:text-white transition duration-300">My Skills</Link>
+            <Link to="/about" className="hover:text-white transition duration-300">About Me</Link>
+            <Link to="/contact" className="hover:text-white transition duration-300">Contact Me</Link>
+            <Link to="/resume" className="hover:text-white transition duration-300">My Resume</Link>
           </div>
         </div>
 
         <div className="flex gap-10 items-center">
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              role="img"
-              viewBox="0 0 24 24"
-              width="24"
-              height="30"
-              aria-hidden="true"
-              className="text-white"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10ZM15.6177 17.0319C14.078 18.2635 12.125 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10C19 12.125 18.2635 14.078 17.0319 15.6177L22.7071 21.2929L21.2929 22.7071L15.6177 17.0319Z"
-                fill="currentColor"
-              ></path>
-            </svg>
-          </div>
+          {/* Search Icon */}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="30" className="text-white">
+            <path fillRule="evenodd" clipRule="evenodd" d="M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10ZM15.6177 17.0319C14.078 18.2635 12.125 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10C19 12.125 18.2635 14.078 17.0319 15.6177L22.7071 21.2929L21.2929 22.7071L15.6177 17.0319Z" fill="currentColor"/>
+          </svg>
 
+          {/* Notification Icon */}
           <div className="relative flex items-center cursor-pointer" onClick={() => setCount(0)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -92,22 +67,15 @@ function Navbar() {
               </span>
             )}
           </div>
-
+          {/* Profile Section */}
           <div className="group flex items-center">
             {location.pathname === "/developer" && (
-              <img className="w-9 rounded-md" src="/src/assets/developer.png" alt="Developer" />
+              <img className="w-9 rounded-md" src={DeveloperImg} alt="Developer" />
             )}
             {location.pathname === "/hr" && (
-              <img className="w-9 rounded-md" src="/src/assets/hr.png" alt="HR" />
+              <img className="w-9 rounded-md" src={HrImg} alt="HR" />
             )}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="white"
-              className="transition-transform duration-300 group-hover:rotate-180"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="white" className="transition-transform duration-300 group-hover:rotate-180">
               <path d="M12 16l-6-6h12z" />
             </svg>
           </div>
@@ -117,25 +85,11 @@ function Navbar() {
       {/* For Mobile Screens */}
       <div className="flex md:hidden justify-between items-center">
         {/* Left Side - Favicon */}
-        <img className="w-50 h-10" src="/src/assets/logo.png" alt="Favicon" />
+        <img className="w-50 h-10" src={Logo} alt="Favicon" />
 
         {/* Right Side - Search Icon */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          role="img"
-          viewBox="0 0 24 24"
-          width="24"
-          height="30"
-          aria-hidden="true"
-          className="text-white"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10ZM15.6177 17.0319C14.078 18.2635 12.125 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10C19 12.125 18.2635 14.078 17.0319 15.6177L22.7071 21.2929L21.2929 22.7071L15.6177 17.0319Z"
-            fill="currentColor"
-          ></path>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="30" className="text-white">
+          <path fillRule="evenodd" clipRule="evenodd" d="M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10ZM15.6177 17.0319C14.078 18.2635 12.125 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10C19 12.125 18.2635 14.078 17.0319 15.6177L22.7071 21.2929L21.2929 22.7071L15.6177 17.0319Z" fill="currentColor"/>
         </svg>
       </div>
     </div>
