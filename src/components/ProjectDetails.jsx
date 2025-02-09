@@ -1,10 +1,66 @@
 import React, { useEffect } from "react";
 
+// ✅ Import Images Properly
+import AiImage from "../assets/projects/AiImage.png";
+import AngelicSalon from "../assets/projects/AngelicSalon.png";
+import CineChronicle from "../assets/projects/CineChronicle.png";
+import YoutubeClone from "../assets/projects/Youtube.png";
+import DevDetective from "../assets/projects/DevDetective.png";
+import ExoApe from "../assets/projects/ExoApe.png";
+import PasswordGenerator from "../assets/projects/PasswordGenerator.png";
+import RecipeBook from "../assets/projects/RecipeBook.png";
+import SortingVisualizer from "../assets/projects/SortingVisualizer.png";
+import TicTacToe from "../assets/projects/TicTacToe.png";
+
+// ✅ Import Logos Properly
+import AiImageLogo from "../assets/logo/aiimage.png";
+import AngelicSalonLogo from "../assets/logo/angelicsalon.png";
+import CineChronicleLogo from "../assets/logo/cinechronicle.png";
+import YoutubeCloneLogo from "../assets/logo/youtube.png";
+import DevDetectiveLogo from "../assets/logo/devdetective.png";
+import ExoApeLogo from "../assets/logo/exoape.png";
+import PasswordGeneratorLogo from "../assets/logo/passwordgenerator.png";
+import RecipeBookLogo from "../assets/logo/recipebook.png";
+import SortingVisualizerLogo from "../assets/logo/sortingvisualizer.png";
+import TicTacToeLogo from "../assets/logo/tictactoe.png";
+
+// ✅ Function to get correct image & logo from project name
+const getProjectImage = (name) => {
+  const images = {
+    "AI Image Generator": AiImage,
+    "Angelic Salon": AngelicSalon,
+    "CineChronicle": CineChronicle,
+    "YouTube Clone": YoutubeClone,
+    "Dev Detective": DevDetective,
+    "ExoApe Clone": ExoApe,
+    "Password Generator": PasswordGenerator,
+    "Recipe Book": RecipeBook,
+    "Sorting Visualizer": SortingVisualizer,
+    "Tic Tac Toe": TicTacToe,
+  };
+  return images[name] || "";
+};
+
+const getProjectLogo = (name) => {
+  const logos = {
+    "AI Image Generator": AiImageLogo,
+    "Angelic Salon": AngelicSalonLogo,
+    "CineChronicle": CineChronicleLogo,
+    "YouTube Clone": YoutubeCloneLogo,
+    "Dev Detective": DevDetectiveLogo,
+    "ExoApe Clone": ExoApeLogo,
+    "Password Generator": PasswordGeneratorLogo,
+    "Recipe Book": RecipeBookLogo,
+    "Sorting Visualizer": SortingVisualizerLogo,
+    "Tic Tac Toe": TicTacToeLogo,
+  };
+  return logos[name] || "";
+};
+
 function ProjectDetails({ project, onClose }) {
   // Prevent background scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden"; // Disable scrolling
-
     return () => {
       document.body.style.overflow = "auto"; // Enable scrolling on unmount
     };
@@ -28,9 +84,9 @@ function ProjectDetails({ project, onClose }) {
         </button>
 
         {/* Project Image */}
-        <div className="relative w-full h-[60%] ">
+        <div className="relative w-full h-[60%]">
           <img
-            src={`/src/assets/projects/${project.image}`}
+            src={getProjectImage(project.name)} // ✅ FIXED IMAGE PATH
             alt={`${project.name} Background`}
             className="w-full h-full object-cover rounded-t-lg"
           />
@@ -41,7 +97,7 @@ function ProjectDetails({ project, onClose }) {
 
           {/* Buttons (Live Demo & GitHub) */}
           <div className="absolute bottom-5 sm:bottom-1 left-5 sm:left-10 flex gap-4 sm:gap-10">
-            <a
+          <a
               href={project.livelink}
               target="_blank"
               rel="noopener noreferrer"
@@ -98,7 +154,6 @@ function ProjectDetails({ project, onClose }) {
 
         {/* Content Section */}
         <div className="flex flex-col sm:flex-row gap-5 sm:gap-10 p-4 sm:p-10">
-          {/* Project Summary */}
           <p className="text-white text-lg sm:text-base font-[Archivo] w-full sm:w-[60%]">
             {project.summary}
           </p>
@@ -111,10 +166,7 @@ function ProjectDetails({ project, onClose }) {
               </h3>
               <div className="flex flex-wrap gap-2">
                 {project.techUsed.map((tech, index) => (
-                  <span
-                    key={index}
-                    className="text-white text-sm sm:text-md font-[Nunito] font-bold"
-                  >
+                  <span key={index} className="text-white text-sm sm:text-md font-[Nunito] font-bold">
                     {tech}{index !== project.techUsed.length - 1 ? "," : ""}
                   </span>
                 ))}
@@ -127,10 +179,7 @@ function ProjectDetails({ project, onClose }) {
               </h3>
               <div className="flex flex-wrap gap-2">
                 {project.genre.split(", ").map((genre, index) => (
-                  <span
-                    key={index}
-                    className="text-white text-sm sm:text-md font-[Nunito] font-bold"
-                  >
+                  <span key={index} className="text-white text-sm sm:text-md font-[Nunito] font-bold">
                     {genre}{index !== project.genre.split(", ").length - 1 ? "," : ""}
                   </span>
                 ))}
@@ -142,9 +191,9 @@ function ProjectDetails({ project, onClose }) {
         {/* Logo Section */}
         <div className="w-full flex justify-center sm:justify-end p-4 sm:pr-20">
           <img
-            src={`/src/assets/logo/${project.image}`}
+            src={getProjectLogo(project.name)} // ✅ FIXED LOGO PATH
             alt={`${project.name} Logo`}
-            className=" sm:w-32 h-20 sm:h-32 object-contain -translate-y-0 sm:-translate-y-20"
+            className="sm:w-32 h-20 sm:h-32 object-contain -translate-y-0 sm:-translate-y-20"
           />
         </div>
       </div>

@@ -38,7 +38,7 @@ function FirstSectionHome() {
           <img
             src={projects[randomIndex].logo} // ✅ Fix Here
             alt={`${projects[randomIndex].name} Logo`}
-            className="w-28 sm:w-36 md:w-60 h-20 sm:h-28 md:h-40 mb-4 object-contain"
+            className="w-28 sm:w-36 md:w-60 h-20 sm:h-28 md:h-40 mb-4  object-contain"
           />
 
           {/* Project Name */}
