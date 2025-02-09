@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 function Intropage() {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ function Intropage() {
     <div className="w-screen flex flex-col gap-10 justify-center items-center h-screen bg-[#141414] px-4 sm:px-0">
       <h1 className="text-3xl sm:text-6xl text-white text-center">Who's Watching?</h1>
 
-      <div className="flex gap-5 mt-10 flex-col sm:flex-row items-center">
+      <div className="flex gap-5 mt-10 items-center">
         <div
           className="group h-40 w-40 sm:h-60 sm:w-60 text-white flex flex-col gap-3 items-center rounded-md cursor-pointer"
           onClick={() => handleLink("/developer")}
@@ -24,7 +24,7 @@ function Intropage() {
           />
 
           {/* Text Color Changes to White on Hover */}
-          <h1 className="text-gray-500 font-jakarta font-bold text-sm sm:text-lg group-hover:text-white">
+          <h1 className="text-gray-500 font-bold text-sm sm:text-lg group-hover:text-white">
             Developer
           </h1>
         </div>
@@ -41,7 +41,7 @@ function Intropage() {
           />
 
           {/* Text Color Changes to White on Hover */}
-          <h1 className="text-gray-500 font-jakarta font-bold text-sm sm:text-lg group-hover:text-white">
+          <h1 className="text-gray-500  font-bold text-sm sm:text-lg group-hover:text-white">
             HR
           </h1>
         </div>
