@@ -12,6 +12,18 @@ import RecipeBook from "../assets/projects/RecipeBook.png";
 import SortingVisualizer from "../assets/projects/SortingVisualizer.png";
 import TicTacToe from "../assets/projects/TicTacToe.png";
 
+// ✅ Import Mobile-Specific Project Images
+import AiImageMob from "../assets/projects/mob/aiimagemob.jpeg";
+import AngelicSalonMob from "../assets/projects/mob/angelicmob.jpeg";
+import CineChronicleMob from "../assets/projects/mob/cinechroniclemob.jpeg";
+import YoutubeCloneMob from "../assets/projects/mob/youtubemob.jpeg";
+import DevDetectiveMob from "../assets/projects/mob/devdetectivemob.jpeg";
+import ExoApeMob from "../assets/projects/mob/exoapemob.jpeg";
+import PasswordGeneratorMob from "../assets/projects/mob/passwordgeneratormob.jpeg";
+import RecipeBookMob from "../assets/projects/mob/recipebookmob.jpeg";
+import SortingVisualizerMob from "../assets/projects/mob/sortingvisualizermob.jpeg";
+import TicTacToeMob from "../assets/projects/mob/tictactoemob.jpeg";
+
 // ✅ Import Logos (Correct Way)
 import AiImageLogo from "../assets/logo/aiimage.png";
 import AngelicSalonLogo from "../assets/logo/angelicsalon.png";
@@ -33,6 +45,7 @@ export const ProjectProvider = ({ children }) => {
     {
       name: "AI Image Generator",
       image: AiImage,
+      imageMob: AiImageMob,
       logo: AiImageLogo,
       githublink: "https://github.com/Nishantvidhuri/AI-Image",
       livelink: "https://aiimage-blue.vercel.app/home",
@@ -43,6 +56,7 @@ export const ProjectProvider = ({ children }) => {
     {
       name: "Angelic Salon",
       image: AngelicSalon,
+      imageMob: AngelicSalonMob,
       logo: AngelicSalonLogo,
       githublink: "https://github.com/Nishantvidhuri/Angelic-Salon",
       livelink: "https://angelicsalon.vercel.app/",
@@ -53,6 +67,7 @@ export const ProjectProvider = ({ children }) => {
     {
       name: "CineChronicle",
       image: CineChronicle,
+      imageMob: CineChronicleMob,
       logo: CineChronicleLogo,
       githublink: "https://github.com/Nishantvidhuri/CineChronicle",
       livelink: "https://cinemachronicle.netlify.app/",
@@ -63,6 +78,7 @@ export const ProjectProvider = ({ children }) => {
     {
       name: "YouTube Clone",
       image: YoutubeClone,
+      imageMob: YoutubeCloneMob,
       logo: YoutubeCloneLogo,
       githublink: "https://github.com/Nishantvidhuri/Youtube-Clone",
       livelink: "https://mytube-chi.vercel.app/",
@@ -71,65 +87,16 @@ export const ProjectProvider = ({ children }) => {
       genre: "Streaming, Video Platform",
     },
     {
-      name: "Dev Detective",
-      image: DevDetective,
-      logo: DevDetectiveLogo,
-      githublink: "https://github.com/Nishantvidhuri/DevDetective",
-      livelink: "https://nishantvidhuri.github.io/Dev-Detective/",
-      summary: "GitHub profile lookup tool displaying repositories, contributions, follower stats, and activity insights with a sleek and responsive user interface.",
-      techUsed: ["React", "GitHub API", "Tailwind CSS"],
-      genre: "Developer Tool, API Integration",
-    },
-    {
-      name: "ExoApe Clone",
-      image: ExoApe,
-      logo: ExoApeLogo,
-      githublink: "https://github.com/Nishantvidhuri/exoape-landing-clone",
-      livelink: "https://exoape-landing-clone.vercel.app/",
-      summary: "A stunning landing page clone featuring modern UI/UX design, smooth animations, and seamless scrolling for an interactive browsing experience.",
-      techUsed: ["React", "Tailwind CSS", "Framer Motion"],
-      genre: "Landing Page, UI/UX Design",
-    },
-    {
-      name: "Password Generator",
-      image: PasswordGenerator,
-      logo: PasswordGeneratorLogo,
-      githublink: "https://github.com/Nishantvidhuri/Password-Generator",
-      livelink: "https://nishantvidhuri.github.io/Password-Generator/",
-      summary: "Creates secure, randomized passwords based on user preferences for length, uppercase/lowercase letters, numbers, and special characters.",
-      techUsed: ["HTML", "CSS", "JavaScript"],
-      genre: "Cybersecurity, Utility Tool",
-    },
-    {
       name: "Recipe Book",
       image: RecipeBook,
+      imageMob: RecipeBookMob,
       logo: RecipeBookLogo,
       githublink: "https://github.com/Nishantvidhuri/Recipe-Book",
       livelink: "https://recipe-book-1iz9.vercel.app/",
       summary: "Interactive cooking guide with categorized recipes, ingredient lists, dietary filters, and step-by-step instructions for home chefs.",
       techUsed: ["React", "Spoonacular API", "Tailwind CSS"],
       genre: "Food, Recipe Guide",
-    },
-    {
-      name: "Sorting Visualizer",
-      image: SortingVisualizer,
-      logo: SortingVisualizerLogo,
-      githublink: "https://github.com/Nishantvidhuri/Sortingvisualizer",
-      livelink: "https://nishantvidhuri.github.io/Sortingvisualizer/",
-      summary: "Educational sorting algorithm visualizer with real-time animations for Bubble, Merge, Quick, and other sorting techniques for learning.",
-      techUsed: ["HTML", "CSS", "JavaScript"],
-      genre: "Education, Algorithm Visualization",
-    },
-    {
-      name: "Tic Tac Toe",
-      image: TicTacToe,
-      logo: TicTacToeLogo,
-      githublink: "https://github.com/Nishantvidhuri/Tic-Tac-Toe",
-      livelink: "https://nishantvidhuri.github.io/Tic-Tac-Toe/",
-      summary: "A simple web-based Tic Tac Toe game with real-time game updates, player turns, and win detection for two players.",
-      techUsed: ["HTML", "CSS", "JavaScript"],
-      genre: "Game, Interactive Web App",
-    },
+    }
   ];
 
   return <ProjectContext.Provider value={{ projects }}>{children}</ProjectContext.Provider>;

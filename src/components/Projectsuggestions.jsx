@@ -6,6 +6,7 @@ import ProjectDetails from "./ProjectDetails"; // Import the modal component
 function Projectsuggestions() {
   const { projects } = useProjects();
   const scrollRef = useRef(null);
+  const mobileScrollRef = useRef(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -29,7 +30,7 @@ function Projectsuggestions() {
   const startDrag = (e) => {
     setIsDragging(true);
     setStartX(e.pageX || e.touches[0].pageX);
-    setScrollLeft(scrollRef.current.scrollLeft);
+    setScrollLeft(scrollRef.current ? scrollRef.current.scrollLeft : 0);
   };
 
   // While Dragging
@@ -40,7 +41,9 @@ function Projectsuggestions() {
 
     const x = e.pageX || e.touches[0].pageX;
     const walk = (x - startX) * 1.5; // Increase scroll sensitivity
-    scrollRef.current.scrollLeft = scrollLeft - walk;
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollLeft - walk;
+    }
   };
 
   // Stop Dragging
@@ -65,11 +68,11 @@ function Projectsuggestions() {
         Today's Top Picks For You
       </h1>
 
-      {/* Wrapper to Align Arrows with Cards */}
-      <div className="relative flex items-center tranlate-x-10">
+      {/* Desktop View */}
+      <div className="hidden sm:block relative flex items-center translate-x-10">
         {/* Scroll Left Button (Visible on Desktop) */}
         <button
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 h-40 w-[72px] opacity-0 group-hover:opacity-100 z-50 text-white hover:bg-black/50 transition-opacity duration-300 flex items-center justify-center hidden md:flex"
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 h-40 w-[72px] opacity-0 group-hover:opacity-100 z-50 text-white hover:bg-black/50 transition-opacity duration-300 flex items-center justify-center"
           onClick={scrollLeftHandler}
         >
           <FaChevronLeft className="transition-transform duration-300 hover:scale-125" size={50} />
@@ -78,7 +81,7 @@ function Projectsuggestions() {
         {/* Scrollable Cards Container */}
         <div
           ref={scrollRef}
-          className="overflow-hidden px-4 sm:px-10 w-full cursor-grab active:cursor-grabbing"
+          className="overflow-x-auto whitespace-nowrap px-4 sm:px-10 w-full cursor-grab active:cursor-grabbing flex"
           onMouseDown={startDrag}
           onMouseMove={onDrag}
           onMouseUp={stopDrag}
@@ -90,12 +93,12 @@ function Projectsuggestions() {
             {projects.map((project, index) => (
               <div
                 key={index}
-                className="relative w-80 h-40 rounded-md flex-shrink-0 overflow-hidden cursor-pointer snap-start"
+                className="relative w-[90%] sm:w-80 h-56 sm:h-40 flex-shrink-0 overflow-hidden cursor-pointer snap-start"
                 onClick={() => setSelectedProject(project)}
               >
-                {/* Background Image */}
+                {/* Background Image - Mobile uses wider images */}
                 <img
-                  src={project.image} // ✅ Use imported image variable
+                  src={window.innerWidth < 640 ? project.imageMob : project.image} // ✅ Use mobile images for small screens
                   alt={`${project.name} Background`}
                   className="absolute w-full h-full object-cover"
                 />
@@ -121,11 +124,33 @@ function Projectsuggestions() {
 
         {/* Scroll Right Button (Visible on Desktop) */}
         <button
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 h-40 w-[72px] opacity-0 group-hover:opacity-100 z-50 text-white hover:bg-black/50 transition-opacity duration-300 flex items-center justify-center hidden md:flex"
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black/30 p-2 h-40 w-[72px] opacity-0 group-hover:opacity-100 z-50 text-white hover:bg-black/50 transition-opacity duration-300 flex items-center justify-center"
           onClick={scrollRightHandler}
         >
           <FaChevronRight className="transition-transform duration-300 hover:scale-125" size={50} />
         </button>
+      </div>
+
+      {/* Mobile View */}
+      <div className="sm:hidden w-full overflow-x-auto whitespace-nowrap py-4" ref={mobileScrollRef}>
+        <div className="flex gap-4 px-4">
+          {projects.map((project, index) => (
+            <div key={index} className="w-44 flex-shrink-0 relative">
+              {/* Background Image */}
+              <img
+                src={project.imageMob}
+                alt={project.name}
+                className="w-full h-24 object-cover rounded-md"
+              />
+              {/* Play Button */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <button className="bg-white text-black px-4 py-1 text-sm font-bold rounded">▶</button>
+              </div>
+              {/* Project Name */}
+              <h2 className="text-white text-center mt-1 text-sm font-semibold">{project.name}</h2>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Show ProjectDetails modal when a project is selected */}
