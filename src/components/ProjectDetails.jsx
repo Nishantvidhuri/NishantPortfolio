@@ -189,7 +189,7 @@ function ProjectDetails({ project, onClose }) {
         </div>
 
         {/* Logo Section */}
-        <div className="w-full flex justify-center sm:justify-end p-4 sm:pr-20">
+        <div className="w-full flex justify-center sm:justify-end pt-12 p-4 sm:pr-20">
           <img
             src={getProjectLogo(project.name)} // ✅ FIXED LOGO PATH
             alt={`${project.name} Logo`}
