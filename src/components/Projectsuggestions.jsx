@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useProjects } from "../context/ProjectContext";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import Icons
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ProjectDetails from "./ProjectDetails"; // Import the modal component
 
 function Projectsuggestions() {
@@ -36,8 +36,7 @@ function Projectsuggestions() {
   const onDrag = (e) => {
     if (!isDragging) return;
 
-    // Prevent default only if dragging (fix for passive event issue)
-    if (e.cancelable) e.preventDefault();
+    if (e.cancelable) e.preventDefault(); // Prevent default only if dragging
 
     const x = e.pageX || e.touches[0].pageX;
     const walk = (x - startX) * 1.5; // Increase scroll sensitivity
@@ -49,7 +48,6 @@ function Projectsuggestions() {
     setIsDragging(false);
   };
 
-  // Prevent Passive Event Error by manually setting `passive: false`
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -93,11 +91,11 @@ function Projectsuggestions() {
               <div
                 key={index}
                 className="relative w-80 h-40 rounded-md flex-shrink-0 overflow-hidden cursor-pointer snap-start"
-                onClick={() => setSelectedProject(project)} // Open modal on click
+                onClick={() => setSelectedProject(project)}
               >
                 {/* Background Image */}
                 <img
-                  src={`/src/assets/projects/${project.image}`}
+                  src={project.image} // ✅ Use imported image variable
                   alt={`${project.name} Background`}
                   className="absolute w-full h-full object-cover"
                 />
@@ -107,7 +105,7 @@ function Projectsuggestions() {
 
                 {/* Foreground Logo */}
                 <img
-                  src={`/src/assets/logo/${project.image}`}
+                  src={project.logo} // ✅ Use imported logo variable
                   alt={`${project.name} Logo`}
                   className="relative z-20 w-20 h-20 object-contain mx-auto mt-3"
                 />

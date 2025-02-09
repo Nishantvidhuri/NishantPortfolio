@@ -1,18 +1,18 @@
 import { createContext, useContext } from "react";
 
-// ✅ Import Project Images
+// ✅ Import Project Images (Correct Way)
 import AiImage from "../assets/projects/AiImage.png";
 import AngelicSalon from "../assets/projects/AngelicSalon.png";
-import CineChronicle from "../assets/projects/cinechronicle.png";
+import CineChronicle from "../assets/projects/CineChronicle.png";
 import YoutubeClone from "../assets/projects/Youtube.png";
 import DevDetective from "../assets/projects/DevDetective.png";
 import ExoApe from "../assets/projects/ExoApe.png";
 import PasswordGenerator from "../assets/projects/PasswordGenerator.png";
 import RecipeBook from "../assets/projects/RecipeBook.png";
 import SortingVisualizer from "../assets/projects/SortingVisualizer.png";
-import TicTacToe from "../assets/projects/tictactoe.png";
+import TicTacToe from "../assets/projects/TicTacToe.png";
 
-// ✅ Import Project Logos
+// ✅ Import Logos (Correct Way)
 import AiImageLogo from "../assets/logo/aiimage.png";
 import AngelicSalonLogo from "../assets/logo/angelicsalon.png";
 import CineChronicleLogo from "../assets/logo/cinechronicle.png";
@@ -32,13 +32,13 @@ export const ProjectProvider = ({ children }) => {
   const projects = [
     {
       name: "AI Image Generator",
-      image: AiImage,
+      image: AiImage, // ✅ Direct Import
       logo: AiImageLogo,
       githublink: "https://github.com/Nishantvidhuri/AI-Image",
       livelink: "https://your-ai-image-project.vercel.app/",
-      summary: "This AI-powered image generator uses deep learning models to create unique visuals...",
+      summary: "AI-powered image generator using deep learning.",
       techUsed: ["React", "Tailwind CSS", "OpenAI API"],
-      genre: "AI/ML, Image Processing"
+      genre: "AI/ML, Image Processing",
     },
     {
       name: "Angelic Salon",
@@ -46,9 +46,9 @@ export const ProjectProvider = ({ children }) => {
       logo: AngelicSalonLogo,
       githublink: "https://github.com/Nishantvidhuri/Angelic-Salon",
       livelink: "https://angelicsalon.vercel.app/",
-      summary: "Angelic Salon is an online beauty service booking platform...",
+      summary: "Online beauty service booking platform.",
       techUsed: ["React", "Tailwind CSS", "Vite", "Express.js"],
-      genre: "E-commerce, Booking System"
+      genre: "E-commerce, Booking System",
     },
     {
       name: "CineChronicle",
@@ -56,9 +56,9 @@ export const ProjectProvider = ({ children }) => {
       logo: CineChronicleLogo,
       githublink: "https://github.com/Nishantvidhuri/CineChronicle",
       livelink: "https://cinemachronicle.netlify.app/",
-      summary: "CineChronicle is an IMDb-like movie database showcasing trending films...",
+      summary: "IMDb-like movie database for trending films & TV shows.",
       techUsed: ["React", "TMDb API", "Tailwind CSS", "Vite", "Redux"],
-      genre: "Entertainment, Movie Database"
+      genre: "Entertainment, Movie Database",
     },
     {
       name: "YouTube Clone",
@@ -66,9 +66,9 @@ export const ProjectProvider = ({ children }) => {
       logo: YoutubeCloneLogo,
       githublink: "https://github.com/Nishantvidhuri/Youtube-Clone",
       livelink: "https://mytube-chi.vercel.app/",
-      summary: "This YouTube clone replicates core YouTube functionalities...",
+      summary: "Replica of YouTube's core functionalities.",
       techUsed: ["React", "Tailwind CSS", "YouTube API", "Vite"],
-      genre: "Streaming, Video Platform"
+      genre: "Streaming, Video Platform",
     },
     {
       name: "Dev Detective",
@@ -76,9 +76,9 @@ export const ProjectProvider = ({ children }) => {
       logo: DevDetectiveLogo,
       githublink: "https://github.com/Nishantvidhuri/DevDetective",
       livelink: "https://dev-detective.vercel.app/",
-      summary: "Dev Detective is a GitHub profile lookup tool...",
+      summary: "GitHub profile lookup tool for developers.",
       techUsed: ["React", "GitHub API", "Tailwind CSS"],
-      genre: "Developer Tool, API Integration"
+      genre: "Developer Tool, API Integration",
     },
     {
       name: "ExoApe Clone",
@@ -86,9 +86,9 @@ export const ProjectProvider = ({ children }) => {
       logo: ExoApeLogo,
       githublink: "https://github.com/Nishantvidhuri/exoape-landing-clone",
       livelink: "https://exoape-landing-clone.vercel.app/",
-      summary: "ExoApe Clone is a visually stunning landing page...",
+      summary: "Modern landing page replication with smooth animations.",
       techUsed: ["React", "Tailwind CSS", "Framer Motion"],
-      genre: "Landing Page, UI/UX Design"
+      genre: "Landing Page, UI/UX Design",
     },
     {
       name: "Password Generator",
@@ -96,9 +96,9 @@ export const ProjectProvider = ({ children }) => {
       logo: PasswordGeneratorLogo,
       githublink: "https://github.com/Nishantvidhuri/Password-Generator",
       livelink: "https://nishantvidhuri.github.io/Password-Generator/",
-      summary: "This Password Generator provides strong, randomized passwords...",
+      summary: "Randomized password generator with user-defined criteria.",
       techUsed: ["HTML", "CSS", "JavaScript"],
-      genre: "Cybersecurity, Utility Tool"
+      genre: "Cybersecurity, Utility Tool",
     },
     {
       name: "Recipe Book",
@@ -106,9 +106,9 @@ export const ProjectProvider = ({ children }) => {
       logo: RecipeBookLogo,
       githublink: "https://github.com/Nishantvidhuri/Recipe-Book",
       livelink: "https://recipe-book.vercel.app/",
-      summary: "The Recipe Book is an interactive cooking guide...",
+      summary: "Interactive cooking guide with categorized recipes.",
       techUsed: ["React", "Spoonacular API", "Tailwind CSS"],
-      genre: "Food, Recipe Guide"
+      genre: "Food, Recipe Guide",
     },
     {
       name: "Sorting Visualizer",
@@ -116,9 +116,9 @@ export const ProjectProvider = ({ children }) => {
       logo: SortingVisualizerLogo,
       githublink: "https://github.com/Nishantvidhuri/Sortingvisualizer",
       livelink: "https://nishantvidhuri.github.io/Sortingvisualizer/",
-      summary: "This Sorting Visualizer helps users understand sorting algorithms...",
+      summary: "Graphical representation of sorting algorithms.",
       techUsed: ["HTML", "CSS", "JavaScript"],
-      genre: "Education, Algorithm Visualization"
+      genre: "Education, Algorithm Visualization",
     },
     {
       name: "Tic Tac Toe",
@@ -126,10 +126,10 @@ export const ProjectProvider = ({ children }) => {
       logo: TicTacToeLogo,
       githublink: "https://github.com/Nishantvidhuri/Tic-Tac-Toe",
       livelink: "https://nishantvidhuri.github.io/Tic-Tac-Toe/",
-      summary: "Tic Tac Toe is a simple yet engaging two-player game...",
+      summary: "Classic Tic Tac Toe game with real-time updates.",
       techUsed: ["HTML", "CSS", "JavaScript"],
-      genre: "Game, Interactive Web App"
-    }
+      genre: "Game, Interactive Web App",
+    },
   ];
 
   return <ProjectContext.Provider value={{ projects }}>{children}</ProjectContext.Provider>;
