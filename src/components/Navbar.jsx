@@ -85,7 +85,7 @@ function Navbar() {
       {/* For Mobile Screens */}
       <div className="flex md:hidden justify-between items-center">
         {/* Left Side - Favicon */}
-        <img className="w-50 h-10" src={Logo} alt="Favicon" />
+        <img className="w-[30%] h-10" src={Logo} alt="Favicon" />
 
         {/* Right Side - Search Icon */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="30" className="text-white">
