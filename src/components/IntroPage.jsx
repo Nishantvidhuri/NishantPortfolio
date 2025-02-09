@@ -1,6 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
+// ✅ Import Images Directly (Fixes Vercel Build Issues)
+import DeveloperImg from "../assets/developer.png";
+import HrImg from "../assets/hr.png";
+
 function Intropage() {
   const navigate = useNavigate();
   const handleLink = (link) => {
@@ -19,7 +23,7 @@ function Intropage() {
           {/* Image with Border on Hover */}
           <img
             className="h-24 sm:h-32 group-hover:border-white group-hover:border-2"
-            src="/src/assets/developer.png"
+            src={DeveloperImg}
             alt="Developer"
           />
 
@@ -36,7 +40,7 @@ function Intropage() {
           {/* Image with Border on Hover */}
           <img
             className="h-24 sm:h-32 group-hover:border-white group-hover:border-2"
-            src="/src/assets/hr.png"
+            src={HrImg}
             alt="HR"
           />
 
