@@ -83,7 +83,7 @@ function Navbar() {
       </div>
 
       {/* For Mobile Screens */}
-      <div className="flex md:hidden justify-between items-center">
+      <div className="flex md:hidden px-3 justify-between items-center">
         {/* Left Side - Favicon */}
         <img className="w-[30%] h-10" src={Logo} alt="Favicon" />
 

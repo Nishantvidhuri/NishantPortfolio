@@ -81,7 +81,7 @@ function Projectsuggestions() {
         {/* Scrollable Cards Container */}
         <div
           ref={scrollRef}
-          className="overflow-x-auto whitespace-nowrap px-4 sm:px-10 w-full cursor-grab active:cursor-grabbing flex"
+          className="overflow-hidden whitespace-nowrap px-4 sm:px-10 w-full cursor-grab active:cursor-grabbing flex"
           onMouseDown={startDrag}
           onMouseMove={onDrag}
           onMouseUp={stopDrag}
@@ -98,7 +98,7 @@ function Projectsuggestions() {
               >
                 {/* Background Image - Mobile uses wider images */}
                 <img
-                  src={window.innerWidth < 640 ? project.imageMob : project.image} // ✅ Use mobile images for small screens
+                  src={project.image}
                   alt={`${project.name} Background`}
                   className="absolute w-full h-full object-cover"
                 />
@@ -108,7 +108,7 @@ function Projectsuggestions() {
 
                 {/* Foreground Logo */}
                 <img
-                  src={project.logo} // ✅ Use imported logo variable
+                  src={project.logo}
                   alt={`${project.name} Logo`}
                   className="relative z-20 w-20 h-20 object-contain mx-auto mt-3"
                 />
@@ -132,25 +132,35 @@ function Projectsuggestions() {
       </div>
 
       {/* Mobile View */}
-      <div className="sm:hidden w-full overflow-x-auto whitespace-nowrap py-4" ref={mobileScrollRef}>
-        <div className="flex gap-4 px-4">
-          {projects.map((project, index) => (
-            <div key={index} className="w-44 flex-shrink-0 relative">
-              {/* Background Image */}
-              <img
-                src={project.imageMob}
-                alt={project.name}
-                className="w-full h-24 object-cover rounded-md"
-              />
-              {/* Play Button */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <button className="bg-white text-black px-4 py-1 text-sm font-bold rounded">▶</button>
-              </div>
-              {/* Project Name */}
-              <h2 className="text-white text-center mt-1 text-sm font-semibold">{project.name}</h2>
-            </div>
-          ))}
-        </div>
+      <div className="sm:hidden w-full overflow-x-auto whitespace-nowrap py-4 no-scrollbar" ref={mobileScrollRef}>
+      <div className="flex gap-4 px-4"
+      >
+  {projects.map((project, index) => (
+    <div key={index} className="w-36 flex-shrink-0 relative" onClick={() => setSelectedProject(project)} >
+      {/* Background Image */}
+      <img
+        src={project.imageMob}
+        alt={project.name}
+        className="w-40 h-50 object-cover rounded-xs"
+      />
+      
+      {/* Black Overlay */}
+      <div className="absolute inset-0 bg-black/80 rounded-xs"></div>
+
+      
+      <img
+                  src={project.logo}
+                  alt={`${project.name} Logo`}
+                  className="absolute bottom-[25%] left-[25%] z-20 w-20 h-20 object-contain mx-auto mt-3"
+                />
+      {/* Project Name */}
+      <h2 className="absolute bottom-2 font-[teko] left-0 right-0 text-white text-center text-lg font-semibold z-10">
+        {project.name}
+      </h2>
+    </div>
+  ))}
+</div>
+
       </div>
 
       {/* Show ProjectDetails modal when a project is selected */}

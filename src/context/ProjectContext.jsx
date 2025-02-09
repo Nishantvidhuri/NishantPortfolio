@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-// ✅ Import Project Images (Correct Way)
+// ✅ Import Project Images (PC and Mobile Versions)
 import AiImage from "../assets/projects/AiImage.png";
 import AngelicSalon from "../assets/projects/AngelicSalon.png";
 import CineChronicle from "../assets/projects/CineChronicle.png";
@@ -12,7 +12,7 @@ import RecipeBook from "../assets/projects/RecipeBook.png";
 import SortingVisualizer from "../assets/projects/SortingVisualizer.png";
 import TicTacToe from "../assets/projects/TicTacToe.png";
 
-// ✅ Import Mobile-Specific Project Images
+// ✅ Import Mobile-Specific Images
 import AiImageMob from "../assets/projects/mob/aiimagemob.jpeg";
 import AngelicSalonMob from "../assets/projects/mob/angelicmob.jpeg";
 import CineChronicleMob from "../assets/projects/mob/cinechroniclemob.jpeg";
@@ -24,7 +24,7 @@ import RecipeBookMob from "../assets/projects/mob/recipebookmob.jpeg";
 import SortingVisualizerMob from "../assets/projects/mob/sortingvisualizermob.jpeg";
 import TicTacToeMob from "../assets/projects/mob/tictactoemob.jpeg";
 
-// ✅ Import Logos (Correct Way)
+// ✅ Import Logos
 import AiImageLogo from "../assets/logo/aiimage.png";
 import AngelicSalonLogo from "../assets/logo/angelicsalon.png";
 import CineChronicleLogo from "../assets/logo/cinechronicle.png";
@@ -45,7 +45,7 @@ export const ProjectProvider = ({ children }) => {
     {
       name: "AI Image Generator",
       image: AiImage,
-      imageMob: AiImageMob,
+      imageMob: AiImageMob, // ✅ Mobile Image
       logo: AiImageLogo,
       githublink: "https://github.com/Nishantvidhuri/AI-Image",
       livelink: "https://aiimage-blue.vercel.app/home",
@@ -87,6 +87,39 @@ export const ProjectProvider = ({ children }) => {
       genre: "Streaming, Video Platform",
     },
     {
+      name: "Dev Detective",
+      image: DevDetective,
+      imageMob: DevDetectiveMob,
+      logo: DevDetectiveLogo,
+      githublink: "https://github.com/Nishantvidhuri/DevDetective",
+      livelink: "https://nishantvidhuri.github.io/Dev-Detective/",
+      summary: "GitHub profile lookup tool displaying repositories, contributions, follower stats, and activity insights with a sleek and responsive user interface.",
+      techUsed: ["React", "GitHub API", "Tailwind CSS"],
+      genre: "Developer Tool, API Integration",
+    },
+    {
+      name: "ExoApe Clone",
+      image: ExoApe,
+      imageMob: ExoApeMob,
+      logo: ExoApeLogo,
+      githublink: "https://github.com/Nishantvidhuri/exoape-landing-clone",
+      livelink: "https://exoape-landing-clone.vercel.app/",
+      summary: "A stunning landing page clone featuring modern UI/UX design, smooth animations, and seamless scrolling for an interactive browsing experience.",
+      techUsed: ["React", "Tailwind CSS", "Framer Motion"],
+      genre: "Landing Page, UI/UX Design",
+    },
+    {
+      name: "Password Generator",
+      image: PasswordGenerator,
+      imageMob: PasswordGeneratorMob,
+      logo: PasswordGeneratorLogo,
+      githublink: "https://github.com/Nishantvidhuri/Password-Generator",
+      livelink: "https://nishantvidhuri.github.io/Password-Generator/",
+      summary: "Creates secure, randomized passwords based on user preferences for length, uppercase/lowercase letters, numbers, and special characters.",
+      techUsed: ["HTML", "CSS", "JavaScript"],
+      genre: "Cybersecurity, Utility Tool",
+    },
+    {
       name: "Recipe Book",
       image: RecipeBook,
       imageMob: RecipeBookMob,
@@ -96,7 +129,29 @@ export const ProjectProvider = ({ children }) => {
       summary: "Interactive cooking guide with categorized recipes, ingredient lists, dietary filters, and step-by-step instructions for home chefs.",
       techUsed: ["React", "Spoonacular API", "Tailwind CSS"],
       genre: "Food, Recipe Guide",
-    }
+    },
+    {
+      name: "Sorting Visualizer",
+      image: SortingVisualizer,
+      imageMob: SortingVisualizerMob,
+      logo: SortingVisualizerLogo,
+      githublink: "https://github.com/Nishantvidhuri/Sortingvisualizer",
+      livelink: "https://nishantvidhuri.github.io/Sortingvisualizer/",
+      summary: "Educational sorting algorithm visualizer with real-time animations for Bubble, Merge, Quick, and other sorting techniques for learning.",
+      techUsed: ["HTML", "CSS", "JavaScript"],
+      genre: "Education, Algorithm Visualization",
+    },
+    {
+      name: "Tic Tac Toe",
+      image: TicTacToe,
+      imageMob: TicTacToeMob,
+      logo: TicTacToeLogo,
+      githublink: "https://github.com/Nishantvidhuri/Tic-Tac-Toe",
+      livelink: "https://nishantvidhuri.github.io/Tic-Tac-Toe/",
+      summary: "A simple web-based Tic Tac Toe game with real-time game updates, player turns, and win detection for two players.",
+      techUsed: ["HTML", "CSS", "JavaScript"],
+      genre: "Game, Interactive Web App",
+    },
   ];
 
   return <ProjectContext.Provider value={{ projects }}>{children}</ProjectContext.Provider>;

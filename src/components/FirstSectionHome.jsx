@@ -80,10 +80,10 @@ function FirstSectionHome() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url(${projects[randomIndex].image})`, // ✅ Fix Here
+            backgroundImage: `url(${projects[randomIndex].imageMob})`, // ✅ Fix Here
           }}
         >
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-[3px]"></div>
         </div>
 
         {/* Navigation Buttons */}
@@ -114,7 +114,7 @@ function FirstSectionHome() {
           </h2>
           <div className="flex">
            
-            <h2 className="text-lg w-full absolute left-0 top-[78%]  text-gray-500">
+            <h2 className="text-lg w-full absolute left-0 top-[78%]  text-white">
             {projects[randomIndex].genre}
             </h2>
           </div>
