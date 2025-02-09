@@ -7,7 +7,7 @@ function FirstSectionHome() {
 
   useEffect(() => {
     if (projects.length > 0) {
-      const randomNumber = Math.floor(Math.random() * projects.length);
+      const randomNumber = Math.floor(Math.random() * 4);
       setRandomIndex(randomNumber);
     }
   }, [projects.length]);
@@ -75,10 +75,10 @@ function FirstSectionHome() {
       </div>
 
       {/* Mobile View */}
-      <div className="flex sm:hidden flex-col items-center justify-center w-full h-[700px] p-6 bg-[#141414] relative">
+      <div className="flex sm:hidden flex-col items-center justify-center w-full h-[600px] p-6 bg-[#141414] relative">
         {/* Background Image */}
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute  inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url(${projects[randomIndex].imageMob})`, // ✅ Fix Here
           }}
@@ -105,7 +105,7 @@ function FirstSectionHome() {
           <img
             src={projects[randomIndex].logo} // ✅ Fix Here
             alt={`${projects[randomIndex].name} Logo`}
-            className="w-60 absolute top-[20%] mb-4 object-contain"
+            className="w-60 absolute top-[10%] mb-4 object-contain"
           />
 
           {/* Project Name */}
@@ -113,9 +113,8 @@ function FirstSectionHome() {
             {projects[randomIndex].name}
           </h2>
           <div className="flex">
-           
             <h2 className="text-lg w-full absolute left-0 top-[78%]  text-white">
-            {projects[randomIndex].genre}
+              {projects[randomIndex].genre}
             </h2>
           </div>
           {/* Buttons */}
