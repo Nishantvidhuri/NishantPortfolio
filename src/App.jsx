@@ -4,7 +4,7 @@ import Intropage from "./components/IntroPage";
 import Developer from "./pages/Developer";
 import Hr from "./pages/Hr";
 import { ProjectProvider } from "./context/ProjectContext";
-import MyProjects from "./pages/MyProjects";
+
 
 function App() {
   return (
