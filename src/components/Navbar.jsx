@@ -47,7 +47,7 @@ function Navbar() {
 
   return (
     <div className={`fixed w-full top-0 left-0  transition-all duration-300 ${scrolled ? "bg-black shadow-lg" : "bg-transparent"} px-0 sm:px-6 py-3 z-50`}>
-      <div className="flex md:hidden justify-between items-center px-5 py-2">
+      <div className="flex md:hidden justify-between items-center px-2 py-2">
         <img className="w-32 h-10" src={Logo} alt="Logo" />
         <FaSearch className="text-white text-xl cursor-pointer" />
       </div>
