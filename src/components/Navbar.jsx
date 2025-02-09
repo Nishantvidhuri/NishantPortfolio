@@ -3,13 +3,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import DeveloperImg from "../assets/developer.png";
 import HrImg from "../assets/hr.png";
-import { FaFileDownload, FaEnvelope, FaCode } from "react-icons/fa";
+import { FaFileDownload, FaEnvelope, FaCode, FaSearch } from "react-icons/fa";
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [count, setCount] = useState(3);
+
+
   const [notifications, setNotifications] = useState([
     <><FaCode className="inline mr-2" /> Have you checked my latest project?</>,
     <><FaFileDownload className="inline mr-2" /> Want to download my resume? Scroll to the bottom!</>,
@@ -28,7 +30,8 @@ function Navbar() {
   }, []);
 
   const handleMouseEnter = (dropdown) => {
-    if (dropdown == "notifications") setCount(0);
+    if(dropdown=="notifications")
+      setCount(0)
     clearTimeout(timeoutId);
     setActiveDropdown(dropdown);
   };
@@ -43,51 +46,21 @@ function Navbar() {
   const oppositeProfileUrl = isDeveloper ? "/hr" : "/developer";
 
   return (
-    <div
-      className={`fixed w-full top-0 left-0 transition-all duration-300 ${
-        scrolled ? "bg-black shadow-lg" : "bg-transparent"
-      } px-6 py-3 z-50`}
-    >
+    <div className={`fixed w-full top-0 left-0  transition-all duration-300 ${scrolled ? "bg-black shadow-lg" : "bg-transparent"} px-6 py-3 z-50`}>
+      <div className="flex md:hidden justify-between items-center px-5 py-2">
+        <img className="w-32 h-10" src={Logo} alt="Logo" />
+        <FaSearch className="text-white text-xl cursor-pointer" />
+      </div>
       <div className="hidden md:flex px-5 py-2 justify-between items-center">
         <div className="flex gap-8 items-center">
           <img className="w-32 h-10" src={Logo} alt="Logo" />
           <div className="flex font-bold text-sm !text-[#D5D5D5] gap-5">
-            <Link
-              to="/developer"
-              className="hover:text-white transition duration-300"
-            >
-              Home
-            </Link>
-            <Link
-              to="/projects"
-              className="hover:text-white transition duration-300"
-            >
-              My Projects
-            </Link>
-            <Link
-              to="/skills"
-              className="hover:text-white transition duration-300"
-            >
-              My Skills
-            </Link>
-            <Link
-              to="/about"
-              className="hover:text-white transition duration-300"
-            >
-              About Me
-            </Link>
-            <Link
-              to="/contact"
-              className="hover:text-white transition duration-300"
-            >
-              Contact Me
-            </Link>
-            <Link
-              to="/resume"
-              className="hover:text-white transition duration-300"
-            >
-              My Resume
-            </Link>
+            <Link to="/developer" className="hover:text-white transition duration-300">Home</Link>
+            <Link to="/projects" className="hover:text-white transition duration-300">My Projects</Link>
+            <Link to="/skills" className="hover:text-white transition duration-300">My Skills</Link>
+            <Link to="/about" className="hover:text-white transition duration-300">About Me</Link>
+            <Link to="/contact" className="hover:text-white transition duration-300">Contact Me</Link>
+            <Link to="/resume" className="hover:text-white transition duration-300">My Resume</Link>
           </div>
         </div>
 
