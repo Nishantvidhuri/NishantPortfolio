@@ -52,12 +52,19 @@ function Navbar() {
     setActiveDropdown(null);
   };
 
-
+  const handleLogoClick = () => {
+    navigate(userRole === 'developer' ? '/developer' : '/hr');
+  };
 
   return (
     <div className={`fixed w-full top-0 left-0  transition-all duration-300 ${scrolled ? "bg-black shadow-lg" : "bg-transparent"} px-0 sm:px-6 py-3 z-50`}>
       <div className="flex md:hidden justify-between items-center px-4 py-2">
-        <img className="w-32 h-10" src={Logo} alt="Logo" />
+        <img 
+          className="w-32 h-10 cursor-pointer" 
+          src={Logo} 
+          alt="Logo" 
+          onClick={handleLogoClick}
+        />
         <div className="relative">
           <button
             onClick={() => handleMouseEnter("profile")}
@@ -100,7 +107,12 @@ function Navbar() {
       </div>
       <div className="hidden md:flex px-5 py-2 justify-between items-center">
         <div className="flex gap-8 items-center">
-          <img className="w-32 h-10" src={Logo} alt="Logo" />
+          <img 
+            className="w-32 h-10 cursor-pointer" 
+            src={Logo} 
+            alt="Logo" 
+            onClick={handleLogoClick}
+          />
           <div className="flex font-bold text-sm !text-[#D5D5D5] gap-5">
             <Link 
               to={userRole === 'developer' ? '/developer' : '/hr'}

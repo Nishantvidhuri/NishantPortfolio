@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ContactModal from './ContactModal';
+import { useNavigate } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaArrowRight, FaMailBulk, FaMailchimp, FaAmericanSignLanguageInterpreting, FaEnvelope } from 'react-icons/fa';
 
 // Import project images
@@ -19,6 +20,7 @@ function HrBanner() {
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
 
   const projectImages = [
     { src: aiimage, name: 'AI Image Generator' },
@@ -80,6 +82,16 @@ function HrBanner() {
     };
   };
 
+  const handleNavigation = (path) => {
+    if (path === 'resume') {
+      // Open resume in new tab
+      window.open("https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing", "_blank");
+    } else {
+      // Navigate to internal routes
+      navigate(`/${path}`);
+    }
+  };
+
   return (
     <section className="relative min-h-[calc(100vh-64px)] w-full mt-16">
       {/* Background Elements - Adjusted opacity and gradients */}
@@ -89,6 +101,28 @@ function HrBanner() {
         className="absolute inset-0 bg-cover bg-center opacity-[0.03]"
   
       />
+    
+      {/* Mobile Navigation Buttons */}
+      <div className="absolute z-[1000] top-2 w-full flex gap-4 text-xl px-4 md:hidden">
+      <button 
+            onClick={() => handleNavigation('projects')}
+            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            Projects
+          </button>
+          <button 
+            onClick={() => handleNavigation('about')}
+            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            About Me
+          </button>
+          <button 
+            onClick={() => handleNavigation('resume')}
+            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            Resume
+          </button>
+      </div>
 
       {/* Content Container */}
       <div className="container mx-auto px-4 h-full relative z-10">
@@ -181,6 +215,8 @@ function HrBanner() {
           </div>
         </div>
       </div>
+  
+
 
       <ContactModal 
         isOpen={isModalOpen} 

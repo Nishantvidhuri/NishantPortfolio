@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useProjects } from "../context/ProjectContext"; // Import the context hook
+import { useNavigate } from 'react-router-dom';
 
 function FirstSectionHome() {
   const { projects } = useProjects();
   const [randomIndex, setRandomIndex] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (projects.length > 0) {
@@ -11,6 +13,16 @@ function FirstSectionHome() {
       setRandomIndex(randomNumber);
     }
   }, [projects.length]);
+
+  const handleNavigation = (path) => {
+    if (path === 'resume') {
+      // Open resume in new tab
+      window.open("https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing", "_blank");
+    } else {
+      // Navigate to internal routes
+      navigate(`/${path}`);
+    }
+  };
 
   if (projects.length === 0) {
     return (
@@ -124,13 +136,22 @@ function FirstSectionHome() {
 
         {/* Navigation Buttons */}
         <div className="absolute top-20  w-full  flex gap-4 text-xl">
-          <button className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300">
+          <button 
+            onClick={() => handleNavigation('projects')}
+            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+          >
             Projects
           </button>
-          <button className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300">
-            Skills
+          <button 
+            onClick={() => handleNavigation('about')}
+            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            About Me
           </button>
-          <button className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300">
+          <button 
+            onClick={() => handleNavigation('resume')}
+            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+          >
             Resume
           </button>
         </div>

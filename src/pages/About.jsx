@@ -1,14 +1,44 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import { FaGithub, FaLinkedin, FaEnvelope, FaMapMarkerAlt, FaPhone, FaExternalLinkAlt } from 'react-icons/fa';
-
+import { useNavigate } from 'react-router-dom';
 function About() {
+  const navigate = useNavigate();
+  const handleNavigation = (path) => {
+    if (path === 'resume') {
+      // Open resume in new tab
+      window.open("https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing", "_blank");
+    } else {
+      // Navigate to internal routes
+      navigate(`/${path}`);
+    }
+  };
   return (
     <div className="min-h-screen bg-[#141414]">
       <Navbar />
-      
+      <div className="absolute z-[1000] top-20 w-full flex gap-4 text-xl px-4 md:hidden">
+      <button 
+            onClick={() => handleNavigation('projects')}
+            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            Projects
+          </button>
+          <button 
+            onClick={() => handleNavigation('about')}
+            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            About Me
+          </button>
+          <button 
+            onClick={() => handleNavigation('resume')}
+            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            Resume
+          </button>
+      </div>
       {/* Hero Section */}
-      <div className="relative pt-24 pb-16 px-4 md:px-12">
+      <div className="relative pt-32 pb-16 px-4 md:px-12">
+        
         <div className="max-w-6xl mx-auto">
           {/* Profile Header */}
           <div className="flex flex-col md:flex-row items-start md:items-end gap-6 md:gap-12 mb-12">
