@@ -65,7 +65,7 @@ function Navbar() {
           alt="Logo" 
           onClick={handleLogoClick}
         />
-        <div className="relative">
+        <div className="relative ">
           <button
             onClick={() => handleMouseEnter("profile")}
             className="flex items-center gap-2 text-white"
