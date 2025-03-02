@@ -1,5 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { useProfile } from '../context/ProfileContext';
 
 // ✅ Import Images Directly (Fixes Vercel Build Issues)
 import DeveloperImg from "../assets/developer.png";
@@ -7,8 +8,11 @@ import HrImg from "../assets/hr.png";
 
 function Intropage() {
   const navigate = useNavigate();
-  const handleLink = (link) => {
-    navigate(link);
+  const { updateUserRole } = useProfile();
+
+  const handleRoleSelect = (role) => {
+    updateUserRole(role);
+    navigate(role === 'developer' ? '/developer' : '/hr');
   };
 
   return (
@@ -18,7 +22,7 @@ function Intropage() {
       <div className="flex gap-5 mt-10 items-center">
         <div
           className="group h-40 w-40 sm:h-60 sm:w-60 text-white flex flex-col gap-3 items-center rounded-md cursor-pointer"
-          onClick={() => handleLink("/developer")}
+          onClick={() => handleRoleSelect('developer')}
         >
           {/* Image with Border on Hover */}
           <img
@@ -35,7 +39,7 @@ function Intropage() {
 
         <div
           className="group h-40 w-40 sm:h-60 sm:w-60 text-white flex flex-col gap-3 items-center rounded-md cursor-pointer"
-          onClick={() => handleLink("/hr")}
+          onClick={() => handleRoleSelect('hr')}
         >
           {/* Image with Border on Hover */}
           <img

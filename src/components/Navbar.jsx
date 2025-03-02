@@ -4,13 +4,14 @@ import Logo from "../assets/logo.png";
 import DeveloperImg from "../assets/developer.png";
 import HrImg from "../assets/hr.png";
 import { FaFileDownload, FaEnvelope, FaCode, FaSearch } from "react-icons/fa";
+import { useProfile } from '../context/ProfileContext';
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [count, setCount] = useState(3);
-
+  const { userRole, updateUserRole } = useProfile();
 
   const [notifications, setNotifications] = useState([
     <><FaCode className="inline mr-2" /> Have you checked my latest project?</>,
@@ -44,6 +45,12 @@ function Navbar() {
   const currentProfileImg = isDeveloper ? DeveloperImg : HrImg;
   const oppositeProfileImg = isDeveloper ? HrImg : DeveloperImg;
   const oppositeProfileUrl = isDeveloper ? "/hr" : "/developer";
+
+  const handleProfileSwitch = (newRole) => {
+    updateUserRole(newRole);
+    navigate(newRole === 'developer' ? '/developer' : '/hr');
+    setActiveDropdown(null);
+  };
 
   return (
     <div className={`fixed w-full top-0 left-0  transition-all duration-300 ${scrolled ? "bg-black shadow-lg" : "bg-transparent"} px-0 sm:px-6 py-3 z-50`}>
@@ -124,8 +131,8 @@ function Navbar() {
           >
             <img
               className="w-9 h-9 rounded-md"
-              src={currentProfileImg}
-              alt="Current Profile"
+              src={userRole === 'developer' ? DeveloperImg : HrImg}
+              alt={userRole === 'developer' ? "Developer Profile" : "HR Profile"}
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -143,14 +150,14 @@ function Navbar() {
                 <ul className="text-white  text-sm font-semibold">
                   <li
                     className="px-4 py-3 border-b-1 border-gray-700 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
-                    onClick={() => navigate(oppositeProfileUrl)}
+                    onClick={() => handleProfileSwitch(userRole === 'developer' ? 'hr' : 'developer')}
                   >
                     <img
-                      src={oppositeProfileImg}
+                      src={userRole === 'developer' ? HrImg : DeveloperImg}
                       alt="Switch Profile"
                       className="w-6 h-6 rounded-md"
                     />
-                    <span>{isDeveloper ? "HR" : "Developer"}</span>
+                    <span>{userRole === 'developer' ? "HR" : "Developer"}</span>
                   </li>
                   <li
                     className="px-4 py-3 hover:bg-red-700 cursor-pointer"
