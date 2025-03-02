@@ -52,22 +52,74 @@ function Navbar() {
     setActiveDropdown(null);
   };
 
+
+
   return (
     <div className={`fixed w-full top-0 left-0  transition-all duration-300 ${scrolled ? "bg-black shadow-lg" : "bg-transparent"} px-0 sm:px-6 py-3 z-50`}>
-      <div className="flex md:hidden justify-between items-center px-2 py-2">
+      <div className="flex md:hidden justify-between items-center px-4 py-2">
         <img className="w-32 h-10" src={Logo} alt="Logo" />
-        <FaSearch className="text-white text-xl cursor-pointer" />
+        <div className="relative">
+          <button
+            onClick={() => handleMouseEnter("profile")}
+            className="flex items-center gap-2 text-white"
+          >
+            <img
+              src={userRole === 'developer' ? DeveloperImg : HrImg}
+              alt="Current Profile"
+              className="w-8 h-8 rounded-md"
+            />
+          </button>
+
+          {activeDropdown === "profile" && (
+            <div 
+              className="absolute top-12 right-0 w-40 bg-black/95 border-[1px] border-white/20 rounded-md shadow-lg z-50"
+              onMouseLeave={handleMouseLeave}
+            >
+              <ul className="text-white text-sm font-semibold">
+                <li
+                  className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
+                  onClick={() => handleProfileSwitch(userRole === 'developer' ? 'hr' : 'developer')}
+                >
+                  <img
+                    src={userRole === 'developer' ? HrImg : DeveloperImg}
+                    alt="Switch Profile"
+                    className="w-6 h-6 rounded-md"
+                  />
+                  <span>{userRole === 'developer' ? "HR" : "Developer"}</span>
+                </li>
+                <li
+                  className="px-4 py-3 hover:bg-red-700 cursor-pointer"
+                  onClick={() => navigate("/")}
+                >
+                  Log Out
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
       <div className="hidden md:flex px-5 py-2 justify-between items-center">
         <div className="flex gap-8 items-center">
           <img className="w-32 h-10" src={Logo} alt="Logo" />
           <div className="flex font-bold text-sm !text-[#D5D5D5] gap-5">
-            <Link to="/developer" className="hover:text-white transition duration-300">Home</Link>
-            <Link to="/projects" className="hover:text-white transition duration-300">My Projects</Link>
-            
-            <Link to="/about" className="hover:text-white transition duration-300">About Me</Link>
-           
-            <Link to="https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing" className="hover:text-white transition duration-300">My Resume</Link>
+            <Link 
+              to={userRole === 'developer' ? '/developer' : '/hr'}
+              className="hover:text-white transition duration-300"
+            >
+              Home
+            </Link>
+            <Link to="/projects" className="hover:text-white transition duration-300">
+              My Projects
+            </Link>
+            <Link to="/about" className="hover:text-white transition duration-300">
+              About Me
+            </Link>
+            <Link 
+              to="https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing" 
+              className="hover:text-white transition duration-300"
+            >
+              My Resume
+            </Link>
           </div>
         </div>
 
