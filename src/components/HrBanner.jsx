@@ -126,7 +126,7 @@ function HrBanner() {
 
       {/* Content Container */}
       <div className="container mx-auto px-4 h-full relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between h-full py-12 lg:py-20">
+        <div className="flex flex-col lg:flex-row items-center justify-between h-full py-20 lg:py-20">
           {/* Text Content */}
           <div className="w-full lg:w-1/2 text-center lg:ml-10  lg:text-left space-y-6 relative">
             <div className="inline-block">
