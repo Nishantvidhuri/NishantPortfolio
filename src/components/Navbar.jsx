@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import DeveloperImg from "../assets/developer.png";
@@ -21,7 +21,6 @@ function Navbar() {
 
   const [activeDropdown, setActiveDropdown] = useState(null);
   let timeoutId;
-  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,22 +28,6 @@ function Navbar() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setActiveDropdown(null);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
   }, []);
 
   const handleMouseEnter = (dropdown) => {
@@ -73,10 +56,6 @@ function Navbar() {
     navigate(userRole === 'developer' ? '/developer' : '/hr');
   };
 
-  const handleProfileClick = () => {
-    setActiveDropdown(activeDropdown === "profile" ? null : "profile");
-  };
-
   return (
     <div className={`fixed w-full top-0 left-0  transition-all duration-300 ${scrolled ? "bg-black shadow-lg" : "bg-transparent"} px-0 sm:px-6 py-3 z-50`}>
       <div className="flex md:hidden justify-between items-center px-4 py-2">
@@ -86,9 +65,9 @@ function Navbar() {
           alt="Logo" 
           onClick={handleLogoClick}
         />
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative ">
           <button
-            onClick={handleProfileClick}
+            onClick={() => handleMouseEnter("profile")}
             className="flex items-center gap-2 text-white"
           >
             <img
@@ -101,14 +80,12 @@ function Navbar() {
           {activeDropdown === "profile" && (
             <div 
               className="absolute top-12 right-0 w-40 bg-black/95 border-[1px] border-white/20 rounded-md shadow-lg z-50"
+              onMouseLeave={handleMouseLeave}
             >
               <ul className="text-white text-sm font-semibold">
                 <li
                   className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
-                  onClick={() => {
-                    handleProfileSwitch(userRole === 'developer' ? 'hr' : 'developer');
-                    setActiveDropdown(null);
-                  }}
+                  onClick={() => handleProfileSwitch(userRole === 'developer' ? 'hr' : 'developer')}
                 >
                   <img
                     src={userRole === 'developer' ? HrImg : DeveloperImg}
@@ -119,10 +96,7 @@ function Navbar() {
                 </li>
                 <li
                   className="px-4 py-3 hover:bg-red-700 cursor-pointer"
-                  onClick={() => {
-                    navigate("/");
-                    setActiveDropdown(null);
-                  }}
+                  onClick={() => navigate("/")}
                 >
                   Log Out
                 </li>
