@@ -103,7 +103,7 @@ function HrBanner() {
       />
     
       {/* Mobile Navigation Buttons */}
-      <div className="absolute top-4 z-[1000] w-full  flex gap-4 text-xl">
+      <div className="absolute top-4 z-[1000] w-full  flex gap-4 text-xl sm:hidden">
           <button 
             onClick={() => handleNavigation('projects')}
             className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
