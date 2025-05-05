@@ -15,7 +15,6 @@ function Hr() {
       <div className="relative z-10 -mt-20 space-y-12">
         <SkillsShowcase />
         <ExperienceSection />
-        <MiniGames />
         <ResumeSection />
         <ContactSection />
       </div>

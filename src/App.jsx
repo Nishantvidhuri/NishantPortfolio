@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Intropage from "./components/IntroPage";
 import Developer from "./pages/Developer";
 import Hr from "./pages/Hr";
+import Kids from "./pages/Kids";
 import { ProjectProvider } from "./context/ProjectContext";
 import { ProfileProvider } from "./context/ProfileContext";
 import MyProjects from "./components/MyProjects";
@@ -19,6 +20,8 @@ const AppContent = () => {
       updateUserRole('developer');
     } else if (location.pathname === '/hr') {
       updateUserRole('hr');
+    } else if (location.pathname === '/kids') {
+      updateUserRole('kids');
     }
   }, [location.pathname, updateUserRole]);
 
@@ -42,6 +45,7 @@ const AppContent = () => {
           <Route path="/" element={<Intropage />} />
           <Route path="/developer" element={<Developer />} />
           <Route path="/hr" element={<Hr />} />
+          <Route path="/kids" element={<Kids />} />
           <Route path="/projects" element={<MyProjects/>}/>
           <Route path="/about" element={<About />} />
         </Routes>

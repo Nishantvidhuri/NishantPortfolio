@@ -69,22 +69,82 @@ function About() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Education Section */}
-              <section className="bg-[#1a1a1a] rounded-lg p-6 space-y-6">
-                <h2 className="text-2xl font-semibold text-white">Education</h2>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-lg text-white">B.Tech (A.K.T.U)</h3>
-                    <p className="text-red-500">7.4 CGPA</p>
-                    <p className="text-gray-400">Graduated Oct 2023</p>
+              {/* Education & Experience Section */}
+              <section className="bg-[#1a1a1a] rounded-lg p-6 space-y-8 hover:bg-[#1f1f1f] transition-colors duration-300">
+                <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                  Education & Experience
+                  <div className="flex-grow h-[1px] bg-gradient-to-r from-red-600 to-transparent ml-4"></div>
+                </h2>
+                <div className="space-y-6">
+                  {/* Vox Gauge Experience */}
+                  <div className="group relative bg-[#141414] rounded-lg p-5 hover:bg-[#1a1a1a] transition-all duration-300 transform hover:scale-[1.02] border border-gray-800 hover:border-red-600/50">
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+                    <div className="relative space-y-3">
+                      <div className="flex items-center gap-4">
+                        <div className="bg-white/5 p-2 rounded-lg group-hover:bg-white/10 transition-colors duration-300">
+                          <img 
+                            src="https://framerusercontent.com/images/5MwGErH8PsYI9enHWzWZJRF7kJ4.svg?scale-down-to=512" 
+                            alt="Vox Gauge Logo" 
+                            className="w-10 h-10 object-contain filter brightness-0 invert"
+                          />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-white group-hover:text-red-500 transition-colors duration-300">
+                            Frontend Developer
+                          </h3>
+                          <p className="text-lg text-gray-400 group-hover:text-white transition-colors duration-300">
+                            Vox Gauge
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <span className="px-3 py-1 bg-red-600/10 text-red-500 rounded-full">
+                          Frontend Development
+                        </span>
+                        <span className="text-gray-400">
+                          Feb 2025 - Present
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="text-lg text-white">St. Mary's Christian Public School</h3>
-                    <p className="text-gray-400">12th Grade (C.B.S.E) • Aug 2019</p>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-lg text-white">Sidhharth International Public School</h3>
-                    <p className="text-gray-400">10th Grade (C.B.S.E) • Aug 2017</p>
+                  
+                  {/* Education Items */}
+                  <div className="space-y-6">
+                    <div className="bg-[#141414] p-5 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 transform hover:translate-x-2">
+                      <h3 className="text-lg font-semibold text-white mb-2">B.Tech (A.K.T.U)</h3>
+                      <div className="flex items-center gap-3">
+                        <span className="px-3 py-1 bg-red-600/10 text-red-500 rounded-full text-sm">
+                          7.4 CGPA
+                        </span>
+                        <span className="text-gray-400 text-sm">
+                          Graduated Oct 2023
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-[#141414] p-5 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 transform hover:translate-x-2">
+                      <h3 className="text-lg font-semibold text-white mb-2">St. Mary's Christian Public School</h3>
+                      <div className="flex items-center gap-3">
+                        <span className="px-3 py-1 bg-red-600/10 text-red-500 rounded-full text-sm">
+                          12th Grade (C.B.S.E)
+                        </span>
+                        <span className="text-gray-400 text-sm">
+                          Aug 2019
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-[#141414] p-5 rounded-lg hover:bg-[#1a1a1a] transition-all duration-300 transform hover:translate-x-2">
+                      <h3 className="text-lg font-semibold text-white mb-2">Sidhharth International Public School</h3>
+                      <div className="flex items-center gap-3">
+                        <span className="px-3 py-1 bg-red-600/10 text-red-500 rounded-full text-sm">
+                          10th Grade (C.B.S.E)
+                        </span>
+                        <span className="text-gray-400 text-sm">
+                          Aug 2017
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>

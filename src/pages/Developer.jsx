@@ -6,6 +6,7 @@ import Technologies from '../components/Technologies';
 import SocialMedia from '../components/SocialMedia';
 import Documents from '../components/Documents';
 import MiniGames from '../components/MiniGames';
+import ExperienceSection from '../components/ExperienceSection';
 
 function Developer() {
   useEffect(() => {
@@ -18,7 +19,7 @@ function Developer() {
       <FirstSectionHome/>
       <Projectsuggestions/>
       <Technologies/>
-      <MiniGames/>
+      <ExperienceSection/>
       <SocialMedia/>
       <Documents/>
     </div>

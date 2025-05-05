@@ -1575,9 +1575,10 @@ const MiniGames = () => {
   const scrollLeft = useRef(0);
   const location = useLocation();
   
-  // Determine if we're on the HR page or Developer page
+  // Determine if we're on the HR page, Developer page, or Kids page
   const isHrPage = location.pathname.includes('/hr');
-  const bgColor = isHrPage ? 'bg-black' : 'bg-[#141414]';
+  const isKidsPage = location.pathname.includes('/kids');
+  const bgColor = isHrPage||isKidsPage ? '' : 'bg-[#141414]';
   const modalBgColor = isHrPage ? 'bg-black' : 'bg-[#141414]';
   const gameContainerBgColor = isHrPage ? 'bg-black' : 'bg-[#1a1a1a]';
 
@@ -1726,84 +1727,111 @@ const MiniGames = () => {
     };
   }, []);
 
+  // Render "Game Zone" for kids page or "Mini Games" for other pages
+  const renderTitle = () => {
+    if (isKidsPage) {
+      return (
+        <h2 className="text-4xl font-bold mb-8 text-white flex items-center">
+          <span className="text-5xl mr-4">🎮</span>
+          Game Zone
+          <span className="text-5xl ml-4">🎮</span>
+        </h2>
+      );
+    }
+    return <h2 className="text-3xl font-bold mb-8 text-white">Mini Games</h2>;
+  };
+
   return (
-    <div className={`w-full py-16 px-4 md:px-8 ${bgColor}`}>
-      <div className=" mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-white">Mini Games</h2>
+    <div className={`w-[105%] translate-x-[-2%] py-16  ${bgColor}`}>
+      <div className="mx-auto">
+        {renderTitle()}
         
         <div className="relative">
           {/* Scroll Left Button */}
           <button
-            className="absolute -left-4 md:-left-8 top-1/2 transform -translate-y-1/2 bg-red-600 p-3 h-12 w-12 z-50 text-white hover:bg-red-700 transition-all duration-300 rounded-full flex items-center justify-center shadow-lg"
+            className="absolute -left-4 md:-left-8 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center group"
             onClick={scrollLeftHandler}
           >
-            <FaChevronLeft className="transition-transform duration-300 hover:scale-125" size={20} />
+            <FaChevronLeft className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
           
           {/* Game Cards Container */}
           <div
             ref={sliderRef}
-            className="flex overflow-x-auto pb-8 hide-scrollbar snap-x snap-mandatory"
+            className="flex gap-10 overflow-x-auto hide-scrollbar pb-10 pt-2"
             onMouseDown={startDrag}
             onMouseLeave={stopDrag}
             onMouseUp={stopDrag}
             onMouseMove={onDrag}
-            style={{ scrollbarWidth: 'none' }}
           >
             {games.map((game) => (
               <div
                 key={game.id}
-                className="min-w-[300px] sm:min-w-[350px] p-4 snap-start"
+                className="flex-none w-[300px] relative group cursor-pointer transition-transform duration-300 hover:scale-105"
+                onClick={() => handleGameClick(game.id)}
               >
-                <motion.div
-                  className="rounded-lg overflow-hidden shadow-lg h-[250px] cursor-pointer transition-all duration-300"
-         
-                  onClick={() => handleGameClick(game.id)}
+                {/* Card Background */}
+                <div 
+                  className="relative  aspect-video rounded-lg overflow-hidden"
                   style={{
                     backgroundImage: game.bgImage,
-                    backgroundSize: 'fit',
-                    backgroundPosition: 'left'
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
                   }}
                 >
-                  <div className={`h-full w-full bg-black/80 bg-opacity-80 p-6 flex flex-col`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-2xl font-bold text-white">{game.title}</h3>
-                      <span className="">{game.icon}</span>
+                  {/* Gradient Overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-100"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Content */}
+                  <div className="absolute inset-0 p-4 flex flex-col justify-end">
+                    {/* Title and Icon */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl transform group-hover:scale-110 transition-transform duration-300">
+                        {game.icon}
+                      </span>
+                      <h3 className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors duration-300">
+                        {game.title}
+                      </h3>
                     </div>
-                    <p className="text-gray-200 mb-6 flex-grow">{game.description}</p>
-                    <button
-                      className="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors font-bold shadow-md"
-                    >
-                      Play Now
+                    
+                    {/* Description - Only visible on hover */}
+                    <p className="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
+                      {game.description}
+                    </p>
+                    
+                    {/* Play Button - Only visible on hover */}
+                    <button className="mt-3 w-full bg-yellow-500 text-black py-2 rounded font-bold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400">
+                      Play Game!
                     </button>
                   </div>
-                </motion.div>
+                </div>
               </div>
             ))}
           </div>
           
           {/* Scroll Right Button */}
           <button
-            className="absolute -right-4 md:-right-8 top-1/2 transform -translate-y-1/2 bg-red-600 p-3 h-12 w-12 z-50 text-white hover:bg-red-700 transition-all duration-300 rounded-full flex items-center justify-center shadow-lg"
+            className="absolute -right-4 md:-right-8 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center group"
             onClick={scrollRightHandler}
           >
-            <FaChevronRight className="transition-transform duration-300 hover:scale-125" size={20} />
+            <FaChevronRight className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
         </div>
       </div>
       
-      {/* Game Modal Popup - Netflix-themed */}
+      {/* Game Modal Popup */}
       <AnimatePresence>
         {showGameModal && activeGame && (
           <motion.div 
-            className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeGameModal}
           >
             <motion.div 
-              className="bg-[#141414] rounded-lg max-w-2xl w-full p-6 border-2 border-red-600 relative shadow-2xl"
+              className="bg-[#141414] rounded-lg max-w-2xl w-full p-6 relative shadow-2xl"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -1820,18 +1848,29 @@ const MiniGames = () => {
                 <span className="text-4xl mr-4">
                   {games.find(game => game.id === activeGame)?.icon}
                 </span>
-                <h3 className="text-3xl font-bold text-red-600">
+                <h3 className="text-3xl font-bold text-yellow-500">
                   {games.find(game => game.id === activeGame)?.title}
                 </h3>
               </div>
               
-              <div className={`game-container ${gameContainerBgColor} p-6 rounded-lg border border-gray-800 shadow-inner`}>
+              <div className="game-container bg-[#1a1a1a] p-6 rounded-lg border border-gray-800 shadow-inner">
                 {games.find(game => game.id === activeGame)?.component}
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Global Styles */}
+      <style jsx global>{`
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };

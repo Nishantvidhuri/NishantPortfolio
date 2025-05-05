@@ -3,7 +3,7 @@ import { FaFilePdf, FaDownload, FaExpand, FaExternalLinkAlt, FaTimes } from 'rea
 
 function ResumeSection() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const resumeUrl = "https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view";
+  const resumeUrl = "https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing";
 
   const getEmbedUrl = (url) => {
     const fileId = url.split('/')[5];

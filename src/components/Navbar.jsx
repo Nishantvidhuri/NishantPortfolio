@@ -48,13 +48,32 @@ function Navbar() {
 
   const handleProfileSwitch = (newRole) => {
     updateUserRole(newRole);
-    navigate(newRole === 'developer' ? '/developer' : '/hr');
+    navigate(newRole === 'developer' ? '/developer' : newRole === 'hr' ? '/hr' : '/kids');
     setActiveDropdown(null);
   };
 
   const handleLogoClick = () => {
-    navigate(userRole === 'developer' ? '/developer' : '/hr');
+    navigate(userRole === 'developer' ? '/developer' : userRole === 'hr' ? '/hr' : '/kids');
   };
+
+  // Netflix Kids Profile Icon Component
+  const KidsProfileIcon = ({ className = "w-6 h-6" }) => (
+    <div className={`${className} rounded-md overflow-hidden relative`}>
+      <div className="absolute inset-0 flex">
+        <div className="flex-1 bg-green-500"></div>
+        <div className="flex-1 bg-yellow-400"></div>
+        <div className="flex-1 bg-pink-500"></div>
+        <div className="flex-1 bg-purple-400"></div>
+        <div className="flex-1 bg-red-500"></div>
+        <div className="flex-1 bg-blue-500"></div>
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="bg-white text-red-600 px-1 py-[1px] rounded-[1px] transform -rotate-6 font-bold text-[8px]">
+          children
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className={`fixed w-full top-0 left-0  transition-all duration-300 ${scrolled ? "bg-black shadow-lg" : "bg-transparent"} px-0 sm:px-6 py-3 z-50`}>
@@ -70,11 +89,15 @@ function Navbar() {
             onClick={() => handleMouseEnter("profile")}
             className="flex items-center gap-2 text-white"
           >
-            <img
-              src={userRole === 'developer' ? DeveloperImg : HrImg}
-              alt="Current Profile"
-              className="w-8 h-8 rounded-md"
-            />
+            {userRole === 'kids' ? (
+              <KidsProfileIcon className="w-8 h-8" />
+            ) : (
+              <img
+                src={userRole === 'developer' ? DeveloperImg : HrImg}
+                alt="Current Profile"
+                className="w-8 h-8 rounded-md"
+              />
+            )}
           </button>
 
           {activeDropdown === "profile" && (
@@ -83,17 +106,33 @@ function Navbar() {
               onMouseLeave={handleMouseLeave}
             >
               <ul className="text-white text-sm font-semibold">
-                <li
-                  className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
-                  onClick={() => handleProfileSwitch(userRole === 'developer' ? 'hr' : 'developer')}
-                >
-                  <img
-                    src={userRole === 'developer' ? HrImg : DeveloperImg}
-                    alt="Switch Profile"
-                    className="w-6 h-6 rounded-md"
-                  />
-                  <span>{userRole === 'developer' ? "HR" : "Developer"}</span>
-                </li>
+                {userRole !== 'developer' && (
+                  <li
+                    className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
+                    onClick={() => handleProfileSwitch('developer')}
+                  >
+                    <img src={DeveloperImg} alt="Developer" className="w-6 h-6 rounded-md" />
+                    <span>Developer</span>
+                  </li>
+                )}
+                {userRole !== 'hr' && (
+                  <li
+                    className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
+                    onClick={() => handleProfileSwitch('hr')}
+                  >
+                    <img src={HrImg} alt="HR" className="w-6 h-6 rounded-md" />
+                    <span>HR</span>
+                  </li>
+                )}
+                {userRole !== 'kids' && (
+                  <li
+                    className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
+                    onClick={() => handleProfileSwitch('kids')}
+                  >
+                    <KidsProfileIcon />
+                    <span>Kids</span>
+                  </li>
+                )}
                 <li
                   className="px-4 py-3 hover:bg-red-700 cursor-pointer"
                   onClick={() => navigate("/")}
@@ -115,7 +154,7 @@ function Navbar() {
           />
           <div className="flex font-bold text-sm !text-[#D5D5D5] gap-5">
             <Link 
-              to={userRole === 'developer' ? '/developer' : '/hr'}
+              to={userRole === 'developer' ? '/developer' : userRole === 'hr' ? '/hr' : '/kids'}
               className="hover:text-white transition duration-300"
             >
               Home
@@ -193,36 +232,45 @@ function Navbar() {
             onMouseEnter={() => handleMouseEnter("profile")}
             onMouseLeave={handleMouseLeave}
           >
-            <img
-              className="w-9 h-9 rounded-md"
-              src={userRole === 'developer' ? DeveloperImg : HrImg}
-              alt={userRole === 'developer' ? "Developer Profile" : "HR Profile"}
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="white"
-              className="transition-transform duration-300 ml-2"
-            >
-              <path d="M12 16l-6-6h12z" />
-            </svg>
-
+            {userRole === 'kids' ? (
+              <KidsProfileIcon className="w-9 h-9" />
+            ) : (
+              <img
+                className="w-9 h-9 rounded-md"
+                src={userRole === 'developer' ? DeveloperImg : HrImg}
+                alt={userRole === 'developer' ? "Developer Profile" : "HR Profile"}
+              />
+            )}
             {activeDropdown === "profile" && (
-              <div className="absolute  top-12 right-0 w-40 border-white border-2 rounded-md shadow-lg z-50  ">
-                <ul className="text-white  text-sm font-semibold">
-                  <li
-                    className="px-4 py-3 border-b-1 border-gray-700 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
-                    onClick={() => handleProfileSwitch(userRole === 'developer' ? 'hr' : 'developer')}
-                  >
-                    <img
-                      src={userRole === 'developer' ? HrImg : DeveloperImg}
-                      alt="Switch Profile"
-                      className="w-6 h-6 rounded-md"
-                    />
-                    <span>{userRole === 'developer' ? "HR" : "Developer"}</span>
-                  </li>
+              <div className="absolute top-12 right-0 w-40 bg-black/95 border-[1px] border-white/20 rounded-md shadow-lg z-50">
+                <ul className="text-white text-sm font-semibold">
+                  {userRole !== 'developer' && (
+                    <li
+                      className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
+                      onClick={() => handleProfileSwitch('developer')}
+                    >
+                      <img src={DeveloperImg} alt="Developer" className="w-6 h-6 rounded-md" />
+                      <span>Developer</span>
+                    </li>
+                  )}
+                  {userRole !== 'hr' && (
+                    <li
+                      className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
+                      onClick={() => handleProfileSwitch('hr')}
+                    >
+                      <img src={HrImg} alt="HR" className="w-6 h-6 rounded-md" />
+                      <span>HR</span>
+                    </li>
+                  )}
+                  {userRole !== 'kids' && (
+                    <li
+                      className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
+                      onClick={() => handleProfileSwitch('kids')}
+                    >
+                      <KidsProfileIcon />
+                      <span>Kids</span>
+                    </li>
+                  )}
                   <li
                     className="px-4 py-3 hover:bg-red-700 cursor-pointer"
                     onClick={() => navigate("/")}
