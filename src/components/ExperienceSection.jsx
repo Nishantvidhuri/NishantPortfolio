@@ -73,7 +73,7 @@ function ExperienceSection() {
       company: "Big Verse",
       title: "Frontend Developer",
       period: "Oct 2024 - Feb 2025",
-      logo: "/src/assets/logo/image.png"
+      logo: "/image.png"
     },
     {
       company: "Vox Gauge",
