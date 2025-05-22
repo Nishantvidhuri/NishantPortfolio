@@ -70,6 +70,12 @@ function ExperienceSection() {
   
   const experiences = [
     {
+      company: "Big Verse",
+      title: "Frontend Developer",
+      period: "Oct 2024 - Feb 2025",
+      logo: "/src/assets/logo/image.png"
+    },
+    {
       company: "Vox Gauge",
       title: "Frontend Developer",
       period: "Feb 2025 - Present",
