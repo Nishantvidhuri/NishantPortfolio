@@ -166,7 +166,7 @@ function Navbar() {
               About Me
             </Link>
             <Link 
-              to="https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing" 
+              to="https://drive.google.com/file/d/12X6s-MHb241ZFPOcQPdi59Akb_5QqJ9-/view" 
               className="hover:text-white transition duration-300"
             >
               My Resume

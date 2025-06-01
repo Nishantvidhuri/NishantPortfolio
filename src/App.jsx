@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Intropage from "./components/IntroPage";
 import Developer from "./pages/Developer";
@@ -10,10 +10,13 @@ import MyProjects from "./components/MyProjects";
 import { useProfile } from "./context/ProfileContext";
 import emailjs from '@emailjs/browser';
 import About from "./pages/About";
+import NetflixIntro from "./components/NetflixIntro";
+
 // Create a wrapper component to handle route-based role updates
 const AppContent = () => {
   const location = useLocation();
   const { userRole, updateUserRole } = useProfile();
+  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     if (location.pathname === '/developer') {
@@ -41,6 +44,7 @@ const AppContent = () => {
   return (
     <ProjectProvider>
       <div className="bg-black min-h-screen">
+        {showIntro && <NetflixIntro onAnimationComplete={() => setShowIntro(false)} />}
         <Routes>
           <Route path="/" element={<Intropage />} />
           <Route path="/developer" element={<Developer />} />
