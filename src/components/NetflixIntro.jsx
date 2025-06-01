@@ -5,7 +5,7 @@ const NetflixIntro = ({ onAnimationComplete }) => {
   const [isVisible, setIsVisible] = useState(true);
   const text = "NISHANT VIDHURI";
   const characters = text.split('');
-  const midIndex = (characters.length - 1) / 2; // Adjust midIndex calculation for even/odd length
+  const midIndex = (characters.length - 1) / 2;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -25,16 +25,19 @@ const NetflixIntro = ({ onAnimationComplete }) => {
       <div className="netflix-intro-content">
         <div className="netflix-logo">
           {characters.map((char, index) => {
-            // Calculate translation using a squared distance for a smoother curve
             const distance = index - midIndex;
-            const translation = Math.pow(distance, 2) * 0.5 - 20; // Adjust multipliers (0.5 and 20) for desired curve
+            // Adjust these multipliers for desired curve on different screen sizes
+            // For desktop, current values are Math.pow(distance, 2) * 0.5 - 20;
+            // For mobile, you might need smaller values for a smoother curve
+            const translation = Math.pow(distance, 2) * 0.3 - 10; // Example adjusted values for mobile
+
             return (
               <span
                 key={index}
                 className="netflix-text-char"
                 style={{ transform: `translateY(${translation}px)` }}
               >
-                {char === ' ' ? '\u00A0' : char} {/* Render space as non-breaking space */}
+                {char === ' ' ? '\u00A0' : char}
               </span>
             );
           })}

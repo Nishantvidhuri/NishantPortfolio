@@ -39,19 +39,45 @@
 
 @keyframes netflixAnimation {
   0% {
-    transform: scale(0.1);
+    transform: scale(0.1) perspective(800px) rotateX(3deg);
     opacity: 0;
   }
   20% {
-    transform: scale(1);
+    transform: scale(1) perspective(800px) rotateX(3deg);
     opacity: 1;
   }
   80% {
-    transform: scale(1);
+    transform: scale(1) perspective(800px) rotateX(3deg);
     opacity: 1;
   }
   100% {
-    transform: scale(20);
+    transform: scale(40) perspective(800px) rotateX(3deg); /* Increased scale for potentially larger screens */
     opacity: 0;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .netflix-text-char {
+    font-size: 4rem; /* Smaller font size for mobile */
+  }
+
+  @keyframes netflixAnimation {
+    0% {
+      transform: scale(0.1) perspective(800px) rotateX(3deg);
+      opacity: 0;
+    }
+    20% {
+      transform: scale(1) perspective(800px) rotateX(3deg);
+      opacity: 1;
+    }
+    80% {
+      transform: scale(1) perspective(800px) rotateX(3deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(60) perspective(800px) rotateX(3deg); /* Larger scale for mobile */
+      opacity: 0;
+    }
   }
 } 
