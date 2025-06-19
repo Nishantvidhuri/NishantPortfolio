@@ -11,6 +11,7 @@ import { useProfile } from "./context/ProfileContext";
 import emailjs from '@emailjs/browser';
 import About from "./pages/About";
 import NetflixIntro from "./components/NetflixIntro";
+import NishantChatBot from "./components/NishantChatBot";
 
 // Create a wrapper component to handle route-based role updates
 const AppContent = () => {
@@ -53,6 +54,7 @@ const AppContent = () => {
           <Route path="/projects" element={<MyProjects/>}/>
           <Route path="/about" element={<About />} />
         </Routes>
+        <NishantChatBot />
       </div>
     </ProjectProvider>
   );
