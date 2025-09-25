@@ -85,7 +85,7 @@ function ExperienceSection() {
       company: "Recrivio",
       title: "Associate Software Developer",
       period: "August 2025 - Present",
-      logo: "/src/assets/logo/recrivio.png"
+      logo: "https://dev-surefy.s3.ap-south-1.amazonaws.com/upload/5edb22f4-f669-4c01-8518-c17a1a3bbda4_1758822235442.png"
     },
     {
       company: "Your Company?",
