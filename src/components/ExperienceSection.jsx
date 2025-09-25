@@ -78,8 +78,14 @@ function ExperienceSection() {
     {
       company: "Vox Gauge",
       title: "Frontend Developer",
-      period: "Feb 2025 - Present",
+      period: "Feb 2025 - June 2025",
       logo: "https://framerusercontent.com/images/5MwGErH8PsYI9enHWzWZJRF7kJ4.svg?scale-down-to=512"
+    },
+    {
+      company: "Recrivio",
+      title: "Associate Software Developer",
+      period: "August 2025 - Present",
+      logo: "/src/assets/logo/recrivio.png"
     },
     {
       company: "Your Company?",
