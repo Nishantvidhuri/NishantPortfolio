@@ -1,10 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useLocation } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import ContactModal from './ContactModal';
 
 function ExperienceSection() {
-  const location = useLocation();
   const scrollRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -12,9 +10,8 @@ function ExperienceSection() {
   const [showArrows, setShowArrows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  // Determine if we're on the HR page or Developer page
-  const isHrPage = location.pathname.includes('/hr');
-  const bgColor = isHrPage ? 'bg-black' : 'bg-[#141414]';
+  // Netflix theme: same dark background on all pages
+  const bgColor = 'bg-[#141414]';
   
   const scrollAmount = window.innerWidth <= 640 ? 200 : 320;
 

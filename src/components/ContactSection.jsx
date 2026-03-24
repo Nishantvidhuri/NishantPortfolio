@@ -3,9 +3,9 @@ import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 
 function ContactSection() {
   return (
-    <div className="px-4 md:px-12 py-8">
-      <h2 className="text-2xl text-white mb-6">Get In Touch</h2>
-      <div className="bg-[#333] rounded-md p-6 max-w-2xl mx-auto">
+    <div className="px-4 sm:px-10 py-8 bg-[#141414]">
+      <h2 className="text-lg sm:text-xl font-['Poppins'] text-white mb-6">Get In Touch</h2>
+      <div className="bg-[#1f1f1f] rounded-lg p-6 max-w-2xl mx-auto border border-gray-700">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
             <h3 className="text-white text-xl mb-4">Contact Information</h3>

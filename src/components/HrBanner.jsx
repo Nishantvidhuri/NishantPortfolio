@@ -1,229 +1,180 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ContactModal from './ContactModal';
+import ProjectDetails from './ProjectDetails';
 import { useNavigate } from 'react-router-dom';
-import { FaGithub, FaLinkedin, FaArrowRight, FaMailBulk, FaMailchimp, FaAmericanSignLanguageInterpreting, FaEnvelope } from 'react-icons/fa';
-
-// Import project images
-import aiimage from '../assets/projects/mob/aiimagemob.jpeg';
-import angelic from '../assets/projects/mob/angelicmob.jpeg';
-import cinechronicle from '../assets/projects/mob/cinechroniclemob.jpeg';
-import devdetective from '../assets/projects/mob/devdetectivemob.jpeg';
-import exoape from '../assets/projects/mob/exoapemob.jpeg';
-import passwordgenerator from '../assets/projects/mob/passwordgeneratormob.jpeg';
-import recipebook from '../assets/projects/mob/recipebookmob.jpeg';
-import sortingvisualizer from '../assets/projects/mob/sortingvisualizermob.jpeg';
-import tictactoe from '../assets/projects/mob/tictactoemob.jpeg';
-import youtube from '../assets/projects/mob/youtubemob.jpeg';
+import { FaGithub, FaLinkedin, FaEnvelope, FaPlay } from 'react-icons/fa';
+import { useProjects } from '../context/ProjectContext';
 
 function HrBanner() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const { projects } = useProjects();
   const navigate = useNavigate();
-
-  const projectImages = [
-    { src: aiimage, name: 'AI Image Generator' },
-    { src: angelic, name: 'Angelic Store' },
-    { src: cinechronicle, name: 'Cine Chronicle' },
-    { src: devdetective, name: 'Dev Detective' },
-    { src: exoape, name: 'Exoape Portfolio' },
-    { src: passwordgenerator, name: 'Password Generator' },
-    { src: recipebook, name: 'Recipe Book' },
-    { src: sortingvisualizer, name: 'Sorting Visualizer' },
-    { src: tictactoe, name: 'Tic Tac Toe' },
-    { src: youtube, name: 'YouTube Clone' }
-  ];
-
-  // Handle window resize
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Auto rotate carousel
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % projectImages.length);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [projectImages.length]);
-
-  // Calculate carousel item positions
-  const getCarouselStyles = (index) => {
-    let offset = index - currentImageIndex;
-    
-    // Handle circular carousel
-    if (offset < -Math.floor(projectImages.length / 2)) {
-      offset += projectImages.length;
-    } else if (offset > Math.floor(projectImages.length / 2)) {
-      offset -= projectImages.length;
-    }
-
-    const absOffset = Math.abs(offset);
-    const isActive = offset === 0;
-    const baseScale = isMobile ? 0.7 : 0.8;
-    const translateX = isMobile ? 35 : 45;
-
-    return {
-      transform: `
-        translateX(${offset * translateX}%) 
-        scale(${baseScale + (isActive ? 0.2 : 0)})
-        translateZ(${-absOffset * 50}px)
-      `,
-      zIndex: projectImages.length - absOffset,
-      opacity: Math.max(0, 1 - absOffset * 0.3),
-      filter: `brightness(${1 - absOffset * 0.2})`,
-    };
-  };
 
   const handleNavigation = (path) => {
     if (path === 'resume') {
-      // Open resume in new tab
       window.open("https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing", "_blank");
     } else {
-      // Navigate to internal routes
       navigate(`/${path}`);
     }
   };
 
   return (
-    <section className="relative min-h-[calc(100vh-64px)] w-full mt-16">
-      {/* Background Elements - Adjusted opacity and gradients */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-[0.03]"
-  
-      />
-    
-      {/* Mobile Navigation Buttons */}
-      <div className="absolute top-4 z-[1000] w-full  flex gap-4 text-xl sm:hidden">
-          <button 
-            onClick={() => handleNavigation('projects')}
-            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
-          >
-            Projects
-          </button>
-          <button 
-            onClick={() => handleNavigation('about')}
-            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
-          >
-            About Me
-          </button>
-          <button 
-            onClick={() => handleNavigation('resume')}
-            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
-          >
-            Resume
-          </button>
+    <>
+      {/* Netflix-style Hero */}
+      <section className="relative w-full h-[70vh] sm:h-[85vh] flex items-end mt-16">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('https://dev-to-uploads.s3.amazonaws.com/i/jxx4zedqe3hkoysugr5j.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/50 to-transparent" />
+
+        {/* Mobile Navigation */}
+        <div className="absolute top-4 z-[1000] w-full flex gap-2 px-4 sm:hidden">
+          <button onClick={() => handleNavigation('projects')} className="flex-1 py-0.5 border-2 rounded-full border-gray-400 text-gray-300 text-sm hover:bg-white/10 transition-colors">Projects</button>
+          <button onClick={() => handleNavigation('about')} className="flex-1 py-0.5 border-2 rounded-full border-gray-400 text-gray-300 text-sm hover:bg-white/10 transition-colors">About Me</button>
+          <button onClick={() => handleNavigation('resume')} className="flex-1 py-0.5 border-2 rounded-full border-gray-400 text-gray-300 text-sm hover:bg-white/10 transition-colors">Resume</button>
         </div>
 
-      {/* Content Container */}
-      <div className="container mx-auto px-4 h-full relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between h-full py-20 lg:py-20">
-          {/* Text Content */}
-          <div className="w-full lg:w-1/2 text-center lg:ml-10  lg:text-left space-y-6 relative">
-            <div className="inline-block">
-              <span className="relative inline-block px-4 py-2 text-red-500 text-sm md:text-base tracking-[0.2em] font-medium">
-                <span className="relative z-10">HELLO, I'M A</span>
-                <span className="absolute inset-0 border-2 border-red-500/20 rounded-lg transform -skew-x-6" />
-              </span>
+        {/* Hero Content */}
+        <div className="relative z-10 w-full px-4 sm:px-10 pb-8 sm:pb-16">
+          <div className=" mx-auto">
+            <div className="inline-block mb-4">
+              <span className="text-[#46d369] font-semibold text-sm tracking-wider uppercase">Portfolio &middot; HR View</span>
             </div>
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white font-['Poppins'] leading-tight">
-              Frontend
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
-                Developer
-              </span>
+            <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold text-white font-['Teko'] leading-none mb-2">
+              NISHANT VIDHURI
             </h1>
-
-            <p className="text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-['Inter']">
-              I design and develop responsive, user-friendly websites with clean and efficient code. 
-              My focus is on creating smooth interactions, optimized performance, and visually appealing 
-              interfaces that work seamlessly across all devices.
+            <p className="text-gray-300 text-lg sm:text-xl font-['Poppins'] mb-6 max-w-2xl">
+              Frontend Developer. Clean code, responsive design, and modern tech stack.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start pt-4">
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className="group relative px-8 py-3 w-full sm:w-auto rounded-full overflow-hidden"
+            <div className="flex flex-wrap items-center gap-4 mb-4">
+              <a
+                href="https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-white text-black font-semibold px-6 py-3 rounded hover:bg-white/90 transition"
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-500 transition-transform group-hover:scale-105" />
-                <span className="relative flex items-center justify-center gap-3 text-white font-medium">
-                {isMobile ? 'Tap to Contact' : 'Click to Contact'}
-                  <FaEnvelope className={`transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`} />
-                </span>
+                <FaPlay size={14} />
+                <span>View Resume</span>
+              </a>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center gap-2 bg-[#6d6d6e]/80 text-white font-semibold px-6 py-3 rounded hover:bg-[#6d6d6e] transition"
+              >
+                <FaEnvelope size={16} />
+                <span>Contact Me</span>
               </button>
-
-              <div className="flex gap-6">
-                <a 
-                  href="https://github.com/Nishantvidhuri"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white/80 hover:text-red-500 transition-all duration-300 hover:scale-110"
-                >
-                  <FaGithub color='white' size={24} />
-                </a>
-                <a 
-                  href="https://www.linkedin.com/in/nishant-vidhuri-092a63124/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white/80 hover:text-red-500 transition-all duration-300 hover:scale-110"
-                >
-                  <FaLinkedin color='white' size={24} />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Project Carousel */}
-          <div className="w-full lg:w-1/2 h-[300px] md:h-[500px]  mt-12 lg:mt-0">
-            <div className="relative w-full h-full flex items-center justify-center perspective-[1000px]">
-              {projectImages.map((project, index) => (
-                <div
-                  key={index}
-                  className="absolute w-[200px] md:w-[250px] cursor-pointer transition-all duration-500"
-                  style={getCarouselStyles(index)}
-                  onClick={() => setCurrentImageIndex(index)}
-                >
-                  <div className="bg-black/50 backdrop-blur-sm rounded-lg overflow-hidden shadow-2xl border border-white/10">
-                    <div className="relative aspect-[3/4]">
-                      <img
-                        src={project.src}
-                        alt={project.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/50 to-transparent pt-8">
-                        <h3 className="text-white text-center py-2 px-3 text-sm font-medium">
-                          {project.name}
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <a href="https://github.com/Nishantvidhuri" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white transition hover:scale-110">
+                <FaGithub size={28} />
+              </a>
+              <a href="https://www.linkedin.com/in/nishant-vidhuri-092a63124/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white transition hover:scale-110">
+                <FaLinkedin size={28} />
+              </a>
             </div>
           </div>
         </div>
-      </div>
-  
+      </section>
 
+      {/* Featured Projects Row - same cards as Developer page */}
+      {projects.length > 0 && (
+        <div className="bg-[#141414] py-6 -mt-2">
+          <h2 className="ml-4 sm:ml-10 pb-4 text-lg sm:text-xl font-['Poppins'] text-white">
+            Featured Projects
+          </h2>
+          {/* Desktop: landscape cards with Netflix badges */}
+          <div className="hidden sm:flex gap-2 px-4 sm:px-10 overflow-x-auto no-scrollbar pb-2">
+            {projects.map((project, index) => (
+              <div
+                key={index}
+                onClick={() => setSelectedProject(project)}
+                className="relative w-80 h-40 flex-shrink-0 overflow-hidden cursor-pointer"
+              >
+                <img
+                  src={project.image}
+                  alt={`${project.name} Background`}
+                  className="absolute w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-[.5px] z-10" />
+                {/* TOP 10 corner badge - ribbon style */}
+                {index < 5 && (
+                  <div
+                    className="absolute top-0 right-0 z-20 bg-red-600 flex flex-col items-center justify-center py-1 px-1.5 min-w-[28px]"
+                    style={{ clipPath: 'polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%)' }}
+                  >
+                    <span className="text-white text-[10px] font-bold leading-tight">TOP</span>
+                    <span className="text-white text-xs font-bold leading-tight">10</span>
+                  </div>
+                )}
+                <img
+                  src={project.logo}
+                  alt={`${project.name} Logo`}
+                  className="relative z-20 w-20 h-20 object-contain mx-auto mt-3"
+                />
+                <h1 className="absolute w-full bottom-8 text-center text-white text-lg font-semibold z-20">
+                  {project.name}
+                </h1>
+                {/* Red label at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center ">
+                  <span className="bg-red-600 px-2 py-1 text-white text-xs font-bold whitespace-nowrap">
+                    {index < 3 ? 'Recently added' : 'Featured'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Mobile: vertical cards with Netflix badges */}
+          <div className="sm:hidden flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2">
+            {projects.map((project, index) => (
+              <div
+                key={index}
+                className="w-36 flex-shrink-0 relative cursor-pointer"
+                onClick={() => setSelectedProject(project)}
+              >
+                <img
+                  src={project.imageMob}
+                  alt={project.name}
+                  className="w-40 h-50 object-cover rounded-xs"
+                />
+                <div className="absolute inset-0 bg-black/80 rounded-xs" />
+                {/* TOP 10 corner badge */}
+                {index < 5 && (
+                  <div
+                    className="absolute top-0 right-0 z-20 bg-red-600 flex flex-col items-center justify-center py-0.5 px-1 min-w-[22px] rounded-bl"
+                    style={{ clipPath: 'polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%)' }}
+                  >
+                    <span className="text-white text-[8px] font-bold leading-tight">TOP</span>
+                    <span className="text-white text-[10px] font-bold leading-tight">10</span>
+                  </div>
+                )}
+                <img
+                  src={project.logo}
+                  alt={`${project.name} Logo`}
+                  className="absolute bottom-[25%] left-[25%] z-20 w-20 h-20 object-contain"
+                />
+                <h2 className="absolute bottom-8 font-[teko] left-0 right-0 text-white text-center text-lg font-semibold z-10">
+                  {project.name}
+                </h2>
+                {/* Red label at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center">
+                  <span className="bg-red-600 px-1.5 text-white text-[10px] font-bold whitespace-nowrap rounded">
+                    {index < 3 ? 'Recently added' : 'Featured'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      <ContactModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-      />
-    </section>
+      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {selectedProject && (
+        <ProjectDetails project={selectedProject} onClose={() => setSelectedProject(null)} />
+      )}
+    </>
   );
 }
 
-export default HrBanner; 
+export default HrBanner;

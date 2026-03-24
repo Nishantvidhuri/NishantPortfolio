@@ -12,21 +12,29 @@ import materialUiImg from "../assets/Technology/materialui.png";
 import viteImg from "../assets/Technology/vite.png";
 import htmlImg from "../assets/Technology/html.png";
 import cssImg from "../assets/Technology/css.png";
+import expressImg from "../assets/Technology/express-js.png";
+import mongodbImg from "../assets/Technology/mongodb.png";
+import postgresImg from "../assets/Technology/postgres.jpg";
+import awsImg from "../assets/Technology/aws.png";
 
 function SkillsShowcase() {
   const techStack = [
     { name: "React", image: reactImg },
     { name: "Angular", image: angularImg },
     { name: "JavaScript", image: jsImg },
-    { name: "Tailwind CSS", image: tailwindImg },
-    { name: "Redux", image: reduxImg },
-    { name: "Three.js", image: threeJsImg },
-    { name: "Axios", image: axiosImg },
-    { name: "GSAP", image: gsapImg },
-    { name: "Material UI", image: materialUiImg },
-    { name: "Vite", image: viteImg },
     { name: "HTML", image: htmlImg },
     { name: "CSS", image: cssImg },
+    { name: "Express.js", image: expressImg },
+    { name: "MongoDB", image: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/mongodb.png" },
+    { name: "PostgreSQL", image: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/postgresql.png" },
+    { name: "AWS", image: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/aws-light.png" },
+    { name: "Tailwind CSS", image: tailwindImg },
+    { name: "Material UI", image: materialUiImg },
+    { name: "Redux", image: reduxImg },
+    { name: "Vite", image: viteImg },
+    { name: "Axios", image: axiosImg },
+    { name: "GSAP", image: gsapImg },
+    { name: "Three.js", image: threeJsImg },
   ];
 
   return (

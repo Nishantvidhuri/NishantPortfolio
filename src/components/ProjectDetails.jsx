@@ -11,6 +11,7 @@ import PasswordGenerator from "../assets/projects/PasswordGenerator.png";
 import RecipeBook from "../assets/projects/RecipeBook.png";
 import SortingVisualizer from "../assets/projects/SortingVisualizer.png";
 import TicTacToe from "../assets/projects/TicTacToe.png";
+import Recriview from "../assets/projects/recriview.jpeg";
 
 // ✅ Import Logos Properly
 import AiImageLogo from "../assets/logo/aiimage.png";
@@ -23,10 +24,12 @@ import PasswordGeneratorLogo from "../assets/logo/passwordgenerator.png";
 import RecipeBookLogo from "../assets/logo/recipebook.png";
 import SortingVisualizerLogo from "../assets/logo/sortingvisualizer.png";
 import TicTacToeLogo from "../assets/logo/tictactoe.png";
+import RecriviewLogo from "../assets/logo/recrivio.png";
 
 // ✅ Function to get correct image & logo from project name
 const getProjectImage = (name) => {
   const images = {
+    "Recriview": Recriview,
     "AI Image Generator": AiImage,
     "Angelic Salon": AngelicSalon,
     "CineChronicle": CineChronicle,
@@ -53,6 +56,7 @@ const getProjectLogo = (name) => {
     "Recipe Book": RecipeBookLogo,
     "Sorting Visualizer": SortingVisualizerLogo,
     "Tic Tac Toe": TicTacToeLogo,
+    "Recriview": RecriviewLogo,
   };
   return logos[name] || "";
 };

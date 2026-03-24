@@ -31,10 +31,10 @@ function FirstSectionHome() {
   }
 
   return (
-    <div className="w-full relative text-white overflow-hidden">
+    <div className="w-full h-[90vh] relative text-white overflow-hidden">
       {/* PC/Laptop View */}
       <div
-        className="hidden sm:flex flex-col justify-end p-4 w-full h-screen"
+        className="hidden  sm:flex flex-col justify-end p-4 w-full h-screen"
         style={{
           backgroundImage: `url(${projects[randomIndex].image})`, // ✅ Fix Here
           backgroundSize: "cover",
@@ -42,10 +42,10 @@ function FirstSectionHome() {
         }}
       >
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-xs"></div>
 
         {/* Content */}
-        <div className="relative z-10 mb-10 sm:mb-20 md:mb-[125px] ml-2 sm:ml-4 md:ml-[40px] translate-y-6 sm:translate-y-10 md:translate-y-20">
+        <div className="relative z-10 mb-10 sm:mb-20 md:mb-[125px] ml-2 sm:ml-4 md:ml-[40px] translate-y-6 sm:translate-y-10 md:translate-y-0">
           {/* Logo */}
           <img
             src={projects[randomIndex].logo} // ✅ Fix Here
@@ -54,15 +54,12 @@ function FirstSectionHome() {
           />
 
           {/* Project Name */}
-          <h2 className="w-full max-w-[500px] pb-1 pt-3 sm:pt-5 md:pt-10 font-[teko] text-2xl sm:text-3xl md:text-5xl">
+          <h2 className="w-full max-w-[500px] mb-10 pb-1 pt-3 sm:pt-5 md:pt-10 font-[teko] text-2xl sm:text-3xl md:text-5xl">
             {projects[randomIndex].name}
           </h2>
 
-          {/* Project Summary */}
-          <h2 className="w-full max-w-[500px] pb-4 sm:pb-6 md:pb-10 font-jakarta text-sm sm:text-base md:text-lg">
-            {projects[randomIndex].summary}
-          </h2>
-
+        
+          
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
             <a
@@ -200,7 +197,7 @@ function FirstSectionHome() {
                 </svg>
               </div>
               <span className="text-sm text-black">Live Demo</span>
-            </a>
+            </a>w
 
             <a
               href={projects[randomIndex].githublink}

@@ -96,27 +96,36 @@ function Projectsuggestions() {
                 className="relative w-[90%] sm:w-80 h-56 sm:h-40 flex-shrink-0 overflow-hidden cursor-pointer snap-start"
                 onClick={() => setSelectedProject(project)}
               >
-                {/* Background Image - Mobile uses wider images */}
                 <img
                   src={project.image}
                   alt={`${project.name} Background`}
                   className="absolute w-full h-full object-cover"
                 />
-
-                {/* Black Overlay with Blur */}
-                <div className="absolute inset-0 bg-black/50 backdrop-blur-[.5px] z-10"></div>
-
-                {/* Foreground Logo */}
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-[.5px] z-10" />
+                {/* TOP 10 corner badge */}
+                {index < 5 && (
+                  <div
+                    className="absolute top-0 right-0 z-20 bg-red-600 flex flex-col items-center justify-center py-1 px-1.5 min-w-[28px]"
+                    style={{ clipPath: 'polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%)' }}
+                  >
+                    <span className="text-white text-[10px] font-bold leading-tight">TOP</span>
+                    <span className="text-white text-xs font-bold leading-tight">10</span>
+                  </div>
+                )}
                 <img
                   src={project.logo}
                   alt={`${project.name} Logo`}
                   className="relative z-20 w-20 h-20 object-contain mx-auto mt-3"
                 />
-
-                {/* Project Name (Centered at Bottom) */}
-                <h1 className="absolute w-full bottom-2 text-center text-white text-lg font-semibold z-20">
+                <h1 className="absolute w-full bottom-8 text-center text-white text-lg font-semibold z-20">
                   {project.name}
                 </h1>
+                {/* Red label at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center">
+                  <span className="bg-red-600 px-2 py-1 text-white text-xs font-bold whitespace-nowrap">
+                    {index < 3 ? 'Recently added' : 'Featured'}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -136,27 +145,37 @@ function Projectsuggestions() {
       <div className="flex gap-4 px-4"
       >
   {projects.map((project, index) => (
-    <div key={index} className="w-36 flex-shrink-0 relative" onClick={() => setSelectedProject(project)} >
-      {/* Background Image */}
+    <div key={index} className="w-36 flex-shrink-0 relative cursor-pointer" onClick={() => setSelectedProject(project)}>
       <img
         src={project.imageMob}
         alt={project.name}
         className="w-40 h-50 object-cover rounded-xs"
       />
-      
-      {/* Black Overlay */}
-      <div className="absolute inset-0 bg-black/80 rounded-xs"></div>
-
-      
+      <div className="absolute inset-0 bg-black/80 rounded-xs" />
+      {/* TOP 10 corner badge */}
+      {index < 5 && (
+        <div
+          className="absolute top-0 right-0 z-20 bg-red-600 flex flex-col items-center justify-center py-0.5 px-1 min-w-[22px] rounded-bl"
+          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%)' }}
+        >
+          <span className="text-white text-[8px] font-bold leading-tight">TOP</span>
+          <span className="text-white text-[10px] font-bold leading-tight">10</span>
+        </div>
+      )}
       <img
-                  src={project.logo}
-                  alt={`${project.name} Logo`}
-                  className="absolute bottom-[25%] left-[25%] z-20 w-20 h-20 object-contain mx-auto mt-3"
-                />
-      {/* Project Name */}
-      <h2 className="absolute bottom-2 font-[teko] left-0 right-0 text-white text-center text-lg font-semibold z-10">
+        src={project.logo}
+        alt={`${project.name} Logo`}
+        className="absolute bottom-[25%] left-[25%] z-20 w-20 h-20 object-contain"
+      />
+      <h2 className="absolute bottom-8 font-[teko] left-0 right-0 text-white text-center text-lg font-semibold z-10">
         {project.name}
       </h2>
+      {/* Red label at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center">
+        <span className="bg-red-600 px-1.5 py-0.5 text-white text-[10px] font-bold whitespace-nowrap rounded">
+          {index < 3 ? 'Recently added' : 'Featured'}
+        </span>
+      </div>
     </div>
   ))}
 </div>

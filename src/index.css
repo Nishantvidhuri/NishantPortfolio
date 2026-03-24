@@ -10,6 +10,12 @@
   --font-netflix: "Martel Sans", "serif";
   
 }
+
+/* Remove rubber band / overscroll bounce effect */
+html, body {
+  overscroll-behavior: none;
+}
+
 a {
   text-decoration: none !important;
   color: inherit !important;

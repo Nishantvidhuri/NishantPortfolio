@@ -22,11 +22,11 @@ function ResumeSection() {
   }, [isExpanded]);
 
   return (
-    <div className="px-4 md:px-12 py-8">
-      <h2 className="text-2xl text-white mb-6">My Resume</h2>
+    <div className="px-4 sm:px-10 py-8 bg-[#141414]">
+      <h2 className="text-lg sm:text-xl font-['Poppins'] text-white mb-6">My Resume</h2>
       
       {/* Regular View */}
-      <div className="bg-[#1a1a1a] rounded-lg overflow-hidden shadow-xl">
+      <div className="bg-[#1f1f1f] rounded-lg overflow-hidden border border-gray-700">
         {/* Header */}
         <div className="bg-[#141414] p-4 flex flex-wrap items-center justify-between gap-4 border-b border-gray-800">
           <div className="flex items-center gap-3">
