@@ -5,7 +5,6 @@ import Projectsuggestions from '../components/Projectsuggestions';
 import Technologies from '../components/Technologies';
 import SocialMedia from '../components/SocialMedia';
 import Documents from '../components/Documents';
-import MiniGames from '../components/MiniGames';
 import ExperienceSection from '../components/ExperienceSection';
 
 function Developer() {
