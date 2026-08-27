@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 // ✅ Import Certificate Logos
 import dsaLogo from "../assets/Certificates/codingninja.png";
@@ -7,9 +6,9 @@ import frontendLogo from "../assets/Certificates/sheriyans.png";
 import resumeLogo from "../assets/Certificates/resume.png";
 
 const documents = [
-  { name: "Resume", logo: resumeLogo, link: "https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing" },
-  { name: "DSA Certificate", logo: dsaLogo, link: "https://drive.google.com/file/d/1KbxojO0BGBbZD7pIh0uHtOXk4HKvGyXH/view?usp=sharing" },
-  { name: "Frontend Certificate", logo: frontendLogo, link: "https://drive.google.com/file/d/1CnF-ItunVRUbe0q6f-YYpN3sCpaEkkbf/view?usp=sharing" },
+  { name: "Resume", logo: resumeLogo, link: "https://drive.google.com/file/d/1mYm-u_piUtMuNP4_kEem3QelcAqDZB4I/view?usp=sharing", sub: "PDF · Google Drive", gradient: "from-red-700 via-rose-800 to-red-950" },
+  { name: "DSA Certificate", logo: dsaLogo, link: "https://drive.google.com/file/d/1KbxojO0BGBbZD7pIh0uHtOXk4HKvGyXH/view?usp=sharing", sub: "DSA with C++ · Code Help", gradient: "from-orange-600 via-amber-700 to-orange-950" },
+  { name: "Frontend Certificate", logo: frontendLogo, link: "https://drive.google.com/file/d/1CnF-ItunVRUbe0q6f-YYpN3sCpaEkkbf/view?usp=sharing", sub: "Frontend Domination · Sheriyans", gradient: "from-amber-500 via-yellow-700 to-orange-950" },
 ];
 
 function Documents() {
@@ -17,21 +16,6 @@ function Documents() {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
-  const [showArrows, setShowArrows] = useState(false);
-
-  const scrollAmount = window.innerWidth <= 640 ? 200 : 320;
-
-  const scrollLeftHandler = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-    }
-  };
-
-  const scrollRightHandler = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
 
   // Start Dragging
   const startDrag = (e) => {
@@ -67,28 +51,12 @@ function Documents() {
   }, [isDragging]);
 
   return (
-    <div
-      className="bg-[#141414] py-5 relative w-full"
-      onMouseEnter={() => setShowArrows(true)}
-      onMouseLeave={() => setShowArrows(false)}
-    >
-      <h1 className="ml-4 sm:ml-10  pb-3 text-lg sm:text-xl font-[Poppins] text-white">
+    <div className="bg-[#141414] py-5 relative w-full">
+      <h1 className="ml-4 sm:ml-10 pb-3 text-lg md:text-2xl font-bold text-[#e5e5e5]">
         My Documents
       </h1>
 
       <div className="relative flex items-center">
-        {/* Scroll Left Button (Visible on Desktop if 5+ documents and on hover) */}
-        {documents.length >= 5 && (
-          <button
-            className={`absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 p-3 h-12 w-12 sm:h-16 sm:w-16 z-50 text-white hover:bg-black/80 transition-all duration-300 rounded-full hidden sm:flex items-center justify-center ${
-              showArrows ? "opacity-100" : "opacity-0"
-            }`}
-            onClick={scrollLeftHandler}
-          >
-            <FaChevronLeft className="transition-transform duration-300 hover:scale-125" size={25} />
-          </button>
-        )}
-
         {/* Scrollable Documents Container */}
         <div
           ref={scrollRef}
@@ -107,28 +75,48 @@ function Documents() {
                 href={doc.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative border border-gray-700 rounded-md w-40 sm:w-80 h-32 sm:h-40 flex-shrink-0 flex flex-col items-center justify-center cursor-pointer "
+                className="w-44 sm:w-72 flex-shrink-0 whitespace-normal group/card"
               >
-                <img src={doc.logo} alt={doc.name} className="w-20 sm:w-28 h-20 sm:h-28 object-contain" />
-                <span className="text-xs sm:text-sm text-white font-semibold mt-2">
-                  {doc.name}
-                </span>
+                <div className="relative h-24 sm:h-40 rounded-md overflow-hidden transition-transform duration-300 group-hover/card:scale-[1.04]">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${doc.gradient}`} />
+                  {/* key-art layers */}
+                  <img
+                    src={doc.logo}
+                    alt=""
+                    aria-hidden
+                    className="absolute -right-5 -bottom-8 h-[130%] w-auto object-contain opacity-20 blur-[1px] rotate-[-10deg]"
+                  />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_15%,rgba(255,255,255,0.3),transparent_55%)]" />
+                  <div className="absolute -left-8 -top-10 h-[220%] w-14 bg-white/10 rotate-[24deg]" />
+                  <div
+                    className="absolute inset-0 opacity-[0.08]"
+                    style={{
+                      backgroundImage: "radial-gradient(rgba(255,255,255,0.9) 1px, transparent 1px)",
+                      backgroundSize: "11px 11px",
+                    }}
+                  />
+                  {/* vignette */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/25" />
+                  {/* logo chip */}
+                  <img
+                    src={doc.logo}
+                    alt={doc.name}
+                    className="absolute top-2 right-2 w-8 h-8 sm:w-12 sm:h-12 object-contain rounded-sm drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]"
+                  />
+                  {/* show-title */}
+                  <div className="absolute bottom-1.5 sm:bottom-2.5 left-2.5 sm:left-3.5 right-2">
+                    <h3 className="font-['Bebas_Neue'] text-white text-2xl sm:text-4xl leading-[0.9] tracking-wide drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                      {doc.name}
+                    </h3>
+                    <p className="text-[9px] sm:text-[11px] text-white/85 mt-0.5 truncate">
+                      {doc.sub}
+                    </p>
+                  </div>
+                </div>
               </a>
             ))}
           </div>
         </div>
-
-        {/* Scroll Right Button (Visible on Desktop if 5+ documents and on hover) */}
-        {documents.length >= 5 && (
-          <button
-            className={`absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 p-3 h-12 w-12 sm:h-16 sm:w-16 z-50 text-white hover:bg-black/80 transition-all duration-300 rounded-full hidden sm:flex items-center justify-center ${
-              showArrows ? "opacity-100" : "opacity-0"
-            }`}
-            onClick={scrollRightHandler}
-          >
-            <FaChevronRight className="transition-transform duration-300 hover:scale-125" size={25} />
-          </button>
-        )}
       </div>
     </div>
   );

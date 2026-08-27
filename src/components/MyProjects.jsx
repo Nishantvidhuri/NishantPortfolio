@@ -12,7 +12,7 @@ function MyProjects() {
       <Navbar/>
       <FirstSectionHome/>
       <Projectsuggestions/>
-      {userRole === 'developer' ? (
+      {userRole === 'explorer' ? (
         <div>Developer Projects View</div>
       ) : (
         <div>HR Projects View</div>

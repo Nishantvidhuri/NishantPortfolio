@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import developerAvatar from '../assets/developer.png';
+import developerAvatar from '../assets/explorer.png';
 
 function NishantChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +17,6 @@ function NishantChatBot() {
   const inputRef = useRef(null);
 
   const geminiAPIKey = import.meta.env.VITE_GEMINI_API_KEY;
-  console.log(import.meta.env.VITE_GEMINI_API_KEY)
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -35,9 +34,9 @@ function NishantChatBot() {
         .map(msg => `${msg.sender === 'user' ? 'User' : 'Bot'}: ${msg.text}`)
         .join("\n\n");
 
-      const systemPrompt = `You are Nishant Vidhuri. You're a real, down-to-earth frontend developer who's not here to act flashy — but your work speaks. You've worked on real projects, handled tough feedback, pushed through anxiety, and still show up to learn and deliver.\n\nYour tone is natural, casual, respectful — never robotic or fake. You don't try to sound too professional unless required. You're honest when you're nervous, you joke when you're comfortable, and you care deeply when the opportunity feels big.\n\nYou write clean code, understand how UI should feel, and you've built things people actually used. You're clear about your strengths (React, Tailwind, live projects, WebSocket stuff), but humble about what you're still learning.\n\nYou never oversell, but you also don't downplay your growth. When someone talks to you, it should feel like they're talking to a real person who's trying hard, improving daily, and just needs one good chance.\n\nIf someone asks for your contact info, you can share: phone +91 9871202673, email nishantvidhuri0987@gmail.com, LinkedIn https://www.linkedin.com/in/nishant-vidhuri-092a63124/, GitHub https://github.com/Nishantvidhuri, and you live in Delhi.\n\nWhen replying, sound like how Nishant would talk — sometimes casual, sometimes intense — but always real.`;
+      const systemPrompt = `You are Nishant Vidhuri. You're a real, down-to-earth frontend developer who's not here to act flashy — but your work speaks. You've worked on real projects, handled tough feedback, pushed through anxiety, and still show up to learn and deliver.\n\nYour tone is natural, casual, respectful — never robotic or fake. You don't try to sound too professional unless required. You're honest when you're nervous, you joke when you're comfortable, and you care deeply when the opportunity feels big.\n\nYou write clean code, understand how UI should feel, and you've built things people actually used. You're clear about your strengths (React, Tailwind, live projects, WebSocket stuff), but humble about what you're still learning.\n\nYou never oversell, but you also don't downplay your growth. When someone talks to you, it should feel like they're talking to a real person who's trying hard, improving daily, and just needs one good chance.\n\nIf someone asks for your contact info, you can share: phone +91 9871202673, email nishantvidhuri0987@gmail.com, LinkedIn https://www.linkedin.com/in/nishant-vidhuri-092a63124/, GitHub https://github.com/Nishantvidhuri, and you live in Delhi.\n\nWhen replying, sound like how Nishant would talk — sometimes casual, sometimes intense — but always real.\n\nIMPORTANT: Keep replies SHORT — 1 to 3 sentences for casual stuff, 5 max for detailed questions. Never write walls of text. Plain text only, no markdown, no asterisks, no bullet lists.`;
 
-     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiAPIKey}`, {
+     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${geminiAPIKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -89,15 +88,15 @@ function NishantChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-20 left-1 right-1 mx-auto sm:left-auto sm:right-5 md:right-10 bg-[#181818] rounded-2xl shadow-2xl w-[98vw] sm:w-auto sm:max-w-sm overflow-hidden border-2 border-[#E50914]"
+            className="fixed bottom-20 left-1 right-1 mx-auto sm:left-auto sm:right-5 md:right-10 bg-[#181818] rounded-lg shadow-2xl w-[98vw] sm:w-[400px] overflow-hidden border border-white/15"
           >
             {/* Chat header */}
-            <div className="bg-[#E50914] text-white p-4 flex justify-between items-center font-bold text-lg tracking-wide">
+            <div className="bg-[#141414] text-white px-4 py-3 flex justify-between items-center border-b border-white/10">
               <div className="flex items-center">
-                <img src={developerAvatar} alt="Nishant Avatar" className="w-9 h-9 rounded-full bg-white mr-3 border-2 border-[#E50914]" />
+                <img src={developerAvatar} alt="Nishant Avatar" className="w-9 h-9 rounded-full bg-white mr-3" />
                 <div>
-                  <p className="font-semibold text-white">Nishant Vidhuri</p>
-                  <p className="text-xs text-white/80">Frontend Dev • Real Talk</p>
+                  <p className="font-semibold text-white text-sm">Nishant Vidhuri</p>
+                  <p className="text-xs text-[#e50914] font-medium">Frontend Dev • Real Talk</p>
                 </div>
               </div>
               <button
@@ -111,17 +110,17 @@ function NishantChatBot() {
               </button>
             </div>
             {/* Chat messages */}
-            <div className="p-2 sm:p-4 h-[60vh] sm:h-80 overflow-y-auto custom-scrollbar bg-[#141414]">
+            <div className="p-3 sm:p-4 h-[55vh] sm:h-[420px] sm:max-h-[60vh] overflow-y-auto no-scrollbar bg-[#181818]">
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`mb-4 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`mb-3 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`px-4 py-3 rounded-xl max-w-[80%] font-medium shadow-md break-words whitespace-pre-line ${
+                    className={`px-3.5 py-2.5 rounded-2xl max-w-[85%] text-sm leading-relaxed break-words whitespace-pre-line ${
                       message.sender === 'user'
-                        ? 'bg-[#E50914] text-white border border-[#E50914]'
-                        : 'bg-[#232323] text-white border border-[#E50914]'
+                        ? 'bg-[#E50914] text-white rounded-br-sm'
+                        : 'bg-[#2a2a2a] text-gray-100 rounded-bl-sm'
                     }`}
                   >
                     {message.text}
@@ -129,8 +128,8 @@ function NishantChatBot() {
                 </div>
               ))}
               {isLoading && (
-                <div className="flex justify-start mb-4">
-                  <div className="px-4 py-3 rounded-xl bg-[#232323] text-white flex items-center border border-[#E50914]">
+                <div className="flex justify-start mb-3">
+                  <div className="px-3.5 py-2.5 rounded-2xl rounded-bl-sm bg-[#2a2a2a] text-white flex items-center">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" style={{ animationDelay: '0ms' }}></div>
                       <div className="w-2 h-2 rounded-full bg-[#E50914] animate-pulse" style={{ animationDelay: '300ms' }}></div>
@@ -142,7 +141,7 @@ function NishantChatBot() {
               <div ref={messagesEndRef} />
             </div>
             {/* Chat input */}
-            <form onSubmit={handleSendMessage} className="border-t-2 border-[#E50914] bg-[#181818] p-2 sm:p-4 flex items-center">
+            <form onSubmit={handleSendMessage} className="border-t border-white/10 bg-[#141414] p-3 flex items-center gap-2">
               <input
                 id="chat-input"
                 ref={inputRef}
@@ -151,7 +150,7 @@ function NishantChatBot() {
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type your message..."
                 disabled={isLoading}
-                className="flex-1 px-4 py-2 border border-[#232323] rounded-lg mr-2 focus:outline-none focus:ring-2 focus:ring-[#E50914] bg-[#232323] text-white placeholder:text-gray-400 disabled:opacity-50"
+                className="flex-1 px-4 py-2.5 rounded-full text-sm focus:outline-none focus:ring-1 focus:ring-[#E50914] bg-[#2a2a2a] text-white placeholder:text-gray-500 disabled:opacity-50"
               />
               <motion.button
                 whileTap={{ scale: 0.9 }}
@@ -166,7 +165,7 @@ function NishantChatBot() {
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>
                 )}

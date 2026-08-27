@@ -17,7 +17,7 @@ function FirstSectionHome() {
   const handleNavigation = (path) => {
     if (path === 'resume') {
       // Open resume in new tab
-      window.open("https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing", "_blank");
+      window.open("https://drive.google.com/file/d/1mYm-u_piUtMuNP4_kEem3QelcAqDZB4I/view?usp=sharing", "_blank");
     } else {
       // Navigate to internal routes
       navigate(`/${path}`);
@@ -43,6 +43,8 @@ function FirstSectionHome() {
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        {/* Netflix billboard fade into the rows below */}
+        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#141414] via-[#141414]/60 to-transparent pointer-events-none"></div>
 
         {/* Content */}
         <div className="relative z-10 mb-10 sm:mb-20 md:mb-[125px] ml-2 sm:ml-4 md:ml-[40px] translate-y-6 sm:translate-y-10 md:translate-y-20">
@@ -53,10 +55,26 @@ function FirstSectionHome() {
             className="w-28 sm:w-36 md:w-60 h-20 sm:h-28 md:h-40 mb-4  object-contain"
           />
 
+          {/* N FEATURED PROJECT tag */}
+          <div className="flex items-center gap-2 pt-3 sm:pt-5 md:pt-8">
+            <span className="font-['Bebas_Neue'] text-[#e50914] text-2xl md:text-3xl leading-none">N</span>
+            <span className="text-gray-300 text-[10px] md:text-xs tracking-[0.4em] font-semibold">FEATURED PROJECT</span>
+          </div>
+
           {/* Project Name */}
-          <h2 className="w-full max-w-[500px] pb-1 pt-3 sm:pt-5 md:pt-10 font-[teko] text-2xl sm:text-3xl md:text-5xl">
+          <h2 className="w-full max-w-[500px] pb-1 font-['Bebas_Neue'] tracking-wide text-3xl sm:text-4xl md:text-6xl drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
             {projects[randomIndex].name}
           </h2>
+
+          {/* Netflix metadata row */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pb-2 text-sm md:text-base">
+            <span className="text-[#46d369] font-semibold">98% Match</span>
+            <span className="text-gray-400">2026</span>
+            <span className="border border-gray-500 text-gray-300 text-[10px] px-1.5 rounded-sm leading-4">HD</span>
+            {projects[randomIndex].genre && (
+              <span className="text-gray-300">{projects[randomIndex].genre}</span>
+            )}
+          </div>
 
           {/* Project Summary */}
           <h2 className="w-full max-w-[500px] pb-4 sm:pb-6 md:pb-10 font-jakarta text-sm sm:text-base md:text-lg">
@@ -132,6 +150,7 @@ function FirstSectionHome() {
           }}
         >
           <div className="absolute inset-0 bg-black/70 backdrop-blur-[3px]"></div>
+          <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-[#141414] to-transparent"></div>
         </div>
 
         {/* Navigation Buttons */}
@@ -166,12 +185,14 @@ function FirstSectionHome() {
           />
 
           {/* Project Name */}
-          <h2 className="text-5xl absolute top-[70%] font-[Teko] text-white">
+          <h2 className="text-5xl absolute top-[70%] font-['Bebas_Neue'] tracking-wide text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
             {projects[randomIndex].name}
           </h2>
           <div className="flex">
-            <h2 className="text-lg w-full absolute left-0 top-[78%]  text-white">
-              {projects[randomIndex].genre}
+            <h2 className="text-sm w-full absolute left-0 top-[78%] text-white flex items-center justify-center gap-2 flex-wrap">
+              <span className="text-[#46d369] font-semibold">98% Match</span>
+              <span className="text-gray-400">2026</span>
+              <span className="text-gray-300">{projects[randomIndex].genre}</span>
             </h2>
           </div>
           {/* Buttons */}

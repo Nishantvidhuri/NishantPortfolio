@@ -4,8 +4,10 @@ import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 function ContactSection() {
   return (
     <div className="px-4 md:px-12 py-8">
-      <h2 className="text-2xl text-white mb-6">Get In Touch</h2>
-      <div className="bg-[#333] rounded-md p-6 max-w-2xl mx-auto">
+      <h2 className="text-lg md:text-2xl font-bold text-[#e5e5e5] mb-3">
+        Get In Touch <span className="text-gray-500 font-normal">— Season Finale</span>
+      </h2>
+      <div className="bg-[#181818] border border-white/10 rounded-md p-6 max-w-2xl mx-auto">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
             <h3 className="text-white text-xl mb-4">Contact Information</h3>
@@ -41,7 +43,7 @@ function ContactSection() {
             <h3 className="text-white text-xl mb-4">Quick Connect</h3>
             <button 
               onClick={() => window.location.href = 'mailto:nishantvidhuri0987@gmail.com'}
-              className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 w-full md:w-auto"
+              className="bg-[#e50914] text-white font-semibold px-6 py-2 rounded-[4px] hover:bg-[#f6121d] transition-colors w-full md:w-auto"
             >
               Schedule a Call
             </button>

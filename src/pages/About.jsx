@@ -7,7 +7,7 @@ function About() {
   const handleNavigation = (path) => {
     if (path === 'resume') {
       // Open resume in new tab
-      window.open("https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing", "_blank");
+      window.open("https://drive.google.com/file/d/1mYm-u_piUtMuNP4_kEem3QelcAqDZB4I/view?usp=sharing", "_blank");
     } else {
       // Navigate to internal routes
       navigate(`/${path}`);

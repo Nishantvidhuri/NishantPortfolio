@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ContactModal from './ContactModal';
 import { useNavigate } from 'react-router-dom';
-import { FaGithub, FaLinkedin, FaArrowRight, FaMailBulk, FaMailchimp, FaAmericanSignLanguageInterpreting, FaEnvelope } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaPlay, FaInfoCircle } from 'react-icons/fa';
 
 // Import project images
 import aiimage from '../assets/projects/mob/aiimagemob.jpeg';
@@ -85,7 +85,7 @@ function HrBanner() {
   const handleNavigation = (path) => {
     if (path === 'resume') {
       // Open resume in new tab
-      window.open("https://drive.google.com/file/d/18z0fJm-KOhX3aejFhth5Mh1FvrZJip1x/view?usp=sharing", "_blank");
+      window.open("https://drive.google.com/file/d/1mYm-u_piUtMuNP4_kEem3QelcAqDZB4I/view?usp=sharing", "_blank");
     } else {
       // Navigate to internal routes
       navigate(`/${path}`);
@@ -97,10 +97,12 @@ function HrBanner() {
       {/* Background Elements - Adjusted opacity and gradients */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center opacity-[0.03]"
-  
+
       />
+      {/* Netflix billboard fade into the rows below */}
+      <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#141414] via-[#141414]/60 to-transparent pointer-events-none" />
     
       {/* Mobile Navigation Buttons */}
       <div className="absolute top-4 z-[1000] w-full  flex gap-4 text-xl sm:hidden">
@@ -127,45 +129,66 @@ function HrBanner() {
       {/* Content Container */}
       <div className="container mx-auto px-4 h-full relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between h-full py-20 lg:py-20">
-          {/* Text Content */}
-          <div className="w-full lg:w-1/2 text-center lg:ml-10  lg:text-left space-y-6 relative">
-            <div className="inline-block">
-              <span className="relative inline-block px-4 py-2 text-red-500 text-sm md:text-base tracking-[0.2em] font-medium">
-                <span className="relative z-10">HELLO, I'M A</span>
-                <span className="absolute inset-0 border-2 border-red-500/20 rounded-lg transform -skew-x-6" />
-              </span>
+          {/* Text Content — Netflix title billboard */}
+          <div className="w-full lg:w-1/2 text-center lg:ml-10  lg:text-left space-y-5 relative">
+            {/* N SERIES tag */}
+            <div className="flex items-center gap-2 justify-center lg:justify-start">
+              <span className="font-['Bebas_Neue'] text-[#e50914] text-3xl leading-none">N</span>
+              <span className="text-gray-400 text-xs md:text-sm tracking-[0.4em] font-semibold">PORTFOLIO SERIES</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white font-['Poppins'] leading-tight">
-              Frontend
+            {/* Show title */}
+            <h1 className="font-['Bebas_Neue'] text-6xl sm:text-7xl md:text-8xl text-white leading-[0.9] tracking-wide drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
+              Nishant
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
-                Developer
-              </span>
+              Vidhuri
             </h1>
 
+            {/* Netflix metadata row */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 justify-center lg:justify-start text-sm md:text-base">
+              <span className="text-[#46d369] font-semibold">98% Match</span>
+              <span className="text-gray-400">2026</span>
+              <span className="border border-gray-500 text-gray-300 text-[10px] px-1.5 rounded-sm leading-4">HD</span>
+              <span className="text-gray-300 font-medium">Frontend Developer</span>
+            </div>
+
+            {/* Genre tags */}
+            <div className="text-sm text-gray-400 flex flex-wrap gap-x-2 justify-center lg:justify-start">
+              <span>React</span><span className="text-gray-600">•</span>
+              <span>Tailwind</span><span className="text-gray-600">•</span>
+              <span>Redux</span><span className="text-gray-600">•</span>
+              <span>Three.js</span>
+            </div>
+
             <p className="text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-['Inter']">
-              I design and develop responsive, user-friendly websites with clean and efficient code. 
-              My focus is on creating smooth interactions, optimized performance, and visually appealing 
+              I design and develop responsive, user-friendly websites with clean and efficient code.
+              My focus is on creating smooth interactions, optimized performance, and visually appealing
               interfaces that work seamlessly across all devices.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start pt-4">
-              <button 
+            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-2">
+              {/* Play-style primary → Resume */}
+              <button
+                onClick={() => handleNavigation('resume')}
+                className="flex items-center justify-center gap-3 bg-white text-black font-semibold px-8 py-3 rounded w-full sm:w-auto hover:bg-white/80 transition-colors"
+              >
+                <FaPlay size={16} />
+                Resume
+              </button>
+
+              {/* More Info-style secondary → Contact modal */}
+              <button
                 onClick={() => setIsModalOpen(true)}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className="group relative px-8 py-3 w-full sm:w-auto rounded-full overflow-hidden"
+                className="flex items-center justify-center gap-3 bg-[rgba(109,109,110,0.7)] text-white font-semibold px-8 py-3 rounded w-full sm:w-auto hover:bg-[rgba(109,109,110,0.4)] transition-colors"
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-500 transition-transform group-hover:scale-105" />
-                <span className="relative flex items-center justify-center gap-3 text-white font-medium">
-                {isMobile ? 'Tap to Contact' : 'Click to Contact'}
-                  <FaEnvelope className={`transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`} />
-                </span>
+                <FaInfoCircle size={18} className={`transition-transform duration-300 ${isHovered ? 'scale-110' : ''}`} />
+                {isMobile ? 'Tap to Contact' : 'Contact Me'}
               </button>
 
               <div className="flex gap-6">
-                <a 
+                <a
                   href="https://github.com/Nishantvidhuri"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -173,7 +196,7 @@ function HrBanner() {
                 >
                   <FaGithub color='white' size={24} />
                 </a>
-                <a 
+                <a
                   href="https://www.linkedin.com/in/nishant-vidhuri-092a63124/"
                   target="_blank"
                   rel="noopener noreferrer"

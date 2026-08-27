@@ -30,17 +30,24 @@ function SkillsShowcase() {
   ];
 
   return (
-    <div className="px-4 md:px-12 py-8">
-      <h2 className="text-2xl text-white mb-6">Technologies I Work With</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+    <div className="py-8">
+      <h2 className="px-4 md:px-12 text-lg md:text-2xl font-bold text-[#e5e5e5] mb-3">
+        Technologies I Work With
+      </h2>
+      <div className="flex overflow-x-auto no-scrollbar gap-3 px-4 md:px-12 pb-4 pt-2">
         {techStack.map((tech, index) => (
-          <div key={index} className="bg-[#333] rounded-md p-4 flex flex-col items-center justify-center hover:bg-[#404040] transition-colors">
-            <img 
-              src={tech.image} 
-              alt={tech.name} 
-              className="w-12 h-12 object-contain mb-2"
-            />
-            <span className="text-white text-sm text-center">{tech.name}</span>
+          <div
+            key={index}
+            className="group relative flex-shrink-0 cursor-pointer"
+          >
+            <div className="relative w-[140px] md:w-[210px] h-[130px] md:h-[180px] bg-gradient-to-b from-[#2a2a2a] to-[#181818] border border-white/10 rounded-sm flex flex-col items-center justify-center gap-3 transition-transform duration-300 group-hover:scale-110 group-hover:border-white/30">
+              <img
+                src={tech.image}
+                alt={tech.name}
+                className="w-12 h-12 md:w-20 md:h-20 object-contain"
+              />
+              <span className="text-gray-300 text-xs md:text-sm text-center px-1">{tech.name}</span>
+            </div>
           </div>
         ))}
       </div>

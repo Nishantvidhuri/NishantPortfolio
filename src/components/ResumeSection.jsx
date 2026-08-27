@@ -3,7 +3,7 @@ import { FaFilePdf, FaDownload, FaExpand, FaExternalLinkAlt, FaTimes } from 'rea
 
 function ResumeSection() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const resumeUrl = "https://drive.google.com/file/d/12X6s-MHb241ZFPOcQPdi59Akb_5QqJ9-/view?usp=sharing";
+  const resumeUrl = "https://drive.google.com/file/d/1mYm-u_piUtMuNP4_kEem3QelcAqDZB4I/view?usp=sharing";
 
   const getEmbedUrl = (url) => {
     const fileId = url.split('/')[5];
@@ -23,10 +23,12 @@ function ResumeSection() {
 
   return (
     <div className="px-4 md:px-12 py-8">
-      <h2 className="text-2xl text-white mb-6">My Resume</h2>
-      
+      <h2 className="text-lg md:text-2xl font-bold text-[#e5e5e5] mb-3">
+        Featured Today <span className="text-gray-500 font-normal">— My Resume</span>
+      </h2>
+
       {/* Regular View */}
-      <div className="bg-[#1a1a1a] rounded-lg overflow-hidden shadow-xl">
+      <div className="bg-[#181818] border border-white/10 rounded-md overflow-hidden shadow-xl">
         {/* Header */}
         <div className="bg-[#141414] p-4 flex flex-wrap items-center justify-between gap-4 border-b border-gray-800">
           <div className="flex items-center gap-3">
@@ -54,7 +56,7 @@ function ResumeSection() {
             <a
               href={resumeUrl}
               download
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#e50914] hover:bg-[#f6121d] text-white rounded-md transition-colors"
             >
               <FaDownload size={16} className='text-white' />
               <span className="hidden xs:inline">Download</span>

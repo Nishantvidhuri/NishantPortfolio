@@ -10,6 +10,22 @@
   --font-netflix: "Martel Sans", "serif";
   
 }
+/* Disable elastic overscroll (rubber-band bounce) at the page edges */
+html,
+body {
+  overscroll-behavior: none;
+}
+
+/* Hide the page scrollbar — scrolling still works */
+html {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 a {
   text-decoration: none !important;
   color: inherit !important;
@@ -24,4 +40,11 @@ a {
 .no-scrollbar {
   -ms-overflow-style: none;  /* Hide scrollbar for IE, Edge */
   scrollbar-width: none;  /* Hide scrollbar for Firefox */
+}
+
+/* Netflix "Top 10" style outlined rank numbers */
+.rank-number {
+  color: #141414;
+  -webkit-text-stroke: 4px #595959;
+  text-stroke: 4px #595959;
 }

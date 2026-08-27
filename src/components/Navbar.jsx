@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
-import DeveloperImg from "../assets/developer.png";
-import HrImg from "../assets/hr.png";
+import DeveloperImg from "../assets/explorer.png";
 import { FaFileDownload, FaEnvelope, FaCode, FaSearch } from "react-icons/fa";
 import { useProfile } from '../context/ProfileContext';
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
   const [count, setCount] = useState(3);
   const { userRole, updateUserRole } = useProfile();
@@ -41,19 +39,14 @@ function Navbar() {
     timeoutId = setTimeout(() => setActiveDropdown(null), 200);
   };
 
-  const isDeveloper = location.pathname === "/developer";
-  const currentProfileImg = isDeveloper ? DeveloperImg : HrImg;
-  const oppositeProfileImg = isDeveloper ? HrImg : DeveloperImg;
-  const oppositeProfileUrl = isDeveloper ? "/hr" : "/developer";
-
   const handleProfileSwitch = (newRole) => {
     updateUserRole(newRole);
-    navigate(newRole === 'developer' ? '/developer' : newRole === 'hr' ? '/hr' : '/kids');
+    navigate(newRole === 'explorer' ? '/explorer' : '/kids');
     setActiveDropdown(null);
   };
 
   const handleLogoClick = () => {
-    navigate(userRole === 'developer' ? '/developer' : userRole === 'hr' ? '/hr' : '/kids');
+    navigate(userRole === 'kids' ? '/kids' : '/explorer');
   };
 
   // Netflix Kids Profile Icon Component
@@ -93,7 +86,7 @@ function Navbar() {
               <KidsProfileIcon className="w-8 h-8" />
             ) : (
               <img
-                src={userRole === 'developer' ? DeveloperImg : HrImg}
+                src={DeveloperImg}
                 alt="Current Profile"
                 className="w-8 h-8 rounded-md"
               />
@@ -106,22 +99,13 @@ function Navbar() {
               onMouseLeave={handleMouseLeave}
             >
               <ul className="text-white text-sm font-semibold">
-                {userRole !== 'developer' && (
+                {userRole !== 'explorer' && (
                   <li
                     className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
-                    onClick={() => handleProfileSwitch('developer')}
+                    onClick={() => handleProfileSwitch('explorer')}
                   >
-                    <img src={DeveloperImg} alt="Developer" className="w-6 h-6 rounded-md" />
-                    <span>Developer</span>
-                  </li>
-                )}
-                {userRole !== 'hr' && (
-                  <li
-                    className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
-                    onClick={() => handleProfileSwitch('hr')}
-                  >
-                    <img src={HrImg} alt="HR" className="w-6 h-6 rounded-md" />
-                    <span>HR</span>
+                    <img src={DeveloperImg} alt="Explorer" className="w-6 h-6 rounded-md" />
+                    <span>Explorer</span>
                   </li>
                 )}
                 {userRole !== 'kids' && (
@@ -152,29 +136,32 @@ function Navbar() {
             alt="Logo" 
             onClick={handleLogoClick}
           />
-          <div className="flex font-bold text-sm !text-[#D5D5D5] gap-5">
-            <Link 
-              to={userRole === 'developer' ? '/developer' : userRole === 'hr' ? '/hr' : '/kids'}
-              className="hover:text-white transition duration-300"
-            >
-              Home
-            </Link>
-            <Link to="/projects" className="hover:text-white transition duration-300">
-              My Projects
-            </Link>
-            <Link to="/about" className="hover:text-white transition duration-300">
-              About Me
-            </Link>
-            <Link 
-              to="https://drive.google.com/file/d/12X6s-MHb241ZFPOcQPdi59Akb_5QqJ9-/view" 
-              className="hover:text-white transition duration-300"
-            >
-              My Resume
-            </Link>
-          </div>
+          {userRole !== 'kids' && (
+            <div className="flex font-bold text-sm !text-[#D5D5D5] gap-5">
+              <Link
+                to="/explorer"
+                className="hover:text-white transition duration-300"
+              >
+                Home
+              </Link>
+              <Link to="/projects" className="hover:text-white transition duration-300">
+                My Projects
+              </Link>
+              <Link to="/about" className="hover:text-white transition duration-300">
+                About Me
+              </Link>
+              <Link
+                to="https://drive.google.com/file/d/1mYm-u_piUtMuNP4_kEem3QelcAqDZB4I/view"
+                className="hover:text-white transition duration-300"
+              >
+                My Resume
+              </Link>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-10 items-center">
+          {userRole !== 'kids' && (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -190,6 +177,8 @@ function Navbar() {
               fill="currentColor"
             />
           </svg>
+          )}
+          {userRole !== 'kids' && (
           <div
             className="relative flex items-center cursor-pointer"
             onMouseEnter={() => handleMouseEnter("notifications")}
@@ -226,6 +215,7 @@ function Navbar() {
               </div>
             )}
           </div>
+          )}
 
           <div
             className="relative flex items-center cursor-pointer"
@@ -237,29 +227,20 @@ function Navbar() {
             ) : (
               <img
                 className="w-9 h-9 rounded-md"
-                src={userRole === 'developer' ? DeveloperImg : HrImg}
-                alt={userRole === 'developer' ? "Developer Profile" : "HR Profile"}
+                src={DeveloperImg}
+                alt="Explorer Profile"
               />
             )}
             {activeDropdown === "profile" && (
               <div className="absolute top-12 right-0 w-40 bg-black/95 border-[1px] border-white/20 rounded-md shadow-lg z-50">
                 <ul className="text-white text-sm font-semibold">
-                  {userRole !== 'developer' && (
+                  {userRole !== 'explorer' && (
                     <li
                       className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
-                      onClick={() => handleProfileSwitch('developer')}
+                      onClick={() => handleProfileSwitch('explorer')}
                     >
-                      <img src={DeveloperImg} alt="Developer" className="w-6 h-6 rounded-md" />
-                      <span>Developer</span>
-                    </li>
-                  )}
-                  {userRole !== 'hr' && (
-                    <li
-                      className="px-4 py-3 border-b border-gray-800 hover:bg-red-700 flex items-center gap-3 cursor-pointer"
-                      onClick={() => handleProfileSwitch('hr')}
-                    >
-                      <img src={HrImg} alt="HR" className="w-6 h-6 rounded-md" />
-                      <span>HR</span>
+                      <img src={DeveloperImg} alt="Explorer" className="w-6 h-6 rounded-md" />
+                      <span>Explorer</span>
                     </li>
                   )}
                   {userRole !== 'kids' && (

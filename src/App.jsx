@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, Navigate } from "react-router-dom";
 import Intropage from "./components/IntroPage";
 import Developer from "./pages/Developer";
-import Hr from "./pages/Hr";
 import Kids from "./pages/Kids";
+import NotFound from "./pages/NotFound";
 import { ProjectProvider } from "./context/ProjectContext";
 import { ProfileProvider } from "./context/ProfileContext";
 import MyProjects from "./components/MyProjects";
@@ -20,10 +20,8 @@ const AppContent = () => {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
-    if (location.pathname === '/developer') {
-      updateUserRole('developer');
-    } else if (location.pathname === '/hr') {
-      updateUserRole('hr');
+    if (location.pathname === '/explorer') {
+      updateUserRole('explorer');
     } else if (location.pathname === '/kids') {
       updateUserRole('kids');
     }
@@ -48,13 +46,15 @@ const AppContent = () => {
         {showIntro && <NetflixIntro onAnimationComplete={() => setShowIntro(false)} />}
         <Routes>
           <Route path="/" element={<Intropage />} />
-          <Route path="/developer" element={<Developer />} />
-          <Route path="/hr" element={<Hr />} />
+          <Route path="/explorer" element={<Developer />} />
+          <Route path="/developer" element={<Navigate to="/explorer" replace />} />
+          <Route path="/hr" element={<Navigate to="/explorer" replace />} />
           <Route path="/kids" element={<Kids />} />
           <Route path="/projects" element={<MyProjects/>}/>
           <Route path="/about" element={<About />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
-        <NishantChatBot />
+        {location.pathname === '/explorer' && <NishantChatBot />}
       </div>
     </ProjectProvider>
   );

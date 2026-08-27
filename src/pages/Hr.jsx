@@ -8,11 +8,11 @@ import ResumeSection from '../components/ResumeSection'
 import MiniGames from '../components/MiniGames'
 function Hr() {
   return (
-    <div className="bg-black min-h-screen pb-20 overflow-x-hidden">
+    <div className="bg-[#141414] min-h-screen pb-20 overflow-x-hidden">
       <Navbar/>
       <HrBanner />
-      
-      <div className="relative z-10 -mt-20 space-y-12">
+
+      <div className="relative z-10 -mt-20 space-y-6">
         <SkillsShowcase />
         <ExperienceSection />
         <ResumeSection />

@@ -10,11 +10,11 @@ import ExperienceSection from '../components/ExperienceSection';
 
 function Developer() {
   useEffect(() => {
-    document.title = "Nishant | Developer";
+    document.title = "Nishant | Explorer";
   }, []);
 
   return (
-    <div className='overflow-x-hidden'>
+    <div className='overflow-x-hidden bg-[#141414]'>
       <Navbar />
       <FirstSectionHome/>
       <Projectsuggestions/>
