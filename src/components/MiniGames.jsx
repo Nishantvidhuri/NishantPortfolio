@@ -1,704 +1,531 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaChevronLeft, FaChevronRight, FaTimes, FaTrophy, FaPlay, FaRedo, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaTimes, FaTrophy, FaPlay, FaRedo } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 
-const SnakeGame = () => {
-  const canvasRef = useRef(null);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
-  const [muted, setMuted] = useState(false);
-  
-  // Game constants
-  const GRID_SIZE = 20;
-  const GAME_SPEED = 100;
-  
-  useEffect(() => {
-    if (!gameStarted) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    
-    // Game state
-    let snake = [{ x: 10, y: 10 }];
-    let food = { x: 15, y: 15 };
-    let direction = 'right';
-    let nextDirection = 'right';
-    let gameInterval;
-    let currentScore = 0;
-    
-    // Set up keyboard controls
-    const handleKeyDown = (e) => {
-      switch (e.key) {
-        case 'ArrowUp':
-          if (direction !== 'down') nextDirection = 'up';
-          break;
-        case 'ArrowDown':
-          if (direction !== 'up') nextDirection = 'down';
-          break;
-        case 'ArrowLeft':
-          if (direction !== 'right') nextDirection = 'left';
-          break;
-        case 'ArrowRight':
-          if (direction !== 'left') nextDirection = 'right';
-          break;
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    
-    // Generate random food position
-    const generateFood = () => {
-      return {
-        x: Math.floor(Math.random() * (canvas.width / GRID_SIZE)),
-        y: Math.floor(Math.random() * (canvas.height / GRID_SIZE))
-      };
-    };
-    
-    // Draw everything
-    const draw = () => {
-      // Clear canvas
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw snake
-      ctx.fillStyle = 'red';
-      snake.forEach(segment => {
-        ctx.fillRect(segment.x * GRID_SIZE, segment.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-      });
-      
-      // Draw food
-      ctx.fillStyle = 'green';
-      ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-    };
-    
-    // Game loop
-    const gameLoop = () => {
-      // Update direction
-      direction = nextDirection;
-      
-      // Move snake
-      const head = { ...snake[0] };
-      switch (direction) {
-        case 'up': head.y--; break;
-        case 'down': head.y++; break;
-        case 'left': head.x--; break;
-        case 'right': head.x++; break;
-      }
-      
-      // Check for collisions with walls
-      if (
-        head.x < 0 || 
-        head.y < 0 || 
-        head.x >= canvas.width / GRID_SIZE || 
-        head.y >= canvas.height / GRID_SIZE
-      ) {
-        endGame();
-        return;
-      }
-      
-      // Check for collisions with self
-      if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-        endGame();
-        return;
-      }
-      
-      // Add new head
-      snake.unshift(head);
-      
-      // Check for food collision
-      if (head.x === food.x && head.y === food.y) {
-        // Generate new food
-        food = generateFood();
-        // Increase score
-        currentScore += 10;
-        setScore(currentScore);
-      } else {
-        // Remove tail
-        snake.pop();
-      }
-      
-      // Draw everything
-      draw();
-    };
-    
-    const endGame = () => {
-      clearInterval(gameInterval);
-      setGameOver(true);
-      setGameStarted(false);
-      if (currentScore > highScore) {
-        setHighScore(currentScore);
-      }
-    };
-    
-    // Initialize game
-    const initGame = () => {
-      // Reset game state
-      snake = [{ x: 10, y: 10 }];
-      food = generateFood();
-      direction = 'right';
-      nextDirection = 'right';
-      currentScore = 0;
-      setScore(0);
-      setGameOver(false);
-      
-      // Start game loop
-      gameInterval = setInterval(gameLoop, GAME_SPEED);
-    };
-    
-    initGame();
-    
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      clearInterval(gameInterval);
-    };
-  }, [gameStarted]);
-  
-  const handleStartGame = () => {
-    setGameStarted(true);
-    setGameOver(false);
-  };
-  
-  return (
-    <div className="flex flex-col items-center">
-      <div className="w-full flex justify-between items-center mb-4">
-        <div className="flex items-center">
-          {gameStarted && !gameOver && (
-            <div className="bg-red-600 text-white px-3 py-1 rounded-md flex items-center">
-              <FaTrophy className="mr-2" />
-              <span className="font-bold">{score}</span>
-            </div>
-          )}
-        </div>
-        <button 
-          onClick={() => setMuted(!muted)} 
-          className="text-gray-400 hover:text-white p-2"
-        >
-          {muted ? <FaVolumeMute size={20} /> : <FaVolumeUp size={20} />}
-        </button>
-      </div>
+/* ═══════════════════════════════════════
+   GAME 1: Emoji Slots
+   ═══════════════════════════════════════ */
+const EmojiSlots = () => {
+  const symbols = ['🎬', '🍿', '📺', '🎭', '🎞️', '🎥', '⭐', '🏆'];
+  const [reels, setReels] = useState(['🎬', '📺', '🍿']);
+  const [spinning, setSpinning] = useState(false);
+  const [coins, setCoins] = useState(100);
+  const [message, setMessage] = useState('');
+  const [won, setWon] = useState(false);
 
-      <div className="relative">
-        <canvas
-          ref={canvasRef}
-          width={300}
-          height={300}
-          className="border-4 border-red-600 rounded-md bg-black"
-        />
-        
-        {!gameStarted && !gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80">
-            <h3 className="text-2xl font-bold text-red-600 mb-4">Snake Game</h3>
-            <p className="text-gray-300 mb-6 text-center px-4">Control the snake, eat food, and avoid hitting walls or yourself.</p>
-            <button
-              onClick={handleStartGame}
-              className="flex items-center bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition-colors font-bold"
-            >
-              <FaPlay className="mr-2" /> Start Game
-            </button>
-          </div>
-        )}
-        
-        {gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80">
-            <h3 className="text-2xl font-bold text-red-600 mb-2">Game Over</h3>
-            <p className="text-xl text-white mb-1">Score: {score}</p>
-            {highScore > 0 && <p className="text-lg text-gray-300 mb-4">High Score: {highScore}</p>}
-            <button
-              onClick={handleStartGame}
-              className="flex items-center bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition-colors font-bold"
-            >
-              <FaRedo className="mr-2" /> Play Again
-            </button>
-          </div>
-        )}
+  const spin = () => {
+    if (spinning || coins < 10) return;
+    setCoins(prev => prev - 10);
+    setSpinning(true);
+    setMessage('');
+    setWon(false);
+
+    let spins = 0;
+    const interval = setInterval(() => {
+      setReels([
+        symbols[Math.floor(Math.random() * symbols.length)],
+        symbols[Math.floor(Math.random() * symbols.length)],
+        symbols[Math.floor(Math.random() * symbols.length)],
+      ]);
+      spins++;
+      if (spins > 15) {
+        clearInterval(interval);
+        const finalReels = [
+          symbols[Math.floor(Math.random() * symbols.length)],
+          symbols[Math.floor(Math.random() * symbols.length)],
+          symbols[Math.floor(Math.random() * symbols.length)],
+        ];
+        setReels(finalReels);
+        setSpinning(false);
+
+        if (finalReels[0] === finalReels[1] && finalReels[1] === finalReels[2]) {
+          setCoins(prev => prev + 100);
+          setMessage('JACKPOT! +100');
+          setWon(true);
+        } else if (finalReels[0] === finalReels[1] || finalReels[1] === finalReels[2]) {
+          setCoins(prev => prev + 25);
+          setMessage('Nice! +25');
+          setWon(true);
+        } else {
+          setMessage('Try again!');
+        }
+      }
+    }, 80);
+  };
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      <div className="flex items-center gap-2 mb-4">
+        <FaTrophy className="text-yellow-500" />
+        <span className="text-white font-bold text-lg">{coins} coins</span>
       </div>
-      
-      {gameStarted && !gameOver && (
-        <div className="mt-4 text-center">
-          <p className="text-gray-300">Use arrow keys to control the snake</p>
-        </div>
+      <div className="flex gap-2 sm:gap-4 mb-6">
+        {reels.map((symbol, i) => (
+          <div key={i} className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-800 border-2 border-red-600 rounded-lg flex items-center justify-center">
+            <span className={`text-4xl sm:text-5xl ${spinning ? 'animate-bounce' : ''}`}>{symbol}</span>
+          </div>
+        ))}
+      </div>
+      {message && (
+        <p className={`text-lg font-bold mb-4 ${won ? 'text-green-400' : 'text-gray-400'}`}>{message}</p>
       )}
+      <button
+        onClick={spin}
+        disabled={spinning || coins < 10}
+        className="bg-red-600 hover:bg-red-700 disabled:bg-gray-700 text-white font-bold px-8 py-3 rounded-lg text-lg transition-colors w-full max-w-xs"
+      >
+        {spinning ? 'Spinning...' : coins < 10 ? 'No Coins!' : 'Spin (10 coins)'}
+      </button>
     </div>
   );
 };
 
-const MemoryGame = () => {
+/* ═══════════════════════════════════════
+   GAME 2: Card Match
+   ═══════════════════════════════════════ */
+const CardMatch = () => {
+  const emojis = ['🎬', '📺', '🍿', '🎭', '🎞️', '🎥', '⭐', '🏆'];
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
-  const [solved, setSolved] = useState([]);
-  const [disabled, setDisabled] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
+  const [matched, setMatched] = useState([]);
   const [moves, setMoves] = useState(0);
-  const [gameComplete, setGameComplete] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [score, setScore] = useState(0);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const timerRef = useRef(null);
-  
-  // Card images (Netflix themed)
-  const cardImages = [
-    { id: 1, image: '🎬' },
-    { id: 2, image: '📺' },
-    { id: 3, image: '🍿' },
-    { id: 4, image: '🎭' },
-    { id: 5, image: '🎞️' },
-    { id: 6, image: '🎥' },
-    { id: 7, image: '🎮' },
-    { id: 8, image: '🎯' },
-  ];
-  
-  // Format time for display
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  };
-  
-  // Initialize game
+  const [started, setStarted] = useState(false);
+  const [complete, setComplete] = useState(false);
+
   const initGame = () => {
-    // Create pairs of cards
-    const duplicatedCards = [...cardImages, ...cardImages]
+    const pairs = [...emojis, ...emojis]
       .sort(() => Math.random() - 0.5)
-      .map((card, index) => ({ 
-        ...card, 
-        uniqueId: index,
-        flipped: false,
-        matched: false,
-        content: card.image
-      }));
-    
-    setCards(duplicatedCards);
+      .map((emoji, i) => ({ id: i, emoji }));
+    setCards(pairs);
     setFlipped([]);
-    setSolved([]);
-    setDisabled(false);
+    setMatched([]);
     setMoves(0);
-    setScore(0);
-    setElapsedTime(0);
-    setGameComplete(false);
-    setGameStarted(true);
-    
-    // Start timer
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setElapsedTime(prev => prev + 1);
-    }, 1000);
+    setComplete(false);
+    setStarted(true);
   };
-  
-  // Handle card click
-  const handleCardClick = (index) => {
-    if (disabled) return;
-    
-    // Don't allow flipping more than 2 cards at once or already matched cards
-    const flippedCount = cards.filter(card => card.flipped && !card.matched).length;
-    if (flippedCount === 2 || cards[index].flipped || cards[index].matched) return;
-    
-    // Flip the card
-    const newCards = [...cards];
-    newCards[index].flipped = true;
-    setCards(newCards);
-    
-    // If this is the second card, check for match
-    if (flippedCount === 1) {
-      setDisabled(true);
-      setMoves(moves + 1);
-      
-      const flippedCards = newCards.filter(card => card.flipped && !card.matched);
-      const firstCard = flippedCards[0];
-      const secondCard = newCards[index];
-      
-      // Check if cards match
-      if (firstCard.id === secondCard.id) {
-        // Mark cards as matched
-        newCards.forEach(card => {
-          if (card.flipped && !card.matched) {
-            card.matched = true;
-          }
-        });
-        setCards(newCards);
-        setScore(score + 10);
-        setDisabled(false);
-        
-        // Check if game is complete
-        if (newCards.filter(card => !card.matched).length === 0) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          setGameComplete(true);
-          setGameStarted(false);
-        }
+
+  const handleFlip = (index) => {
+    if (flipped.length === 2 || flipped.includes(index) || matched.includes(index)) return;
+    const newFlipped = [...flipped, index];
+    setFlipped(newFlipped);
+
+    if (newFlipped.length === 2) {
+      setMoves(m => m + 1);
+      const [a, b] = newFlipped;
+      if (cards[a].emoji === cards[b].emoji) {
+        const newMatched = [...matched, a, b];
+        setMatched(newMatched);
+        setFlipped([]);
+        if (newMatched.length === cards.length) setComplete(true);
       } else {
-        // If no match, flip cards back after a delay
-        setTimeout(() => {
-          newCards.forEach(card => {
-            if (card.flipped && !card.matched) {
-              card.flipped = false;
-            }
-          });
-          setCards(newCards);
-          setDisabled(false);
-        }, 1000);
+        setTimeout(() => setFlipped([]), 800);
       }
     }
   };
-  
-  // Clean up timer on unmount
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-  
-  return (
-    <div className="flex flex-col items-center">
-      <div className="w-full flex justify-between items-center mb-4">
-        <div className="flex items-center space-x-4">
-          <div className="bg-red-600 text-white px-3 py-1 rounded-md flex items-center">
-            <FaTrophy className="mr-2" />
-            <span className="font-bold">{score}</span>
-          </div>
-          {moves > 0 && (
-            <div className="bg-gray-800 text-white px-3 py-1 rounded-md">
-              Moves: {moves}
-            </div>
-          )}
-        </div>
-        <button 
-          onClick={() => setMuted(!muted)} 
-          className="text-gray-400 hover:text-white p-2"
-        >
-          {muted ? <FaVolumeMute size={20} /> : <FaVolumeUp size={20} />}
+
+  if (!started) {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-xl font-bold text-red-500 mb-3">Card Match</h3>
+        <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">Find all matching pairs of cards</p>
+        <button onClick={initGame} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaPlay className="mr-2" /> Start Game
         </button>
       </div>
+    );
+  }
 
-      {!gameStarted && !gameComplete && (
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-red-600 mb-4">Memory Game</h3>
-          <p className="text-gray-300 mb-6">Find matching pairs of cards in this classic memory challenge.</p>
-          <button
-            onClick={initGame}
-            className="flex items-center mx-auto bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition-colors font-bold"
-          >
-            <FaPlay className="mr-2" /> Start Game
-          </button>
-        </div>
-      )}
+  if (complete) {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-2xl font-bold text-green-400 mb-2">Complete!</h3>
+        <p className="text-white text-lg mb-4">Solved in {moves} moves</p>
+        <button onClick={initGame} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaRedo className="mr-2" /> Play Again
+        </button>
+      </div>
+    );
+  }
 
-      {gameComplete && (
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-red-600 mb-2">Game Complete!</h3>
-          <p className="text-xl text-white mb-1">Moves: {moves}</p>
-          <p className="text-lg text-gray-300 mb-4">Time: {formatTime(elapsedTime)}</p>
-          <button
-            onClick={initGame}
-            className="flex items-center mx-auto bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition-colors font-bold"
-          >
-            <FaRedo className="mr-2" /> Play Again
-          </button>
-        </div>
-      )}
-
-      {gameStarted && !gameComplete && (
-        <div className="grid grid-cols-4 gap-2 w-full max-w-md">
-          {cards.map((card, index) => (
-            <div
-              key={index}
-              className="aspect-square cursor-pointer transition-all duration-300"
-              onClick={() => handleCardClick(index)}
+  return (
+    <div className="flex flex-col items-center w-full">
+      <p className="text-gray-300 mb-3">Moves: {moves}</p>
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2 w-full max-w-xs sm:max-w-sm">
+        {cards.map((card, i) => {
+          const isFlipped = flipped.includes(i) || matched.includes(i);
+          return (
+            <button key={i} onClick={() => handleFlip(i)}
+              className={`aspect-square rounded-lg text-2xl sm:text-3xl flex items-center justify-center transition-all duration-300 ${
+                isFlipped ? 'bg-gray-900 border-2 border-red-500' : 'bg-red-600 hover:bg-red-700'
+              } ${matched.includes(i) ? 'opacity-60' : ''}`}
             >
-              <div className={`relative w-full h-full transition-transform duration-500 ${
-                card.flipped ? 'rotate-y-180' : ''
-              }`}>
-                <div className={`absolute w-full h-full backface-hidden bg-red-600 rounded-md flex items-center justify-center shadow-md ${
-                  card.flipped ? 'hidden' : 'block'
-                }`}>
-                  <span className="text-white text-2xl">N</span>
-                </div>
-                <div className={`absolute w-full h-full backface-hidden bg-gray-900 rounded-md flex items-center justify-center border-2 border-red-600 ${
-                  card.flipped ? 'block' : 'hidden'
-                }`}>
-                  <span className="text-4xl">{card.content}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              {isFlipped ? card.emoji : 'N'}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
 
-const PuzzleGame = () => {
-  const [puzzle, setPuzzle] = useState([]);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [moves, setMoves] = useState(0);
-  const [gameComplete, setGameComplete] = useState(false);
-  
-  // Initialize game
-  const initGame = () => {
-    // Create puzzle pieces (3x3 grid)
-    const pieces = Array.from({ length: 8 }, (_, i) => i + 1);
-    pieces.push(null); // Empty space
-    
-    // Shuffle pieces (ensure solvable)
-    let shuffled = [...pieces];
-    let iterations = 100;
-    while (iterations > 0) {
-      const emptyIndex = shuffled.indexOf(null);
-      const possibleMoves = [];
-      
-      // Find possible moves (up, down, left, right)
-      if (emptyIndex % 3 > 0) possibleMoves.push(emptyIndex - 1); // Left
-      if (emptyIndex % 3 < 2) possibleMoves.push(emptyIndex + 1); // Right
-      if (emptyIndex >= 3) possibleMoves.push(emptyIndex - 3); // Up
-      if (emptyIndex < 6) possibleMoves.push(emptyIndex + 3); // Down
-      
-      // Choose random move
-      const moveIndex = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-      
-      // Swap pieces
-      [shuffled[emptyIndex], shuffled[moveIndex]] = [shuffled[moveIndex], shuffled[emptyIndex]];
-      
-      iterations--;
-    }
-    
-    setPuzzle(shuffled);
-    setMoves(0);
-    setGameComplete(false);
-    setGameStarted(true);
+/* ═══════════════════════════════════════
+   GAME 3: Netflix Trivia
+   ═══════════════════════════════════════ */
+const NetflixTrivia = () => {
+  const allQuestions = [
+    { q: "Which Netflix show features kids fighting the Demogorgon?", opts: ["Dark", "Stranger Things", "The OA", "Black Mirror"], ans: 1 },
+    { q: "In Squid Game, what is the prize money?", opts: ["38.6M won", "45.6B won", "100M won", "1B won"], ans: 1 },
+    { q: "Which show is about a chess prodigy?", opts: ["The Crown", "Queen's Gambit", "Bridgerton", "Witcher"], ans: 1 },
+    { q: "Who plays Geralt in The Witcher (S1-S3)?", opts: ["Jaskier", "Henry Cavill", "Vesemir", "Emhyr"], ans: 1 },
+    { q: "Which show is set in Hawkins, Indiana?", opts: ["Ozark", "Stranger Things", "Dark", "Riverdale"], ans: 1 },
+    { q: "Money Heist's Royal Mint is in which city?", opts: ["Barcelona", "Seville", "Madrid", "Valencia"], ans: 2 },
+    { q: "Which show stars Wednesday Addams?", opts: ["Chilling Adventures", "Wednesday", "Locke & Key", "Sandman"], ans: 1 },
+    { q: "Who plays Joe Goldberg in You?", opts: ["Zac Efron", "Penn Badgley", "Chris Evans", "Tom Holland"], ans: 1 },
+    { q: "Which Korean drama has a glass bridge?", opts: ["All of Us Are Dead", "Squid Game", "Sweet Home", "Hellbound"], ans: 1 },
+    { q: "Which show features the Byrde family?", opts: ["Breaking Bad", "Narcos", "Ozark", "Better Call Saul"], ans: 2 },
+  ];
+  const [questions, setQuestions] = useState([]);
+  const [idx, setIdx] = useState(0);
+  const [score, setScore] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [phase, setPhase] = useState('idle');
+
+  const start = () => {
+    setQuestions([...allQuestions].sort(() => Math.random() - 0.5).slice(0, 7));
+    setIdx(0);
+    setScore(0);
+    setSelected(null);
+    setPhase('playing');
   };
-  
-  // Check if puzzle is solved
-  const checkSolved = (puzzleState) => {
-    for (let i = 0; i < puzzleState.length - 1; i++) {
-      if (puzzleState[i] !== i + 1) return false;
-    }
-    return puzzleState[puzzleState.length - 1] === null;
-  };
-  
-  // Handle piece click
-  const handlePieceClick = (index) => {
-    if (!gameStarted || gameComplete) return;
-    
-    const emptyIndex = puzzle.indexOf(null);
-    
-    // Check if piece can move (adjacent to empty space)
-    const canMoveHorizontal = Math.floor(index / 3) === Math.floor(emptyIndex / 3) && 
-                             Math.abs(index % 3 - emptyIndex % 3) === 1;
-    const canMoveVertical = Math.abs(Math.floor(index / 3) - Math.floor(emptyIndex / 3)) === 1 && 
-                           index % 3 === emptyIndex % 3;
-    
-    if (canMoveHorizontal || canMoveVertical) {
-      // Create new puzzle state
-      const newPuzzle = [...puzzle];
-      [newPuzzle[index], newPuzzle[emptyIndex]] = [newPuzzle[emptyIndex], newPuzzle[index]];
-      
-      setPuzzle(newPuzzle);
-      setMoves(moves + 1);
-      
-      // Check if solved
-      if (checkSolved(newPuzzle)) {
-        setGameComplete(true);
-        setGameStarted(false);
+
+  const answer = (i) => {
+    if (selected !== null) return;
+    setSelected(i);
+    if (i === questions[idx].ans) setScore(s => s + 1);
+    setTimeout(() => {
+      if (idx + 1 < questions.length) {
+        setIdx(idx + 1);
+        setSelected(null);
+      } else {
+        setPhase('done');
       }
-    }
+    }, 1200);
   };
-  
-  return (
-    <div className="flex flex-col items-center">
-      <h3 className="text-xl font-bold mb-2">Sliding Puzzle</h3>
-      <p className="mb-2 text-gray-300">Arrange numbers in order</p>
-      
-      {!gameStarted && !gameComplete && (
-        <button 
-          onClick={initGame}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 mb-4"
-        >
-          Start Game
+
+  if (phase === 'idle') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-xl font-bold text-red-500 mb-3">Netflix Trivia</h3>
+        <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">Test your Netflix knowledge</p>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaPlay className="mr-2" /> Start Quiz
         </button>
-      )}
-      
-      {gameComplete && (
-        <div className="mb-4 text-center">
-          <h3 className="text-2xl font-bold mb-2">Puzzle Solved!</h3>
-          <p className="mb-4">You solved the puzzle in {moves} moves</p>
-          <button 
-            onClick={initGame}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+      </div>
+    );
+  }
+  if (phase === 'done') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-2xl font-bold text-red-500 mb-2">Quiz Complete!</h3>
+        <p className="text-white text-lg mb-4">{score}/{questions.length} correct</p>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaRedo className="mr-2" /> Play Again
+        </button>
+      </div>
+    );
+  }
+
+  const q = questions[idx];
+  return (
+    <div className="flex flex-col items-center w-full">
+      <p className="text-gray-400 text-sm mb-1">Question {idx + 1}/{questions.length} &middot; Score: {score}</p>
+      <h3 className="text-white text-base sm:text-lg font-semibold mb-4 text-center">{q.q}</h3>
+      <div className="flex flex-col gap-2 w-full max-w-md">
+        {q.opts.map((opt, i) => (
+          <button key={i} onClick={() => answer(i)}
+            disabled={selected !== null}
+            className={`w-full p-3 rounded-lg text-left text-sm sm:text-base transition-colors ${
+              selected === null ? 'bg-gray-800 hover:bg-gray-700 text-white' :
+              i === q.ans ? 'bg-green-600 text-white' :
+              selected === i ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-500'
+            }`}
           >
-            Play Again
+            {opt}
           </button>
-        </div>
-      )}
-      
-      {gameStarted && <p className="mb-2">Moves: {moves}</p>}
-      
-      <div className="grid grid-cols-3 gap-1 w-64 h-64 bg-gray-900 p-1 rounded">
-        {puzzle.map((piece, index) => (
-          <div 
-            key={index}
-            onClick={() => handlePieceClick(index)}
-            className={`
-              flex items-center justify-center rounded cursor-pointer transition-all duration-200
-              ${piece === null ? 'bg-gray-900' : 'bg-red-600 hover:bg-red-700'}
-              ${piece === null ? '' : 'text-white font-bold text-2xl'}
-            `}
-          >
-            {piece}
-          </div>
         ))}
       </div>
     </div>
   );
 };
 
-// New Game 1: Whack-A-Mole
-const WhackAMole = () => {
-  const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [activeMole, setActiveMole] = useState(null);
-  const [highScore, setHighScore] = useState(0);
-  const timerRef = useRef(null);
-  const moleTimerRef = useRef(null);
+/* ═══════════════════════════════════════
+   GAME 4: Reaction Test
+   ═══════════════════════════════════════ */
+const ReactionTest = () => {
+  const [phase, setPhase] = useState('idle');
+  const [startTime, setStartTime] = useState(0);
+  const [result, setResult] = useState(null);
+  const [best, setBest] = useState(null);
+  const timeoutRef = useRef(null);
 
-  const startGame = () => {
-    setScore(0);
-    setTimeLeft(30);
-    setGameStarted(true);
-    setGameOver(false);
-    setActiveMole(Math.floor(Math.random() * 9));
-
-    // Start countdown timer
-    timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          endGame();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    // Start mole movement
-    moleTimerRef.current = setInterval(() => {
-      setActiveMole(Math.floor(Math.random() * 9));
-    }, 1000);
+  const start = () => {
+    setPhase('waiting');
+    setResult(null);
+    const delay = 1500 + Math.random() * 3500;
+    timeoutRef.current = setTimeout(() => {
+      setPhase('go');
+      setStartTime(Date.now());
+    }, delay);
   };
 
-  const endGame = () => {
-    clearInterval(timerRef.current);
-    clearInterval(moleTimerRef.current);
-    setGameStarted(false);
-    setGameOver(true);
-    if (score > highScore) {
-      setHighScore(score);
+  const handleTap = () => {
+    if (phase === 'waiting') {
+      clearTimeout(timeoutRef.current);
+      setPhase('idle');
+      setResult('Too early!');
+    } else if (phase === 'go') {
+      const time = Date.now() - startTime;
+      setResult(`${time}ms`);
+      if (!best || time < best) setBest(time);
+      setPhase('result');
     }
   };
 
-  const whackMole = (index) => {
-    if (index === activeMole) {
-      setScore(prev => prev + 1);
-      setActiveMole(Math.floor(Math.random() * 9));
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      clearInterval(timerRef.current);
-      clearInterval(moleTimerRef.current);
-    };
-  }, []);
+  useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
   return (
-    <div className="flex flex-col items-center">
-      <h3 className="text-xl font-bold mb-2">Whack-A-Mole</h3>
-      <p className="mb-2 text-gray-300">Click on the moles as they appear</p>
+    <div className="flex flex-col items-center w-full">
+      <div
+        onClick={phase === 'waiting' || phase === 'go' ? handleTap : undefined}
+        className={`w-full max-w-sm aspect-square rounded-xl flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 mb-4 ${
+          phase === 'waiting' ? 'bg-red-800' :
+          phase === 'go' ? 'bg-green-600' :
+          'bg-gray-800'
+        }`}
+      >
+        {phase === 'idle' && (
+          <>
+            <p className="text-white text-lg font-bold mb-2">Reaction Test</p>
+            <p className="text-gray-400 text-sm mb-4 px-4 text-center">Tap when the screen turns green</p>
+            {result && <p className="text-yellow-400 mb-4">{result}</p>}
+            <button onClick={start} className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700">
+              <FaPlay className="inline mr-2" />Start
+            </button>
+          </>
+        )}
+        {phase === 'waiting' && <p className="text-white text-2xl font-bold">Wait for green...</p>}
+        {phase === 'go' && <p className="text-white text-3xl font-bold">TAP NOW!</p>}
+        {phase === 'result' && (
+          <>
+            <p className="text-white text-3xl font-bold mb-2">{result}</p>
+            {best && <p className="text-gray-300 text-sm mb-4">Best: {best}ms</p>}
+            <button onClick={start} className="bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700">
+              <FaRedo className="inline mr-2" />Try Again
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
 
-      {!gameStarted && !gameOver && (
-        <button
-          onClick={startGame}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 mb-4"
-        >
-          Start Game
+/* ═══════════════════════════════════════
+   GAME 5: Word Guess (Hangman)
+   ═══════════════════════════════════════ */
+const WordGuess = () => {
+  const shows = ['STRANGER THINGS', 'SQUID GAME', 'WEDNESDAY', 'THE CROWN', 'DARK', 'OZARK', 'NARCOS', 'BRIDGERTON', 'BLACK MIRROR', 'MONEY HEIST'];
+  const [word, setWord] = useState('');
+  const [guessed, setGuessed] = useState([]);
+  const [wrong, setWrong] = useState(0);
+  const [phase, setPhase] = useState('idle');
+  const maxWrong = 6;
+
+  const start = () => {
+    setWord(shows[Math.floor(Math.random() * shows.length)]);
+    setGuessed([]);
+    setWrong(0);
+    setPhase('playing');
+  };
+
+  const guess = (letter) => {
+    if (guessed.includes(letter) || phase !== 'playing') return;
+    const newGuessed = [...guessed, letter];
+    setGuessed(newGuessed);
+
+    if (!word.includes(letter)) {
+      const newWrong = wrong + 1;
+      setWrong(newWrong);
+      if (newWrong >= maxWrong) setPhase('lost');
+    } else {
+      const allFound = word.split('').every(c => c === ' ' || newGuessed.includes(c));
+      if (allFound) setPhase('won');
+    }
+  };
+
+  const renderWord = () => word.split('').map((c, i) => (
+    <span key={i} className="text-xl sm:text-2xl font-bold mx-0.5 sm:mx-1">
+      {c === ' ' ? '\u00A0\u00A0' : guessed.includes(c) ? c : '_'}
+    </span>
+  ));
+
+  if (phase === 'idle') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-xl font-bold text-red-500 mb-3">Guess the Show</h3>
+        <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">Guess the Netflix show title letter by letter</p>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaPlay className="mr-2" /> Start Game
         </button>
-      )}
+      </div>
+    );
+  }
 
-      {gameOver && (
-        <div className="mb-4 text-center">
-          <h3 className="text-2xl font-bold mb-2">Game Over!</h3>
-          <p className="mb-4">Your score: {score}</p>
-          {highScore > 0 && <p className="mb-4">High score: {highScore}</p>}
-          <button
-            onClick={startGame}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Play Again
-          </button>
-        </div>
-      )}
+  if (phase === 'won' || phase === 'lost') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className={`text-2xl font-bold mb-2 ${phase === 'won' ? 'text-green-400' : 'text-red-500'}`}>
+          {phase === 'won' ? 'You Got It!' : 'Game Over'}
+        </h3>
+        <p className="text-white text-lg mb-4">{phase === 'lost' ? `It was: ${word}` : word}</p>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaRedo className="mr-2" /> Play Again
+        </button>
+      </div>
+    );
+  }
 
-      {gameStarted && (
-        <div className="mb-4">
-          <p>Score: {score}</p>
-          <p>Time left: {timeLeft}s</p>
-        </div>
-      )}
-
-      <div className="grid grid-cols-3 gap-2 w-80 h-80">
-        {Array.from({ length: 9 }).map((_, index) => (
-          <div
-            key={index}
-            onClick={() => gameStarted && whackMole(index)}
-            className="bg-gray-800 rounded-full overflow-hidden relative cursor-pointer"
-          >
-            {activeMole === index && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-4xl">🎭</span>
-              </div>
-            )}
-          </div>
+  return (
+    <div className="flex flex-col items-center w-full">
+      <p className="text-red-500 font-bold mb-2">Wrong: {wrong}/{maxWrong}</p>
+      <div className="w-full h-3 bg-gray-800 rounded-full mb-4 max-w-xs">
+        <div className="h-full bg-red-600 rounded-full transition-all" style={{ width: `${(wrong / maxWrong) * 100}%` }} />
+      </div>
+      <div className="mb-6 flex flex-wrap justify-center">{renderWord()}</div>
+      <div className="grid grid-cols-7 sm:grid-cols-9 gap-1.5 sm:gap-2 w-full max-w-sm">
+        {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter => (
+          <button key={letter} onClick={() => guess(letter)} disabled={guessed.includes(letter)}
+            className={`w-8 h-8 sm:w-9 sm:h-9 rounded text-xs sm:text-sm font-bold transition-colors ${
+              guessed.includes(letter)
+                ? word.includes(letter) ? 'bg-green-600 text-white' : 'bg-red-900 text-gray-500'
+                : 'bg-gray-700 hover:bg-gray-600 text-white'
+            }`}
+          >{letter}</button>
         ))}
       </div>
     </div>
   );
 };
 
-// New Game 2: Color Match
-const ColorMatch = () => {
-  const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
-  const colorClasses = {
-    red: 'bg-red-600',
-    blue: 'bg-blue-600',
-    green: 'bg-green-600',
-    yellow: 'bg-yellow-500',
-    purple: 'bg-purple-600',
-    orange: 'bg-orange-500'
+/* ═══════════════════════════════════════
+   GAME 6: Tic Tac Toe
+   ═══════════════════════════════════════ */
+const TicTacToe = () => {
+  const [board, setBoard] = useState(Array(9).fill(null));
+  const [phase, setPhase] = useState('idle');
+  const [winner, setWinner] = useState(null);
+  const [thinking, setThinking] = useState(false);
+  const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+  const check = (b) => { for (const [a,bb,c] of wins) if (b[a] && b[a]===b[bb] && b[a]===b[c]) return b[a]; return null; };
+  const full = (b) => b.every(s => s !== null);
+
+  const start = () => { setBoard(Array(9).fill(null)); setPhase('playing'); setWinner(null); };
+
+  const play = (i) => {
+    if (board[i] || phase !== 'playing' || thinking) return;
+    const b = [...board]; b[i] = 'X'; setBoard(b);
+    const w = check(b);
+    if (w) { setWinner(w); setPhase('done'); return; }
+    if (full(b)) { setPhase('done'); return; }
+    setThinking(true);
+    setTimeout(() => {
+      const empty = b.map((s,j) => s===null?j:null).filter(j=>j!==null);
+      if (empty.length) { b[empty[Math.floor(Math.random()*empty.length)]] = 'O'; setBoard([...b]); }
+      const w2 = check(b);
+      if (w2) { setWinner(w2); setPhase('done'); }
+      else if (full(b)) setPhase('done');
+      setThinking(false);
+    }, 400);
   };
 
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
+  if (phase === 'idle') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-xl font-bold text-red-500 mb-3">Tic Tac Toe</h3>
+        <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">Play against Netflix AI</p>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaPlay className="mr-2" /> Start Game
+        </button>
+      </div>
+    );
+  }
+
+  if (phase === 'done') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className={`text-2xl font-bold mb-2 ${winner === 'X' ? 'text-green-400' : winner === 'O' ? 'text-red-500' : 'text-yellow-400'}`}>
+          {winner === 'X' ? 'You Won!' : winner === 'O' ? 'Netflix Won!' : 'Draw!'}
+        </h3>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold mt-4">
+          <FaRedo className="mr-2" /> Play Again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      <p className="text-gray-300 mb-3 text-sm">{thinking ? 'Netflix is thinking...' : 'Your turn (X)'}</p>
+      <div className="grid grid-cols-3 gap-1.5 w-full max-w-[240px] sm:max-w-[280px]">
+        {board.map((cell, i) => (
+          <button key={i} onClick={() => play(i)}
+            className={`aspect-square rounded-lg text-2xl sm:text-3xl font-bold flex items-center justify-center transition-colors border border-gray-700 ${
+              cell === 'X' ? 'bg-gray-800 text-red-500' : cell === 'O' ? 'bg-gray-800 text-blue-400' : 'bg-gray-800 hover:bg-gray-700'
+            }`}
+          >{cell}</button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════
+   GAME 7: Color Tap
+   ═══════════════════════════════════════ */
+const ColorTap = () => {
+  const colors = [
+    { name: 'Red', bg: 'bg-red-600' },
+    { name: 'Blue', bg: 'bg-blue-600' },
+    { name: 'Green', bg: 'bg-green-600' },
+    { name: 'Yellow', bg: 'bg-yellow-500' },
+    { name: 'Purple', bg: 'bg-purple-600' },
+  ];
+  const [phase, setPhase] = useState('idle');
   const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30);
-  const [currentColor, setCurrentColor] = useState('');
-  const [currentText, setCurrentText] = useState('');
-  const [isMatch, setIsMatch] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(20);
+  const [target, setTarget] = useState(null);
+  const [options, setOptions] = useState([]);
+  const [best, setBest] = useState(0);
   const timerRef = useRef(null);
 
-  const startGame = () => {
-    setScore(0);
-    setTimeLeft(30);
-    setGameStarted(true);
-    setGameOver(false);
-    generateNewRound();
+  const newRound = () => {
+    const t = colors[Math.floor(Math.random() * colors.length)];
+    setTarget(t);
+    const shuffled = [...colors].sort(() => Math.random() - 0.5);
+    setOptions(shuffled);
+  };
 
-    // Start countdown timer
+  const start = () => {
+    setScore(0);
+    setTimeLeft(20);
+    setPhase('playing');
+    newRound();
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
-          endGame();
+          clearInterval(timerRef.current);
+          setPhase('done');
           return 0;
         }
         return prev - 1;
@@ -706,1173 +533,443 @@ const ColorMatch = () => {
     }, 1000);
   };
 
-  const endGame = () => {
-    clearInterval(timerRef.current);
-    setGameStarted(false);
-    setGameOver(true);
-    if (score > highScore) {
-      setHighScore(score);
-    }
-  };
-
-  const generateNewRound = () => {
-    const colorIndex = Math.floor(Math.random() * colors.length);
-    const textIndex = Math.floor(Math.random() * colors.length);
-    const match = Math.random() > 0.5;
-
-    setCurrentColor(colors[colorIndex]);
-    setCurrentText(match ? colors[colorIndex] : colors[textIndex === colorIndex ? (textIndex + 1) % colors.length : textIndex]);
-    setIsMatch(match);
-  };
-
-  const handleAnswer = (userAnswer) => {
-    if (userAnswer === isMatch) {
-      setScore(prev => prev + 1);
+  const tap = (color) => {
+    if (phase !== 'playing') return;
+    if (color.name === target.name) {
+      const newScore = score + 1;
+      setScore(newScore);
+      if (newScore > best) setBest(newScore);
     } else {
       setTimeLeft(prev => Math.max(prev - 2, 0));
     }
-    generateNewRound();
+    newRound();
   };
 
-  useEffect(() => {
-    return () => {
-      clearInterval(timerRef.current);
-    };
-  }, []);
+  useEffect(() => () => clearInterval(timerRef.current), []);
+
+  if (phase === 'idle') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-xl font-bold text-red-500 mb-3">Color Tap</h3>
+        <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">Tap the color that matches the name</p>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaPlay className="mr-2" /> Start Game
+        </button>
+      </div>
+    );
+  }
+
+  if (phase === 'done') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-2xl font-bold text-red-500 mb-2">Time's Up!</h3>
+        <p className="text-white text-lg mb-1">Score: {score}</p>
+        {best > 0 && <p className="text-gray-400 text-sm mb-4">Best: {best}</p>}
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaRedo className="mr-2" /> Play Again
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center">
-      <h3 className="text-xl font-bold mb-2">Color Match</h3>
-      <p className="mb-2 text-gray-300">Does the color match the text?</p>
-
-      {!gameStarted && !gameOver && (
-        <button
-          onClick={startGame}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 mb-4"
-        >
-          Start Game
-        </button>
-      )}
-
-      {gameOver && (
-        <div className="mb-4 text-center">
-          <h3 className="text-2xl font-bold mb-2">Game Over!</h3>
-          <p className="mb-4">Your score: {score}</p>
-          {highScore > 0 && <p className="mb-4">High score: {highScore}</p>}
-          <button
-            onClick={startGame}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Play Again
-          </button>
-        </div>
-      )}
-
-      {gameStarted && (
-        <>
-          <div className="mb-4">
-            <p>Score: {score}</p>
-            <p>Time left: {timeLeft}s</p>
-          </div>
-
-          <div className="mb-8 flex items-center justify-center h-20">
-            <span className={`text-4xl font-bold ${colorClasses[currentColor]} px-4 py-2 rounded`}>
-              {currentText.toUpperCase()}
-            </span>
-          </div>
-
-          <div className="flex gap-4">
-            <button
-              onClick={() => handleAnswer(true)}
-              className="px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Match
-            </button>
-            <button
-              onClick={() => handleAnswer(false)}
-              className="px-6 py-3 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              No Match
-            </button>
-          </div>
-        </>
-      )}
+    <div className="flex flex-col items-center w-full">
+      <div className="flex justify-between w-full max-w-xs mb-4">
+        <span className="text-white font-bold">Score: {score}</span>
+        <span className="text-red-400 font-bold">{timeLeft}s</span>
+      </div>
+      <p className="text-white text-2xl sm:text-3xl font-bold mb-6">Tap: {target?.name}</p>
+      <div className="grid grid-cols-3 gap-3 w-full max-w-xs">
+        {options.map((c, i) => (
+          <button key={i} onClick={() => tap(c)}
+            className={`${c.bg} aspect-square rounded-xl hover:opacity-80 transition-opacity`}
+          />
+        ))}
+      </div>
     </div>
   );
 };
 
-// New Game 3: Word Scramble
-const WordScramble = () => {
-  const netflixWords = [
-    'STRANGER', 'WITCHER', 'BRIDGERTON', 'SQUIDGAME', 'CROWN', 
-    'OZARK', 'NARCOS', 'DAREDEVIL', 'UMBRELLA', 'WEDNESDAY',
-    'LUCIFER', 'MINDHUNTER', 'SANDMAN', 'COBRA', 'QUEEN'
-  ];
-
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
+/* ═══════════════════════════════════════
+   GAME 8: Speed Typer
+   ═══════════════════════════════════════ */
+const SpeedTyper = () => {
+  const titles = ['STRANGER THINGS', 'SQUID GAME', 'THE CROWN', 'WEDNESDAY', 'DARK', 'OZARK', 'NARCOS', 'BRIDGERTON', 'BLACK MIRROR', 'MONEY HEIST', 'YOU', 'LUPIN', 'COBRA KAI', 'THE WITCHER', 'LUCIFER'];
+  const [phase, setPhase] = useState('idle');
+  const [current, setCurrent] = useState('');
+  const [input, setInput] = useState('');
   const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [currentWord, setCurrentWord] = useState('');
-  const [scrambledWord, setScrambledWord] = useState('');
-  const [userInput, setUserInput] = useState('');
-  const [usedWords, setUsedWords] = useState([]);
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [best, setBest] = useState(0);
   const timerRef = useRef(null);
+  const inputRef = useRef(null);
 
-  const scrambleWord = (word) => {
-    const wordArray = word.split('');
-    let scrambled = wordArray.sort(() => Math.random() - 0.5).join('');
-    
-    // Make sure the scrambled word is different from the original
-    while (scrambled === word && word.length > 1) {
-      scrambled = wordArray.sort(() => Math.random() - 0.5).join('');
-    }
-    
-    return scrambled;
-  };
+  const nextWord = () => setCurrent(titles[Math.floor(Math.random() * titles.length)]);
 
-  const getNewWord = () => {
-    const availableWords = netflixWords.filter(word => !usedWords.includes(word));
-    
-    if (availableWords.length === 0) {
-      // If all words used, reset the used words
-      setUsedWords([]);
-      const randomIndex = Math.floor(Math.random() * netflixWords.length);
-      const word = netflixWords[randomIndex];
-      setCurrentWord(word);
-      setScrambledWord(scrambleWord(word));
-      setUsedWords([word]);
-    } else {
-      const randomIndex = Math.floor(Math.random() * availableWords.length);
-      const word = availableWords[randomIndex];
-      setCurrentWord(word);
-      setScrambledWord(scrambleWord(word));
-      setUsedWords([...usedWords, word]);
-    }
-  };
-
-  const startGame = () => {
+  const start = () => {
     setScore(0);
-    setTimeLeft(60);
-    setGameStarted(true);
-    setGameOver(false);
-    setUserInput('');
-    setUsedWords([]);
-    getNewWord();
-
-    // Start countdown timer
+    setTimeLeft(30);
+    setInput('');
+    setPhase('playing');
+    nextWord();
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) {
-          endGame();
-          return 0;
-        }
+        if (prev <= 1) { clearInterval(timerRef.current); setPhase('done'); return 0; }
         return prev - 1;
       });
     }, 1000);
+    setTimeout(() => inputRef.current?.focus(), 100);
   };
 
-  const endGame = () => {
-    clearInterval(timerRef.current);
-    setGameStarted(false);
-    setGameOver(true);
-    if (score > highScore) {
-      setHighScore(score);
+  const handleInput = (e) => {
+    const val = e.target.value.toUpperCase();
+    setInput(val);
+    if (val === current) {
+      const s = score + 1;
+      setScore(s);
+      if (s > best) setBest(s);
+      setInput('');
+      nextWord();
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (userInput.toUpperCase() === currentWord) {
-      setScore(prev => prev + 1);
-      setUserInput('');
-      getNewWord();
-    } else {
-      // Shake effect or some feedback could be added here
-      setTimeLeft(prev => Math.max(prev - 3, 0));
-    }
-  };
+  useEffect(() => () => clearInterval(timerRef.current), []);
 
-  useEffect(() => {
-    return () => {
-      clearInterval(timerRef.current);
-    };
-  }, []);
-
-  return (
-    <div className="flex flex-col items-center">
-      <h3 className="text-xl font-bold mb-2">Word Scramble</h3>
-      <p className="mb-2 text-gray-300">Unscramble Netflix show titles</p>
-
-      {!gameStarted && !gameOver && (
-        <button
-          onClick={startGame}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 mb-4"
-        >
-          Start Game
-        </button>
-      )}
-
-      {gameOver && (
-        <div className="mb-4 text-center">
-          <h3 className="text-2xl font-bold mb-2">Game Over!</h3>
-          <p className="mb-4">Your score: {score}</p>
-          {highScore > 0 && <p className="mb-4">High score: {highScore}</p>}
-          <button
-            onClick={startGame}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Play Again
-          </button>
-        </div>
-      )}
-
-      {gameStarted && (
-        <>
-          <div className="mb-4">
-            <p>Score: {score}</p>
-            <p>Time left: {timeLeft}s</p>
-          </div>
-
-          <div className="mb-6">
-            <h3 className="text-3xl font-bold mb-4 text-red-500">{scrambledWord}</h3>
-            <form onSubmit={handleSubmit} className="flex gap-2">
-              <input
-                type="text"
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                className="px-3 py-2 bg-gray-800 border border-gray-700 rounded text-white"
-                placeholder="Enter unscrambled word"
-                autoFocus
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-              >
-                Submit
-              </button>
-            </form>
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
-
-// New Game 4: Reaction Time
-const ReactionTime = () => {
-  const [gameState, setGameState] = useState('idle'); // idle, waiting, ready, clicked
-  const [startTime, setStartTime] = useState(0);
-  const [reactionTime, setReactionTime] = useState(null);
-  const [bestTime, setBestTime] = useState(null);
-  const [countdown, setCountdown] = useState(3);
-  const timerRef = useRef(null);
-  const timeoutRef = useRef(null);
-
-  const startGame = () => {
-    setGameState('waiting');
-    setCountdown(3);
-    
-    // Countdown from 3
-    timerRef.current = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current);
-          setRandomTimeout();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const setRandomTimeout = () => {
-    // Random time between 1-5 seconds
-    const randomDelay = 1000 + Math.floor(Math.random() * 4000);
-    
-    timeoutRef.current = setTimeout(() => {
-      setGameState('ready');
-      setStartTime(Date.now());
-    }, randomDelay);
-  };
-
-  const handleClick = () => {
-    if (gameState === 'waiting') {
-      // Clicked too early
-      clearTimeout(timeoutRef.current);
-      setGameState('idle');
-      setReactionTime('Too early!');
-    } else if (gameState === 'ready') {
-      // Good click
-      const endTime = Date.now();
-      const time = endTime - startTime;
-      setReactionTime(time);
-      
-      if (bestTime === null || time < bestTime) {
-        setBestTime(time);
-      }
-      
-      setGameState('clicked');
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      clearInterval(timerRef.current);
-      clearTimeout(timeoutRef.current);
-    };
-  }, []);
-
-  return (
-    <div className="flex flex-col items-center">
-      <h3 className="text-xl font-bold mb-2">Reaction Time</h3>
-      <p className="mb-2 text-gray-300">Test your reflexes</p>
-
-      <div 
-        className={`w-80 h-80 rounded-lg flex items-center justify-center cursor-pointer mb-4 transition-colors duration-200
-          ${gameState === 'idle' ? 'bg-gray-800' : 
-            gameState === 'waiting' ? 'bg-red-800' : 
-            gameState === 'ready' ? 'bg-green-600' : 'bg-blue-600'}`}
-        onClick={handleClick}
-      >
-        {gameState === 'idle' && (
-          <button
-            onClick={startGame}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Start Game
-          </button>
-        )}
-        
-        {gameState === 'waiting' && (
-          <div className="text-center">
-            <p className="text-2xl font-bold mb-2">Wait for green...</p>
-            {countdown > 0 && <p className="text-xl">{countdown}</p>}
-          </div>
-        )}
-        
-        {gameState === 'ready' && (
-          <p className="text-2xl font-bold">CLICK NOW!</p>
-        )}
-        
-        {gameState === 'clicked' && (
-          <div className="text-center">
-            <p className="text-2xl font-bold mb-2">
-              {reactionTime} ms
-            </p>
-            <button
-              onClick={startGame}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Try Again
-            </button>
-          </div>
-        )}
-      </div>
-
-      {bestTime && (
-        <p className="text-lg">Best time: {bestTime} ms</p>
-      )}
-    </div>
-  );
-};
-
-// New Game 5: Trivia Quiz
-const TriviaQuiz = () => {
-  const questions = [
-    {
-      question: "Which Netflix show features a group of kids fighting the Demogorgon?",
-      options: ["Dark", "Stranger Things", "The OA", "Black Mirror"],
-      answer: 1
-    },
-    {
-      question: "In 'Squid Game', what is the prize money for winning all the games?",
-      options: ["38.6 million won", "45.6 billion won", "100 million won", "1 billion won"],
-      answer: 1
-    },
-    {
-      question: "Which Netflix show is about a chess prodigy?",
-      options: ["The Crown", "The Queen's Gambit", "Bridgerton", "The Witcher"],
-      answer: 1
-    },
-    {
-      question: "Which character does Henry Cavill play in 'The Witcher'?",
-      options: ["Jaskier", "Geralt of Rivia", "Vesemir", "Emhyr"],
-      answer: 1
-    },
-    {
-      question: "Which Netflix show is set in the fictional town of Hawkins?",
-      options: ["Ozark", "Stranger Things", "Dark", "Riverdale"],
-      answer: 1
-    },
-    {
-      question: "In 'Money Heist', what city is the Royal Mint located in?",
-      options: ["Barcelona", "Seville", "Madrid", "Valencia"],
-      answer: 2
-    },
-    {
-      question: "Which Netflix show features the Umbrella Academy?",
-      options: ["The Umbrella Academy", "Locke & Key", "The Haunting of Hill House", "A Series of Unfortunate Events"],
-      answer: 0
-    },
-    {
-      question: "Which Netflix show is about a family who moves to the Ozarks to launder money?",
-      options: ["Breaking Bad", "Narcos", "Ozark", "Better Call Saul"],
-      answer: 2
-    },
-    {
-      question: "In 'The Crown', which actress played Queen Elizabeth II in seasons 1 and 2?",
-      options: ["Olivia Colman", "Helena Bonham Carter", "Claire Foy", "Vanessa Kirby"],
-      answer: 2
-    },
-    {
-      question: "Which Netflix show features Joe Goldberg as the main character?",
-      options: ["Mindhunter", "You", "The Sinner", "Dexter"],
-      answer: 1
-    }
-  ];
-
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [answered, setAnswered] = useState(false);
-  const [shuffledQuestions, setShuffledQuestions] = useState([]);
-
-  const startGame = () => {
-    // Shuffle questions
-    const shuffled = [...questions].sort(() => Math.random() - 0.5);
-    setShuffledQuestions(shuffled);
-    setCurrentQuestion(0);
-    setScore(0);
-    setSelectedOption(null);
-    setAnswered(false);
-    setGameStarted(true);
-    setGameOver(false);
-  };
-
-  const handleAnswer = (optionIndex) => {
-    if (answered) return;
-    
-    setSelectedOption(optionIndex);
-    setAnswered(true);
-    
-    if (optionIndex === shuffledQuestions[currentQuestion].answer) {
-      setScore(prev => prev + 1);
-    }
-    
-    // Move to next question after a delay
-    setTimeout(() => {
-      if (currentQuestion < shuffledQuestions.length - 1) {
-        setCurrentQuestion(prev => prev + 1);
-        setSelectedOption(null);
-        setAnswered(false);
-      } else {
-        setGameOver(true);
-        setGameStarted(false);
-      }
-    }, 1500);
-  };
-
-  return (
-    <div className="flex flex-col items-center">
-      <h3 className="text-xl font-bold mb-2">Netflix Trivia</h3>
-      <p className="mb-2 text-gray-300">Test your Netflix knowledge</p>
-
-      {!gameStarted && !gameOver && (
-        <button
-          onClick={startGame}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 mb-4"
-        >
-          Start Quiz
-        </button>
-      )}
-
-      {gameOver && (
-        <div className="mb-4 text-center">
-          <h3 className="text-2xl font-bold mb-2">Quiz Complete!</h3>
-          <p className="mb-4">Your score: {score}/{questions.length}</p>
-          <button
-            onClick={startGame}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Play Again
-          </button>
-        </div>
-      )}
-
-      {gameStarted && shuffledQuestions.length > 0 && (
-        <>
-          <div className="mb-4 text-center">
-            <p>Question {currentQuestion + 1}/{shuffledQuestions.length}</p>
-            <p>Score: {score}</p>
-          </div>
-
-          <div className="mb-6 w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">{shuffledQuestions[currentQuestion].question}</h3>
-            
-            <div className="space-y-2">
-              {shuffledQuestions[currentQuestion].options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswer(index)}
-                  className={`w-full p-3 text-left rounded transition-colors duration-200
-                    ${selectedOption === null ? 'bg-gray-800 hover:bg-gray-700' : 
-                      index === shuffledQuestions[currentQuestion].answer ? 'bg-green-600' : 
-                      selectedOption === index ? 'bg-red-600' : 'bg-gray-800'}`}
-                  disabled={answered}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
-
-// New Game: Hangman
-const Hangman = () => {
-  const [word, setWord] = useState('');
-  const [guessedLetters, setGuessedLetters] = useState([]);
-  const [wrongGuesses, setWrongGuesses] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [gameWon, setGameWon] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const maxWrongGuesses = 6;
-  
-  // Netflix show titles for the game
-  const netflixShows = [
-    'STRANGER THINGS', 'THE CROWN', 'BRIDGERTON', 'SQUID GAME', 'WEDNESDAY',
-    'OZARK', 'NARCOS', 'DARK', 'MONEY HEIST', 'BLACK MIRROR'
-  ];
-  
-  const startGame = () => {
-    const randomWord = netflixShows[Math.floor(Math.random() * netflixShows.length)];
-    setWord(randomWord);
-    setGuessedLetters([]);
-    setWrongGuesses(0);
-    setGameStarted(true);
-    setGameOver(false);
-    setGameWon(false);
-  };
-  
-  const handleGuess = (letter) => {
-    if (gameOver || guessedLetters.includes(letter)) return;
-    
-    const newGuessedLetters = [...guessedLetters, letter];
-    setGuessedLetters(newGuessedLetters);
-    
-    if (!word.includes(letter)) {
-      const newWrongGuesses = wrongGuesses + 1;
-      setWrongGuesses(newWrongGuesses);
-      
-      if (newWrongGuesses >= maxWrongGuesses) {
-        setGameOver(true);
-        setGameStarted(false);
-      }
-    } else {
-      // Check if player has won
-      const isWon = word.split('').every(char => 
-        char === ' ' || newGuessedLetters.includes(char)
-      );
-      
-      if (isWon) {
-        setGameWon(true);
-        setGameOver(true);
-        setGameStarted(false);
-      }
-    }
-  };
-  
-  const renderWord = () => {
-    return word.split('').map((letter, index) => (
-      <span key={index} className="mx-1 text-2xl">
-        {letter === ' ' ? '\u00A0\u00A0' : 
-          guessedLetters.includes(letter) ? letter : '_'}
-      </span>
-    ));
-  };
-  
-  const renderHangman = () => {
-    const parts = [
-      <circle key="head" cx="50" cy="30" r="10" stroke="white" fill="none" strokeWidth="2" />,
-      <line key="body" x1="50" y1="40" x2="50" y2="70" stroke="white" strokeWidth="2" />,
-      <line key="arm1" x1="50" y1="50" x2="30" y2="40" stroke="white" strokeWidth="2" />,
-      <line key="arm2" x1="50" y1="50" x2="70" y2="40" stroke="white" strokeWidth="2" />,
-      <line key="leg1" x1="50" y1="70" x2="30" y2="90" stroke="white" strokeWidth="2" />,
-      <line key="leg2" x1="50" y1="70" x2="70" y2="90" stroke="white" strokeWidth="2" />
-    ];
-    
+  if (phase === 'idle') {
     return (
-      <svg width="100" height="100" viewBox="0 0 100 100" className="mx-auto mb-4">
-        {/* Gallows */}
-        <line x1="10" y1="95" x2="90" y2="95" stroke="white" strokeWidth="2" />
-        <line x1="30" y1="95" x2="30" y2="10" stroke="white" strokeWidth="2" />
-        <line x1="30" y1="10" x2="50" y2="10" stroke="white" strokeWidth="2" />
-        <line x1="50" y1="10" x2="50" y2="20" stroke="white" strokeWidth="2" />
-        
-        {/* Body parts based on wrong guesses */}
-        {parts.slice(0, wrongGuesses)}
-      </svg>
-    );
-  };
-  
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  
-  return (
-    <div className="flex flex-col items-center">
-      <div className="w-full flex justify-between items-center mb-4">
-        <div className="flex items-center">
-          {gameStarted && (
-            <div className="bg-red-600 text-white px-3 py-1 rounded-md">
-              <span className="font-bold">Wrong: {wrongGuesses}/{maxWrongGuesses}</span>
-            </div>
-          )}
-        </div>
-        <button 
-          onClick={() => setMuted(!muted)} 
-          className="text-gray-400 hover:text-white p-2"
-        >
-          {muted ? <FaVolumeMute size={20} /> : <FaVolumeUp size={20} />}
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-xl font-bold text-red-500 mb-3">Speed Typer</h3>
+        <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">Type Netflix show titles as fast as you can</p>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaPlay className="mr-2" /> Start Game
         </button>
       </div>
+    );
+  }
 
-      {!gameStarted && !gameOver && (
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-red-600 mb-4">Hangman</h3>
-          <p className="text-gray-300 mb-6">Guess the Netflix show title before the hangman is complete.</p>
-          <button
-            onClick={startGame}
-            className="flex items-center mx-auto bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition-colors font-bold"
-          >
-            <FaPlay className="mr-2" /> Start Game
-          </button>
-        </div>
-      )}
-
-      {gameOver && (
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-red-600 mb-2">
-            {gameWon ? 'You Won!' : 'Game Over'}
-          </h3>
-          <p className="text-xl text-white mb-4">
-            {gameWon ? 'Great job!' : `The word was: ${word}`}
-          </p>
-          <button
-            onClick={startGame}
-            className="flex items-center mx-auto bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition-colors font-bold"
-          >
-            <FaRedo className="mr-2" /> Play Again
-          </button>
-        </div>
-      )}
-
-      {gameStarted && (
-        <div className="w-full max-w-md">
-          {renderHangman()}
-          
-          <div className="mb-6 text-center">
-            {renderWord()}
-          </div>
-          
-          <div className="grid grid-cols-7 gap-2">
-            {alphabet.map(letter => (
-              <button
-                key={letter}
-                onClick={() => handleGuess(letter)}
-                disabled={guessedLetters.includes(letter)}
-                className={`w-10 h-10 flex items-center justify-center rounded-md font-bold transition-colors
-                  ${guessedLetters.includes(letter) 
-                    ? word.includes(letter) 
-                      ? 'bg-green-600 text-white cursor-not-allowed' 
-                      : 'bg-red-600 text-white cursor-not-allowed'
-                    : 'bg-gray-800 hover:bg-gray-700 text-white'
-                  }`}
-              >
-                {letter}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// New Game: Tic Tac Toe
-const TicTacToe = () => {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [isXNext, setIsXNext] = useState(true);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [winner, setWinner] = useState(null);
-  const [muted, setMuted] = useState(false);
-  const [aiThinking, setAiThinking] = useState(false);
-  
-  const winningCombinations = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-    [0, 4, 8], [2, 4, 6]             // diagonals
-  ];
-  
-  const startGame = () => {
-    setBoard(Array(9).fill(null));
-    setIsXNext(true);
-    setGameStarted(true);
-    setGameOver(false);
-    setWinner(null);
-  };
-  
-  const checkWinner = (boardState) => {
-    for (let i = 0; i < winningCombinations.length; i++) {
-      const [a, b, c] = winningCombinations[i];
-      if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
-        return boardState[a];
-      }
-    }
-    return null;
-  };
-  
-  const isBoardFull = (boardState) => {
-    return boardState.every(square => square !== null);
-  };
-  
-  const handleClick = (index) => {
-    if (board[index] || gameOver || aiThinking) return;
-    
-    const newBoard = [...board];
-    newBoard[index] = 'X';
-    setBoard(newBoard);
-    
-    const winner = checkWinner(newBoard);
-    if (winner) {
-      setWinner(winner);
-      setGameOver(true);
-      return;
-    }
-    
-    if (isBoardFull(newBoard)) {
-      setGameOver(true);
-      return;
-    }
-    
-    // AI move
-    setAiThinking(true);
-    setTimeout(() => {
-      const aiBoard = [...newBoard];
-      const emptySquares = aiBoard.map((square, i) => square === null ? i : null).filter(i => i !== null);
-      
-      if (emptySquares.length > 0) {
-        const randomIndex = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-        aiBoard[randomIndex] = 'O';
-        setBoard(aiBoard);
-        
-        const aiWinner = checkWinner(aiBoard);
-        if (aiWinner) {
-          setWinner(aiWinner);
-          setGameOver(true);
-        } else if (isBoardFull(aiBoard)) {
-          setGameOver(true);
-        }
-      }
-      
-      setAiThinking(false);
-    }, 500);
-  };
-  
-  const renderSquare = (index) => {
+  if (phase === 'done') {
     return (
-      <button
-        className={`w-20 h-20 bg-gray-800 border border-gray-700 flex items-center justify-center text-3xl font-bold transition-colors ${
-          board[index] === 'X' ? 'text-red-500' : board[index] === 'O' ? 'text-blue-500' : 'hover:bg-gray-700'
-        }`}
-        onClick={() => handleClick(index)}
-        disabled={board[index] !== null || gameOver}
-      >
-        {board[index]}
-      </button>
-    );
-  };
-  
-  return (
-    <div className="flex flex-col items-center">
-      <div className="w-full flex justify-between items-center mb-4">
-        <div className="flex items-center">
-          {gameStarted && !gameOver && (
-            <div className="bg-red-600 text-white px-3 py-1 rounded-md">
-              <span className="font-bold">{aiThinking ? "Netflix is thinking..." : "Your turn"}</span>
-            </div>
-          )}
-        </div>
-        <button 
-          onClick={() => setMuted(!muted)} 
-          className="text-gray-400 hover:text-white p-2"
-        >
-          {muted ? <FaVolumeMute size={20} /> : <FaVolumeUp size={20} />}
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-2xl font-bold text-red-500 mb-2">Time's Up!</h3>
+        <p className="text-white text-lg mb-1">You typed {score} titles</p>
+        {best > 0 && <p className="text-gray-400 text-sm mb-4">Best: {best}</p>}
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaRedo className="mr-2" /> Play Again
         </button>
       </div>
+    );
+  }
 
-      {!gameStarted && !gameOver && (
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-red-600 mb-4">Tic Tac Toe</h3>
-          <p className="text-gray-300 mb-6">Play against Netflix AI in this classic game.</p>
-          <button
-            onClick={startGame}
-            className="flex items-center mx-auto bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition-colors font-bold"
-          >
-            <FaPlay className="mr-2" /> Start Game
-          </button>
-        </div>
-      )}
-
-      {gameOver && (
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-red-600 mb-2">
-            {winner ? `${winner === 'X' ? 'You Won!' : 'Netflix Won!'}` : 'Draw!'}
-          </h3>
-          <p className="text-xl text-white mb-4">
-            {winner ? (winner === 'X' ? 'Great job beating Netflix!' : 'Better luck next time!') : 'It\'s a tie!'}
-          </p>
-          <button
-            onClick={startGame}
-            className="flex items-center mx-auto bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition-colors font-bold"
-          >
-            <FaRedo className="mr-2" /> Play Again
-          </button>
-        </div>
-      )}
-
-      {gameStarted && !gameOver && (
-        <div className="grid grid-cols-3 gap-1 mb-4">
-          {renderSquare(0)}
-          {renderSquare(1)}
-          {renderSquare(2)}
-          {renderSquare(3)}
-          {renderSquare(4)}
-          {renderSquare(5)}
-          {renderSquare(6)}
-          {renderSquare(7)}
-          {renderSquare(8)}
-        </div>
-      )}
+  return (
+    <div className="flex flex-col items-center w-full">
+      <div className="flex justify-between w-full max-w-xs mb-4">
+        <span className="text-white font-bold">Score: {score}</span>
+        <span className="text-red-400 font-bold">{timeLeft}s</span>
+      </div>
+      <p className="text-red-500 text-xl sm:text-2xl font-bold mb-4 text-center">{current}</p>
+      <input ref={inputRef} type="text" value={input} onChange={handleInput}
+        className="w-full max-w-xs px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white text-center text-lg focus:border-red-500 focus:outline-none"
+        placeholder="Type here..."
+        autoComplete="off"
+      />
     </div>
   );
 };
 
+/* ═══════════════════════════════════════
+   GAME 9: Rock Paper Scissors
+   ═══════════════════════════════════════ */
+const RockPaperScissors = () => {
+  const choices = [
+    { name: 'Rock', emoji: '🪨' },
+    { name: 'Paper', emoji: '📄' },
+    { name: 'Scissors', emoji: '✂️' },
+  ];
+  const [phase, setPhase] = useState('idle');
+  const [playerChoice, setPlayerChoice] = useState(null);
+  const [aiChoice, setAiChoice] = useState(null);
+  const [result, setResult] = useState('');
+  const [pScore, setPScore] = useState(0);
+  const [aScore, setAScore] = useState(0);
+  const [round, setRound] = useState(0);
+
+  const start = () => { setPScore(0); setAScore(0); setRound(0); setPhase('playing'); setPlayerChoice(null); setAiChoice(null); setResult(''); };
+
+  const play = (choice) => {
+    if (phase !== 'playing') return;
+    const ai = choices[Math.floor(Math.random() * 3)];
+    setPlayerChoice(choice);
+    setAiChoice(ai);
+    const newRound = round + 1;
+    setRound(newRound);
+
+    let r;
+    if (choice.name === ai.name) { r = 'Draw!'; }
+    else if (
+      (choice.name === 'Rock' && ai.name === 'Scissors') ||
+      (choice.name === 'Paper' && ai.name === 'Rock') ||
+      (choice.name === 'Scissors' && ai.name === 'Paper')
+    ) { r = 'You Win!'; setPScore(s => s + 1); }
+    else { r = 'Netflix Wins!'; setAScore(s => s + 1); }
+    setResult(r);
+
+    if (newRound >= 5) setTimeout(() => setPhase('done'), 1500);
+  };
+
+  if (phase === 'idle') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-xl font-bold text-red-500 mb-3">Rock Paper Scissors</h3>
+        <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">Best of 5 rounds against Netflix AI</p>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaPlay className="mr-2" /> Start Game
+        </button>
+      </div>
+    );
+  }
+
+  if (phase === 'done') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className={`text-2xl font-bold mb-2 ${pScore > aScore ? 'text-green-400' : pScore < aScore ? 'text-red-500' : 'text-yellow-400'}`}>
+          {pScore > aScore ? 'You Won the Series!' : pScore < aScore ? 'Netflix Won!' : 'Series Tied!'}
+        </h3>
+        <p className="text-white text-lg mb-4">You {pScore} - {aScore} Netflix</p>
+        <button onClick={start} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaRedo className="mr-2" /> Play Again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      <div className="flex justify-between w-full max-w-xs mb-3">
+        <span className="text-white font-bold">You: {pScore}</span>
+        <span className="text-gray-400 text-sm">Round {round}/5</span>
+        <span className="text-red-400 font-bold">AI: {aScore}</span>
+      </div>
+      {result && (
+        <div className="mb-4 text-center">
+          <p className="text-gray-300 text-sm">{playerChoice?.emoji} vs {aiChoice?.emoji}</p>
+          <p className="text-white font-bold text-lg">{result}</p>
+        </div>
+      )}
+      <p className="text-gray-300 mb-3 text-sm">Choose your move:</p>
+      <div className="flex gap-4">
+        {choices.map(c => (
+          <button key={c.name} onClick={() => play(c)}
+            className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-800 hover:bg-gray-700 border-2 border-gray-600 hover:border-red-500 rounded-xl flex items-center justify-center text-3xl sm:text-4xl transition-colors"
+          >{c.emoji}</button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════
+   GAME 10: Number Puzzle (Sliding)
+   ═══════════════════════════════════════ */
+const NumberPuzzle = () => {
+  const [tiles, setTiles] = useState([]);
+  const [moves, setMoves] = useState(0);
+  const [phase, setPhase] = useState('idle');
+
+  const init = () => {
+    const pieces = Array.from({ length: 8 }, (_, i) => i + 1);
+    pieces.push(null);
+    let shuffled = [...pieces];
+    for (let i = 0; i < 200; i++) {
+      const ei = shuffled.indexOf(null);
+      const possible = [];
+      if (ei % 3 > 0) possible.push(ei - 1);
+      if (ei % 3 < 2) possible.push(ei + 1);
+      if (ei >= 3) possible.push(ei - 3);
+      if (ei < 6) possible.push(ei + 3);
+      const mi = possible[Math.floor(Math.random() * possible.length)];
+      [shuffled[ei], shuffled[mi]] = [shuffled[mi], shuffled[ei]];
+    }
+    setTiles(shuffled);
+    setMoves(0);
+    setPhase('playing');
+  };
+
+  const solved = (t) => t.every((v, i) => i === 8 ? v === null : v === i + 1);
+
+  const tap = (i) => {
+    if (phase !== 'playing') return;
+    const ei = tiles.indexOf(null);
+    const canH = Math.floor(i/3) === Math.floor(ei/3) && Math.abs(i%3 - ei%3) === 1;
+    const canV = Math.abs(Math.floor(i/3) - Math.floor(ei/3)) === 1 && i%3 === ei%3;
+    if (canH || canV) {
+      const n = [...tiles];
+      [n[i], n[ei]] = [n[ei], n[i]];
+      setTiles(n);
+      setMoves(m => m + 1);
+      if (solved(n)) setPhase('won');
+    }
+  };
+
+  if (phase === 'idle') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-xl font-bold text-red-500 mb-3">Number Puzzle</h3>
+        <p className="text-gray-300 mb-6 text-center text-sm sm:text-base">Slide tiles into order (1-8)</p>
+        <button onClick={init} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaPlay className="mr-2" /> Start Game
+        </button>
+      </div>
+    );
+  }
+
+  if (phase === 'won') {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-2xl font-bold text-green-400 mb-2">Solved!</h3>
+        <p className="text-white text-lg mb-4">In {moves} moves</p>
+        <button onClick={init} className="flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+          <FaRedo className="mr-2" /> Play Again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      <p className="text-gray-300 mb-3">Moves: {moves}</p>
+      <div className="grid grid-cols-3 gap-1.5 w-full max-w-[220px] sm:max-w-[260px]">
+        {tiles.map((t, i) => (
+          <button key={i} onClick={() => tap(i)}
+            className={`aspect-square rounded-lg text-xl sm:text-2xl font-bold flex items-center justify-center transition-all ${
+              t === null ? 'bg-gray-900' : 'bg-red-600 hover:bg-red-700 text-white active:scale-95'
+            }`}
+          >{t}</button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════
+   MAIN: MiniGames Section
+   ═══════════════════════════════════════ */
 const MiniGames = () => {
   const [activeGame, setActiveGame] = useState(null);
-  const [showGameModal, setShowGameModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const sliderRef = useRef(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const scrollLeftRef = useRef(0);
   const location = useLocation();
-  
-  // Determine if we're on the HR page, Developer page, or Kids page
-  const isHrPage = location.pathname.includes('/hr');
+
   const isKidsPage = location.pathname.includes('/kids');
-  const bgColor = isHrPage||isKidsPage ? '' : 'bg-[#141414]';
-  const modalBgColor = isHrPage ? 'bg-black' : 'bg-[#141414]';
-  const gameContainerBgColor = isHrPage ? 'bg-black' : 'bg-[#1a1a1a]';
 
   const games = [
-    {
-      id: 'snake',
-      title: 'Snake Game',
-      description: 'Control the snake, eat food, and avoid hitting walls or yourself.',
-      icon: '🐍',
-      component: <SnakeGame />,
-      bgImage: 'url("https://uploads.drafts.toph.co/drafts-images/55c5cc603bb03ab823fd2806-1571231085736176225-8406388898923468000-0605f396e824ddee1d8cd9b7c04663f7.jpg")',
-      bgColor: 'from-green-900 to-black'
-    },
-    {
-      id: 'memory',
-      title: 'Memory Game',
-      description: 'Find matching pairs of cards in this classic memory challenge.',
-      icon: '🎮',
-      component: <MemoryGame />,
-      bgImage: 'url("https://cloud.educaplay.com/r1/img/activities/RELACIONAR_MOSAICO/logoActivity.png?v=1740142054")',
-      bgColor: 'from-blue-900 to-black'
-    },
-    {
-      id: 'puzzle',
-      title: 'Sliding Puzzle',
-      description: 'Arrange the numbers in order by sliding tiles into the empty space.',
-      icon: '🧩',
-      component: <PuzzleGame />,
-      bgImage: 'url("https://content.instructables.com/FT3/QGT0/HUBJBJDI/FT3QGT0HUBJBJDI.jpg?auto=webp")',
-      bgColor: 'from-purple-900 to-black'
-    },
-    {
-      id: 'whackamole',
-      title: 'Whack-A-Mole',
-      description: 'Click on the moles as they appear to score points.',
-      icon: '🎭',
-      component: <WhackAMole />,
-      bgImage: 'url("https://images-cdn.ubuy.co.in/65aa9a1a8fbc777c7b00e38c-rozyard-whack-a-mole-game-electronic.jpg")',
-      bgColor: 'from-yellow-900 to-black'
-    },
-    {
-      id: 'colormatch',
-      title: 'Color Match',
-      description: 'Quickly determine if the color matches the text.',
-      icon: '🎨',
-      component: <ColorMatch />,
-      bgImage: 'url("https://images.unsplash.com/photo-1541701494587-cb58502866ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")',
-      bgColor: 'from-pink-900 to-black'
-    },
-    {
-      id: 'wordscramble',
-      title: 'Word Scramble',
-      description: 'Unscramble Netflix show titles against the clock.',
-      icon: '📝',
-      component: <WordScramble />,
-      bgImage: 'url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo5fyxd_ng4Ut01lLYw8HS33Yuxi4Be00IJQ&s")',
-      bgColor: 'from-indigo-900 to-black'
-    },
-    {
-      id: 'reactiontime',
-      title: 'Reaction Time',
-      description: 'Test your reflexes by clicking as soon as the color changes.',
-      icon: '⚡',
-      component: <ReactionTime />,
-      bgImage: 'url("https://content.instructables.com/FDQ/MG4G/J1QP8FQY/FDQMG4GJ1QP8FQY.jpg?auto=webp")',
-      bgColor: 'from-orange-900 to-black'
-    },
-    {
-      id: 'trivia',
-      title: 'Netflix Trivia',
-      description: 'Test your knowledge of Netflix shows and movies.',
-      icon: '❓',
-      component: <TriviaQuiz />,
-      bgImage: 'url("https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")',
-      bgColor: 'from-red-900 to-black'
-    },
-    {
-      id: 'hangman',
-      title: 'Hangman',
-      description: 'Guess the Netflix show title before the hangman is complete.',
-      icon: '📺',
-      component: <Hangman />,
-      bgImage: 'url("https://images.unsplash.com/photo-1594908900066-3f47337549d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")',
-      bgColor: 'from-gray-900 to-black'
-    },
-    {
-      id: 'tictactoe',
-      title: 'Tic Tac Toe',
-      description: 'Play against Netflix AI in this classic game.',
-      icon: '❌',
-      component: <TicTacToe />,
-      bgImage: 'url("https://images.unsplash.com/photo-1611996575749-79a3a250f948?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")',
-      bgColor: 'from-blue-900 to-black'
-    }
+    { id: 'slots',   title: 'Emoji Slots',         icon: '🎰', component: <EmojiSlots />,        desc: 'Spin the reels and win coins!',             badge: 'TOP 10' },
+    { id: 'match',   title: 'Card Match',           icon: '🃏', component: <CardMatch />,         desc: 'Find matching emoji pairs.',                badge: 'NEW' },
+    { id: 'trivia',  title: 'Netflix Trivia',       icon: '❓', component: <NetflixTrivia />,     desc: 'Test your Netflix knowledge.',              badge: 'TOP 10' },
+    { id: 'react',   title: 'Reaction Test',        icon: '⚡', component: <ReactionTest />,      desc: 'Tap when green. How fast are you?',         badge: 'HOT' },
+    { id: 'guess',   title: 'Guess the Show',       icon: '🎬', component: <WordGuess />,         desc: 'Guess the Netflix title letter by letter.', badge: 'TOP 10' },
+    { id: 'ttt',     title: 'Tic Tac Toe',          icon: '❌', component: <TicTacToe />,         desc: 'Play against Netflix AI.',                  badge: 'NEW' },
+    { id: 'color',   title: 'Color Tap',            icon: '🎨', component: <ColorTap />,          desc: 'Tap the matching color fast!',              badge: 'HOT' },
+    { id: 'type',    title: 'Speed Typer',          icon: '⌨️', component: <SpeedTyper />,        desc: 'Type Netflix titles against the clock.',    badge: 'NEW' },
+    { id: 'rps',     title: 'Rock Paper Scissors',  icon: '✊', component: <RockPaperScissors />, desc: 'Best of 5 vs Netflix AI.',                  badge: 'TOP 10' },
+    { id: 'puzzle',  title: 'Number Puzzle',        icon: '🧩', component: <NumberPuzzle />,      desc: 'Slide tiles into the right order.',         badge: 'HOT' },
   ];
 
-  const scrollLeftHandler = () => {
-    if (sliderRef.current) {
-      sliderRef.current.scrollBy({ left: -320, behavior: 'smooth' });
-    }
-  };
+  const scrollLeft = () => sliderRef.current?.scrollBy({ left: -320, behavior: 'smooth' });
+  const scrollRight = () => sliderRef.current?.scrollBy({ left: 320, behavior: 'smooth' });
 
-  const scrollRightHandler = () => {
-    if (sliderRef.current) {
-      sliderRef.current.scrollBy({ left: 320, behavior: 'smooth' });
-    }
-  };
+  const startDrag = (e) => { isDragging.current = true; startX.current = e.pageX - sliderRef.current.offsetLeft; scrollLeftRef.current = sliderRef.current.scrollLeft; };
+  const onDrag = (e) => { if (!isDragging.current) return; e.preventDefault(); const x = e.pageX - sliderRef.current.offsetLeft; sliderRef.current.scrollLeft = scrollLeftRef.current - (x - startX.current) * 2; };
+  const stopDrag = () => { isDragging.current = false; };
 
-  const startDrag = (e) => {
-    isDragging.current = true;
-    startX.current = e.pageX - sliderRef.current.offsetLeft;
-    scrollLeft.current = sliderRef.current.scrollLeft;
-  };
-
-  const onDrag = (e) => {
-    if (!isDragging.current) return;
-    e.preventDefault();
-    const x = e.pageX - sliderRef.current.offsetLeft;
-    const walk = (x - startX.current) * 2;
-    sliderRef.current.scrollLeft = scrollLeft.current - walk;
-  };
-
-  const stopDrag = () => {
-    isDragging.current = false;
-  };
-
-  const handleGameClick = (gameId) => {
-    setActiveGame(gameId);
-    setShowGameModal(true);
-  };
-
-  const closeGameModal = () => {
-    setShowGameModal(false);
-  };
+  const openGame = (id) => { setActiveGame(id); setShowModal(true); };
+  const closeGame = () => setShowModal(false);
 
   useEffect(() => {
-    const handleEscKey = (e) => {
-      if (e.key === 'Escape') {
-        closeGameModal();
-      }
-    };
-
-    window.addEventListener('keydown', handleEscKey);
-    return () => {
-      window.removeEventListener('keydown', handleEscKey);
-    };
+    const esc = (e) => { if (e.key === 'Escape') closeGame(); };
+    window.addEventListener('keydown', esc);
+    return () => window.removeEventListener('keydown', esc);
   }, []);
 
-  // Render "Game Zone" for kids page or "Mini Games" for other pages
-  const renderTitle = () => {
-    if (isKidsPage) {
-      return (
-        <h2 className="text-4xl font-bold mb-8 text-white flex items-center">
-          <span className="text-5xl mr-4">🎮</span>
-          Game Zone
-          <span className="text-5xl ml-4">🎮</span>
-        </h2>
-      );
-    }
-    return <h2 className="text-3xl font-bold mb-8 text-white">Mini Games</h2>;
-  };
-
   return (
-    <div className={`w-[105%] translate-x-[-2%] py-16  ${bgColor}`}>
+    <div className="bg-[#141414] py-8 w-full">
       <div className="mx-auto">
-        {renderTitle()}
-        
-        <div className="relative">
-          {/* Scroll Left Button */}
-          <button
-            className="absolute -left-4 md:-left-8 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center group"
-            onClick={scrollLeftHandler}
-          >
-            <FaChevronLeft className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {isKidsPage ? (
+          <h2 className="text-4xl font-bold mb-8 text-white flex items-center px-4 sm:px-10">
+            <span className="text-5xl mr-4">🎮</span>Game Zone<span className="text-5xl ml-4">🎮</span>
+          </h2>
+        ) : (
+          <h2 className="ml-4 sm:ml-10 text-lg sm:text-xl font-['Poppins'] text-white mb-6">Netflix Games</h2>
+        )}
+
+        <div className="relative group">
+          <button className="absolute left-0 sm:left-2 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 rounded-full w-10 h-10 sm:w-12 sm:h-12 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" onClick={scrollLeft}>
+            <FaChevronLeft className="text-white" size={20} />
           </button>
-          
-          {/* Game Cards Container */}
-          <div
-            ref={sliderRef}
-            className="flex gap-10 overflow-x-auto hide-scrollbar pb-10 pt-2"
-            onMouseDown={startDrag}
-            onMouseLeave={stopDrag}
-            onMouseUp={stopDrag}
-            onMouseMove={onDrag}
+
+          <div ref={sliderRef} className="flex gap-3 sm:gap-4 px-4 sm:px-10 overflow-x-auto no-scrollbar pb-4 cursor-grab active:cursor-grabbing"
+            onMouseDown={startDrag} onMouseLeave={stopDrag} onMouseUp={stopDrag} onMouseMove={onDrag}
           >
             {games.map((game) => (
-              <div
-                key={game.id}
-                className="flex-none w-[300px] relative group cursor-pointer transition-transform duration-300 hover:scale-105"
-                onClick={() => handleGameClick(game.id)}
+              <div key={game.id} onClick={() => openGame(game.id)}
+                className="flex-none w-[200px] sm:w-[280px] relative group/card cursor-pointer transition-transform duration-300"
               >
-                {/* Card Background */}
-                <div 
-                  className="relative  aspect-video rounded-lg overflow-hidden"
-                  style={{
-                    backgroundImage: game.bgImage,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                  }}
-                >
-                  {/* Gradient Overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-100"></div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  {/* Content */}
-                  <div className="absolute inset-0 p-4 flex flex-col justify-end">
-                    {/* Title and Icon */}
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-2xl transform group-hover:scale-110 transition-transform duration-300">
-                        {game.icon}
-                      </span>
-                      <h3 className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors duration-300">
-                        {game.title}
-                      </h3>
+                <div className="relative aspect-video rounded overflow-hidden border border-gray-700 bg-gray-900">
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-black" />
+                  {game.badge && (
+                    <div className="absolute top-0 right-0 z-10 bg-red-600 flex items-center justify-center py-0.5 px-1.5"
+                      style={{ clipPath: 'polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%)' }}
+                    >
+                      <span className="text-white text-[9px] font-bold leading-tight">{game.badge}</span>
                     </div>
-                    
-                    {/* Description - Only visible on hover */}
-                    <p className="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
-                      {game.description}
-                    </p>
-                    
-                    {/* Play Button - Only visible on hover */}
-                    <button className="mt-3 w-full bg-yellow-500 text-black py-2 rounded font-bold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400">
-                      Play Game!
+                  )}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center ">
+                    <span className="text-4xl sm:text-5xl mb-2">{game.icon}</span>
+                    <h3 className="text-white text-sm sm:text-base font-bold text-center">{game.title}</h3>
+                    <p className="text-gray-400 text-[10px] sm:text-xs text-center mt-1 line-clamp-2">{game.desc}</p>
+                    <button className="mt-2 bg-white text-black px-4 py-1.5 rounded text-xs sm:text-sm font-semibold opacity-0 group-hover/card:opacity-100 transition-all translate-y-2 group-hover/card:translate-y-0">
+                      ▶ Play
                     </button>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          
-          {/* Scroll Right Button */}
-          <button
-            className="absolute -right-4 md:-right-8 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 transition-all duration-300 rounded-full w-12 h-12 flex items-center justify-center group"
-            onClick={scrollRightHandler}
-          >
-            <FaChevronRight className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+          <button className="absolute right-0 sm:right-2 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 rounded-full w-10 h-10 sm:w-12 sm:h-12 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" onClick={scrollRight}>
+            <FaChevronRight className="text-white" size={20} />
           </button>
         </div>
       </div>
-      
-      {/* Game Modal Popup */}
+
       <AnimatePresence>
-        {showGameModal && activeGame && (
-          <motion.div 
-            className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={closeGameModal}
+        {showModal && activeGame && (
+          <motion.div className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-3 sm:p-6"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={closeGame}
           >
-            <motion.div 
-              className="bg-[#141414] rounded-lg max-w-2xl w-full p-6 relative shadow-2xl"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+            <motion.div
+              className="bg-[#141414] rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-6 relative border border-gray-800"
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-                onClick={closeGameModal}
-              >
-                <FaTimes size={24} />
+              <button className="absolute top-3 right-3 text-gray-400 hover:text-white z-10" onClick={closeGame}>
+                <FaTimes size={22} />
               </button>
-              
-              <div className="mb-6 flex items-center">
-                <span className="text-4xl mr-4">
-                  {games.find(game => game.id === activeGame)?.icon}
-                </span>
-                <h3 className="text-3xl font-bold text-yellow-500">
-                  {games.find(game => game.id === activeGame)?.title}
-                </h3>
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-3xl">{games.find(g => g.id === activeGame)?.icon}</span>
+                <h3 className="text-xl sm:text-2xl font-bold text-white">{games.find(g => g.id === activeGame)?.title}</h3>
               </div>
-              
-              <div className="game-container bg-[#1a1a1a] p-6 rounded-lg border border-gray-800 shadow-inner">
-                {games.find(game => game.id === activeGame)?.component}
+              <div className="bg-[#1a1a1a] p-4 sm:p-6 rounded-lg border border-gray-800">
+                {games.find(g => g.id === activeGame)?.component}
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Global Styles */}
-      <style jsx global>{`
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 };
 
-export default MiniGames; 
+export default MiniGames;

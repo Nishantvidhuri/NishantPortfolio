@@ -11,6 +11,7 @@ import PasswordGenerator from "../assets/projects/PasswordGenerator.png";
 import RecipeBook from "../assets/projects/RecipeBook.png";
 import SortingVisualizer from "../assets/projects/SortingVisualizer.png";
 import TicTacToe from "../assets/projects/TicTacToe.png";
+import Recriview from "../assets/projects/recriview.jpeg";
 
 // ✅ Import Mobile-Specific Images
 import AiImageMob from "../assets/projects/mob/aiimagemob.jpeg";
@@ -23,6 +24,7 @@ import PasswordGeneratorMob from "../assets/projects/mob/passwordgeneratormob.jp
 import RecipeBookMob from "../assets/projects/mob/recipebookmob.jpeg";
 import SortingVisualizerMob from "../assets/projects/mob/sortingvisualizermob.jpeg";
 import TicTacToeMob from "../assets/projects/mob/tictactoemob.jpeg";
+import RecriviewMob from "../assets/projects/recriviewmobile.jpeg";
 
 // ✅ Import Logos
 import AiImageLogo from "../assets/logo/aiimage.png";
@@ -35,6 +37,7 @@ import PasswordGeneratorLogo from "../assets/logo/passwordgenerator.png";
 import RecipeBookLogo from "../assets/logo/recipebook.png";
 import SortingVisualizerLogo from "../assets/logo/sortingvisualizer.png";
 import TicTacToeLogo from "../assets/logo/tictactoe.png";
+import RecriviewLogo from "../assets/logo/recrivio.png";
 
 // 1️⃣ Create Context
 const ProjectContext = createContext();
@@ -42,6 +45,17 @@ const ProjectContext = createContext();
 // 2️⃣ Create Provider Component
 export const ProjectProvider = ({ children }) => {
   const projects = [
+    {
+      name: "Recriview",
+      image: Recriview,
+      imageMob: RecriviewMob,
+      logo: RecriviewLogo,
+      githublink: "https://github.com/Nishantvidhuri/recriview",
+      livelink: "https://recriview.vercel.app/",
+      summary: "RecriView is a web-based assessment platform designed to streamline the technical hiring process. Key features: assessment creation (coding tests, MCQs, custom assessments), candidate management with progress tracking, automated evaluation of objective questions and coding submissions via Judge0, real-time results & analytics, secure time-based test environment, and email integration for invitations and notifications.",
+      techUsed: ["React", "Judge0", "MongoDB", "Express", "Node.js", "Tailwind CSS"],
+      genre: "HR Tech, Assessment Platform",
+    },
     {
       name: "AI Image Generator",
       image: AiImage,
