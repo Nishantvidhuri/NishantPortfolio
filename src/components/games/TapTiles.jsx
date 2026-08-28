@@ -109,11 +109,42 @@ function TapTiles() {
         ctx.stroke();
       }
 
+      // stage light beams from the top of each lane
+      for (let c = 0; c < COLS; c++) {
+        const g = ctx.createLinearGradient(0, 0, 0, H * 0.8);
+        g.addColorStop(0, `rgba(255,255,255,${0.05 + st.laneFlash[c] * 0.10})`);
+        g.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(c * COL_W + COL_W * 0.42, 0);
+        ctx.lineTo(c * COL_W + COL_W * 0.58, 0);
+        ctx.lineTo(c * COL_W + COL_W, H * 0.8);
+        ctx.lineTo(c * COL_W, H * 0.8);
+        ctx.closePath();
+        ctx.fill();
+      }
+
       // hit zone hint at bottom
       ctx.fillStyle = "rgba(255,255,255,0.05)";
       ctx.fillRect(0, H - 90, W, 90);
       ctx.fillStyle = "rgba(229,9,20,0.4)";
       ctx.fillRect(0, H - 90, W, 2);
+
+      // piano keyboard along the bottom
+      for (let c = 0; c < COLS; c++) {
+        const kx = c * COL_W + 3;
+        const lit = st.laneFlash[c];
+        ctx.fillStyle = lit > 0 ? `rgba(255,${120 + lit * 120},${120 + lit * 120},1)` : "#f4f4f5";
+        ctx.beginPath();
+        ctx.roundRect(kx, H - 46, COL_W - 6, 42, { tl: 3, tr: 3, bl: 6, br: 6 });
+        ctx.fill();
+        ctx.fillStyle = "rgba(0,0,0,0.18)";
+        ctx.fillRect(kx, H - 46, COL_W - 6, 3);
+        if (c < COLS - 1) {
+          ctx.fillStyle = "#18181b";
+          ctx.fillRect((c + 1) * COL_W - 9, H - 46, 18, 25);
+        }
+      }
 
       // tiles
       st.tiles.forEach((t) => {

@@ -69,6 +69,19 @@ function StackTower() {
     scene.add(group);
 
     // Glowing pad under the tower
+    // reflective ground plane under the tower
+    const floor = new THREE.Mesh(
+      new THREE.CircleGeometry(9, 48),
+      new THREE.MeshStandardMaterial({
+        color: 0x10101f,
+        roughness: 0.25,
+        metalness: 0.85,
+      })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -BLOCK_H / 2 - 0.02;
+    scene.add(floor);
+
     const padGlow = new THREE.Mesh(
       new THREE.CircleGeometry(3.4, 40),
       new THREE.MeshBasicMaterial({
@@ -114,6 +127,12 @@ function StackTower() {
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(x, level * BLOCK_H, z);
+      // crisp edge outline so stacked blocks read clearly
+      const edges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(geo),
+        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22 })
+      );
+      mesh.add(edges);
       group.add(mesh);
       return { mesh, sizeX, sizeZ, x, z };
     };

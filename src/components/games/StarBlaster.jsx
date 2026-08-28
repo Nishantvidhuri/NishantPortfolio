@@ -177,6 +177,24 @@ function StarBlaster() {
       ctx.stroke();
       ctx.restore();
 
+      // distant galaxy swirl
+      ctx.save();
+      ctx.translate(W * 0.22, H * 0.72);
+      ctx.rotate(st.t * 0.05);
+      for (let a = 0; a < 3; a++) {
+        ctx.strokeStyle = `rgba(190,150,255,${0.10 - a * 0.025})`;
+        ctx.lineWidth = 8 - a * 2;
+        ctx.beginPath();
+        for (let s = 0; s < 40; s++) {
+          const th = s * 0.22 + a * 2.1;
+          const rr = s * 1.7;
+          const px = Math.cos(th) * rr, py = Math.sin(th) * rr * 0.45;
+          s ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+
       // Stars — two layers
       ctx.fillStyle = "rgba(255,255,255,0.45)";
       for (let i = 0; i < 40; i++) {

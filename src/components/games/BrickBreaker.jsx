@@ -115,11 +115,21 @@ function BrickBreaker() {
       grad.addColorStop(1, "#191030");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
-      // faint stars
-      ctx.fillStyle = "rgba(255,255,255,0.14)";
-      for (let i = 0; i < 26; i++) {
+      // starfield + drifting nebula
+      const neb = ctx.createRadialGradient(W * 0.7, 120, 20, W * 0.7, 120, 220);
+      neb.addColorStop(0, "rgba(129,80,255,0.16)");
+      neb.addColorStop(1, "rgba(129,80,255,0)");
+      ctx.fillStyle = neb;
+      ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < 46; i++) {
+        const tw = 0.35 + 0.45 * Math.abs(Math.sin(st.t * 1.6 + i));
+        ctx.fillStyle = `rgba(255,255,255,${tw * 0.5})`;
         ctx.fillRect((i * 71) % W, (i * 113) % H, 2, 2);
       }
+      // faint play-area grid
+      ctx.strokeStyle = "rgba(255,255,255,0.04)";
+      for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
       // neon side rails
       ctx.fillStyle = "rgba(229,9,20,0.5)";
       ctx.fillRect(0, 0, 3, H);
@@ -138,6 +148,12 @@ function BrickBreaker() {
         ctx.fill();
         ctx.fillStyle = "rgba(255,255,255,0.3)";
         ctx.fillRect(b.x + 4, b.y + 3, BW - 8, 3);
+        // inner bevel + glow rim
+        ctx.strokeStyle = "rgba(0,0,0,0.35)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(b.x + 1.5, b.y + 1.5, BW - 3, BH - 3);
+        ctx.fillStyle = "rgba(255,255,255,0.10)";
+        ctx.fillRect(b.x + 3, b.y + BH - 6, BW - 6, 2);
       });
 
       // Ball trail

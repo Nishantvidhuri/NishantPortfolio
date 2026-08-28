@@ -94,6 +94,41 @@ function PongGame() {
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
 
+      // perspective arena floor receding to a vanishing point
+      ctx.strokeStyle = "rgba(120,140,255,0.10)";
+      ctx.lineWidth = 1;
+      for (let i = -6; i <= 6; i++) {
+        ctx.beginPath();
+        ctx.moveTo(W / 2 + i * 26, H / 2);
+        ctx.lineTo(W / 2 + i * 150, H);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(W / 2 + i * 26, H / 2);
+        ctx.lineTo(W / 2 + i * 150, 0);
+        ctx.stroke();
+      }
+      for (let i = 1; i <= 5; i++) {
+        const o = Math.pow(i / 5, 2) * (H / 2);
+        ctx.beginPath();
+        ctx.moveTo(0, H / 2 + o); ctx.lineTo(W, H / 2 + o);
+        ctx.moveTo(0, H / 2 - o); ctx.lineTo(W, H / 2 - o);
+        ctx.stroke();
+      }
+      // arena glow vignette
+      const vig = ctx.createRadialGradient(W / 2, H / 2, 40, W / 2, H / 2, W * 0.75);
+      vig.addColorStop(0, "rgba(90,110,255,0.10)");
+      vig.addColorStop(1, "rgba(0,0,0,0.55)");
+      ctx.fillStyle = vig;
+      ctx.fillRect(0, 0, W, H);
+      // corner posts
+      [[6,6],[W-6,6],[6,H-6],[W-6,H-6]].forEach(([px,py]) => {
+        ctx.fillStyle = "rgba(229,9,20,0.85)";
+        ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI*2); ctx.fill();
+      });
+      // scanlines
+      ctx.fillStyle = "rgba(0,0,0,0.10)";
+      for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1);
+
       // goal flash
       if (st.flash > 0) {
         ctx.fillStyle = `rgba(229,9,20,${st.flash * 0.25})`;

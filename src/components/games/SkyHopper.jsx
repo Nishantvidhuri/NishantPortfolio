@@ -108,6 +108,16 @@ function SkyHopper() {
       // grass highlight
       ctx.fillStyle = `hsl(${p.hue}, 70%, 60%)`;
       ctx.fillRect(p.x + 4, p.y + 1, PW - 8, 2);
+      // little spring coils under each platform
+      ctx.strokeStyle = "rgba(255,255,255,0.28)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let k = 0; k < 3; k++) {
+        ctx.moveTo(p.x + 14 + k * 18, p.y + PH);
+        ctx.lineTo(p.x + 20 + k * 18, p.y + PH + 5);
+        ctx.lineTo(p.x + 14 + k * 18, p.y + PH + 9);
+      }
+      ctx.stroke();
     };
 
     const drawHopper = () => {
@@ -197,6 +207,19 @@ function SkyHopper() {
         ctx.ellipse(cx, cy, 44, 12, 0, 0, Math.PI * 2);
         ctx.ellipse(cx + 30, cy + 6, 30, 9, 0, 0, Math.PI * 2);
         ctx.fill();
+      }
+
+      // distant skyline far below, scrolling with height
+      ctx.fillStyle = "rgba(10,14,40,0.85)";
+      for (let i = 0; i < 10; i++) {
+        const bw = 46;
+        const bx = (i * bw * 1.1) % (W + bw) - bw / 2;
+        const bh = 40 + ((i * 53) % 60);
+        const by = H - 10 + ((st.height * 0.06) % 120) - 60;
+        ctx.fillRect(bx, by, bw - 8, bh);
+        ctx.fillStyle = "rgba(255,214,102,0.30)";
+        for (let k = 0; k < 3; k++) ctx.fillRect(bx + 5 + k * 12, by + 8 + k * 12, 5, 6);
+        ctx.fillStyle = "rgba(10,14,40,0.85)";
       }
 
       // platforms
