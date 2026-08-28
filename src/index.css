@@ -45,6 +45,6 @@ a {
 /* Netflix "Top 10" style outlined rank numbers */
 .rank-number {
   color: #141414;
-  -webkit-text-stroke: 4px #595959;
-  text-stroke: 4px #595959;
+  -webkit-text-stroke: 6px #595959;
+  text-stroke: 6px #595959;
 }

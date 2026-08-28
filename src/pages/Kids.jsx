@@ -219,7 +219,7 @@ function Kids() {
           {NEW_GAMES.map((game, index) => (
             <div key={game.id} className="flex items-end flex-shrink-0 mr-3 md:mr-5">
               {/* Netflix Top-10 rank number */}
-              <span className="rank-number font-['Bebas_Neue'] text-[130px] md:text-[135px] leading-[0.7] -mr-3 md:-mr-2 select-none">
+              <span className="rank-number font-['Bebas_Neue'] text-[394px] md:text-[350px] leading-[0.73] -mr-8 select-none">
                 {index + 1}
               </span>
               {/* Movie poster card */}
