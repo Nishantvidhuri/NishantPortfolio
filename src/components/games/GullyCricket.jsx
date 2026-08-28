@@ -40,6 +40,7 @@ function GullyCricket() {
       runs: 0,
       wickets: 0,
       balls: 0,
+      streak: 0,   // consecutive boundaries
       raf: 0,
       last: performance.now(),
       t: 0,
@@ -97,6 +98,7 @@ function GullyCricket() {
       sfx.fail(); haptic([50, 30, 70]); shake(surface, 11);
       st.phase = "wicket";
       st.timer = 1.3;
+      st.streak = 0;
       st.wickets += 1;
       setWickets(st.wickets);
       say(reason, "#e50914");
@@ -119,6 +121,15 @@ function GullyCricket() {
       if (n === 6) { sfx.cheer(); haptic([15, 25, 15, 25, 30]); shake(surface, 8); }
       else if (n === 4) { sfx.score(); haptic([12, 20, 20]); shake(surface, 5); }
       else haptic(10);
+      const base = n; // pre-bonus value drives the visuals
+      // back-to-back boundaries build a streak bonus
+      if (n >= 4) {
+        st.streak += 1;
+        if (st.streak >= 2) {
+          n += st.streak;
+          label = `${label}  +${st.streak}`;
+        }
+      } else st.streak = 0;
       st.runs += n;
       setRuns(st.runs);
       say(label, color);
@@ -133,8 +144,8 @@ function GullyCricket() {
         vy: -(160 + n * 42),
         r: 9,
       };
-      burst(n >= 4 ? 20 : 8, CX, BAT_Y - 24,
-        n === 6 ? "rgba(255,199,44,0.95)" : n === 4 ? "rgba(70,211,105,0.95)" : "rgba(255,255,255,0.8)");
+      burst(base >= 4 ? 20 : 8, CX, BAT_Y - 24,
+        base === 6 ? "rgba(255,199,44,0.95)" : base === 4 ? "rgba(70,211,105,0.95)" : "rgba(255,255,255,0.8)");
     };
 
     const swingBat = () => {
@@ -502,6 +513,7 @@ function GullyCricket() {
     st.runs = 0;
     st.wickets = 0;
     st.balls = 0;
+    st.streak = 0;
     st.particles.length = 0;
     st.popup = null;
     st.shot = null;

@@ -30,6 +30,7 @@ function FlappyBlock() {
       particles: [],
       spawn: 0,
       score: 0,
+      streak: 0,
       flap: 0,
       raf: 0,
       last: performance.now(),
@@ -268,9 +269,12 @@ function FlappyBlock() {
           p.x -= 165 * dt;
           if (!p.passed && p.x + p.w < 90 - 16) {
             p.passed = true;
-            st.score += 1;
+            st.streak += 1;
+            // every 5 pipes clean = bonus point + fanfare
+            const bonus = st.streak % 5 === 0 ? 1 : 0;
+            st.score += 1 + bonus;
             setScore(st.score);
-            sfx.coin();
+            if (bonus) { sfx.cheer(); haptic([10, 20, 10]); } else sfx.coin();
             puff(7, p.x + p.w / 2, p.top + p.gap / 2, "rgba(255,214,102,0.9)", 80);
           }
           if (p.x + p.w < -20) st.pipes.splice(i, 1);
@@ -302,6 +306,7 @@ function FlappyBlock() {
     st.particles.length = 0;
     st.spawn = 1.0;
     st.score = 0;
+    st.streak = 0;
     st.running = true;
     setScore(0);
     setGameOver(false);

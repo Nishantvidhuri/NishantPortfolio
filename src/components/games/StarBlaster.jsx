@@ -30,6 +30,11 @@ function StarBlaster() {
       particles: [],
       fireTimer: 0,
       spawnTimer: 0,
+      drops: [],
+      shield: false,
+      rapidT: 0,
+      combo: 0,
+      comboT: 0,
       score: 0,
       t: 0,
       raf: 0,
@@ -255,7 +260,44 @@ function StarBlaster() {
       });
       ctx.globalAlpha = 1;
 
+      // power-up drops
+      st.drops.forEach((d) => {
+        const isShield = d.kind === "shield";
+        ctx.save();
+        ctx.shadowColor = isShield ? "rgba(56,189,248,0.9)" : "rgba(250,204,21,0.9)";
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = isShield ? "#38bdf8" : "#facc15";
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        ctx.fillStyle = "#0b0b16";
+        ctx.font = "bold 10px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(isShield ? "S" : "R", d.x, d.y + 3.5);
+        ctx.textAlign = "left";
+      });
+
       if (!st.exploded) drawShip();
+
+      // shield bubble around the ship
+      if (st.shield && !st.exploded) {
+        ctx.strokeStyle = `rgba(56,189,248,${0.55 + Math.sin(st.t * 7) * 0.2})`;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(st.x, H - 46, 26, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // combo multiplier
+      if (st.combo > 1) {
+        ctx.save();
+        ctx.textAlign = "center";
+        ctx.font = "bold 26px 'Bebas Neue', sans-serif";
+        ctx.fillStyle = `rgba(250,204,21,${Math.min(1, st.comboT)})`;
+        ctx.fillText(`x${Math.min(5, st.combo)} COMBO`, W / 2, 44);
+        ctx.restore();
+      }
     };
 
     const loop = (now) => {
@@ -273,6 +315,17 @@ function StarBlaster() {
       }
 
       if (st.running) {
+        if (st.rapidT > 0) st.rapidT -= dt;
+        if (st.comboT > 0) { st.comboT -= dt; if (st.comboT <= 0) st.combo = 0; }
+        for (let i = st.drops.length - 1; i >= 0; i--) {
+          const d = st.drops[i];
+          d.y += 110 * dt;
+          if ((d.x - st.x) ** 2 + (d.y - (H - 46)) ** 2 < 900) {
+            if (d.kind === "shield") st.shield = true; else st.rapidT = 7;
+            sfx.coin(); haptic(15);
+            st.drops.splice(i, 1);
+          } else if (d.y > H + 20) st.drops.splice(i, 1);
+        }
         const kSpeed = 330;
         if (st.keys.ArrowLeft || st.keys.a || st.keys.A) st.x = Math.max(20, st.x - kSpeed * dt);
         if (st.keys.ArrowRight || st.keys.d || st.keys.D) st.x = Math.min(W - 20, st.x + kSpeed * dt);
@@ -281,7 +334,7 @@ function StarBlaster() {
         if (st.fireTimer <= 0) {
           st.bullets.push({ x: st.x, y: H - 64 });
           sfx.laser();
-          st.fireTimer = 0.22;
+          st.fireTimer = st.rapidT > 0 ? 0.10 : 0.22;
         }
         st.bullets.forEach((b) => (b.y -= 480 * dt));
         st.bullets = st.bullets.filter((b) => b.y > -20);
@@ -311,9 +364,14 @@ function StarBlaster() {
             if ((b.x - r.x) ** 2 + (b.y - r.y) ** 2 < (r.size + 4) ** 2) {
               boom(10, r.x, r.y, r.color, 120);
               sfx.brick();
+              if (Math.random() < 0.12) {
+                st.drops.push({ x: r.x, y: r.y, kind: Math.random() < 0.5 ? "shield" : "rapid" });
+              }
               st.rocks.splice(i, 1);
               st.bullets.splice(j, 1);
-              st.score += 10;
+              st.combo += 1;
+              st.comboT = 2.6;
+              st.score += 10 * Math.min(5, st.combo);
               setScore(st.score);
               break;
             }
@@ -321,6 +379,13 @@ function StarBlaster() {
 
           if (!st.rocks[i]) continue;
           if ((r.x - st.x) ** 2 + (r.y - (H - 46)) ** 2 < (r.size + 12) ** 2) {
+            if (st.shield) {
+              st.shield = false;
+              st.rocks.splice(i, 1);
+              boom(16, st.x, H - 46, "rgba(56,189,248,0.95)", 170);
+              sfx.thud(); haptic(30); shake(surface, 8);
+              continue;
+            }
             endGame();
             break;
           }
@@ -352,6 +417,11 @@ function StarBlaster() {
     st.score = 0;
     st.t = 0;
     st.exploded = false;
+    st.drops.length = 0;
+    st.shield = false;
+    st.rapidT = 0;
+    st.combo = 0;
+    st.comboT = 0;
     st.running = true;
     setScore(0);
     setGameOver(false);

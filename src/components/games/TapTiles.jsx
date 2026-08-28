@@ -69,7 +69,9 @@ function TapTiles() {
 
       if (target.col === col && y > target.y && y < target.y + TILE_H + 60) {
         target.hit = true;
-        st.score += 1;
+        st.combo = (st.combo || 0) + 1;
+        // every 10 in a row adds a bonus point
+        st.score += 1 + (st.combo % 10 === 0 ? 1 : 0);
         st.speed += 4;
         sfx.note(st.score - 1); haptic(6);
         setScore(st.score);
@@ -242,6 +244,7 @@ function TapTiles() {
     st.ripples.length = 0;
     st.speed = 170;
     st.score = 0;
+    st.combo = 0;
     st.running = true;
     setScore(0);
     setGameOver(false);

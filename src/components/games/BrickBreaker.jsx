@@ -34,6 +34,8 @@ function BrickBreaker() {
       bricks: [],
       trail: [],
       particles: [],
+      drops: [],      // falling power-ups
+      slowT: 0,       // slow-motion timer
       score: 0, lives: 3, level: 1,
       raf: 0, last: performance.now(),
       t: 0,
@@ -175,6 +177,30 @@ function BrickBreaker() {
       });
       ctx.globalAlpha = 1;
 
+      // falling power-ups
+      st.drops.forEach((d) => {
+        const isLife = d.kind === "life";
+        ctx.save();
+        ctx.shadowColor = isLife ? "rgba(229,9,20,0.9)" : "rgba(56,189,248,0.9)";
+        ctx.shadowBlur = 12;
+        ctx.fillStyle = isLife ? "#e50914" : "#38bdf8";
+        ctx.beginPath();
+        ctx.roundRect(d.x - 13, d.y - 8, 26, 16, 8);
+        ctx.fill();
+        ctx.restore();
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(isLife ? "+1" : "SLO", d.x, d.y + 4);
+        ctx.textAlign = "left";
+      });
+
+      // slow-motion tint
+      if (st.slowT > 0) {
+        ctx.fillStyle = "rgba(56,189,248,0.07)";
+        ctx.fillRect(0, 0, W, H);
+      }
+
       // Paddle — glowing with red core
       ctx.save();
       ctx.shadowColor = "rgba(229,9,20,0.7)";
@@ -219,11 +245,24 @@ function BrickBreaker() {
       }
 
       if (st.running) {
+        if (st.slowT > 0) st.slowT -= dt;
+        for (let i = st.drops.length - 1; i >= 0; i--) {
+          const d = st.drops[i];
+          d.y += 130 * dt;
+          const caught = d.y > H - 34 && d.y < H - 10 && Math.abs(d.x - st.px) < PW / 2 + 12;
+          if (caught) {
+            if (d.kind === "life") { st.lives = Math.min(5, st.lives + 1); setLives(st.lives); sfx.cheer(); }
+            else { st.slowT = 6; sfx.coin(); }
+            haptic(15);
+            st.drops.splice(i, 1);
+          } else if (d.y > H + 20) st.drops.splice(i, 1);
+        }
         st.trail.push({ x: st.bx, y: st.by });
         if (st.trail.length > 7) st.trail.shift();
 
-        st.bx += st.bvx * dt;
-        st.by += st.bvy * dt;
+        const sm = st.slowT > 0 ? 0.62 : 1;
+        st.bx += st.bvx * dt * sm;
+        st.by += st.bvy * dt * sm;
 
         if (st.bx < BR || st.bx > W - BR) st.bvx *= -1;
         if (st.by < BR) st.bvy = Math.abs(st.bvy);
@@ -244,6 +283,12 @@ function BrickBreaker() {
           if (st.bx > b.x - BR && st.bx < b.x + BW + BR && st.by > b.y - BR && st.by < b.y + BH + BR) {
             b.alive = false;
             sfx.brick();
+            if (Math.random() < 0.14) {
+              st.drops.push({
+                x: b.x + BW / 2, y: b.y + BH / 2,
+                kind: Math.random() < 0.5 ? "life" : "slow",
+              });
+            }
             boom(9, b.x + BW / 2, b.y + BH / 2, b.color);
             st.score += 10;
             setScore(st.score);
@@ -295,6 +340,8 @@ function BrickBreaker() {
     st.bvy = -260;
     st.trail.length = 0;
     st.particles.length = 0;
+    st.drops.length = 0;
+    st.slowT = 0;
     st.running = true;
     setScore(0);
     setLives(3);
