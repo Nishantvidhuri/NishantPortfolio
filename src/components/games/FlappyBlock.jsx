@@ -17,6 +17,9 @@ function FlappyBlock() {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
+    // Input surface = the fullscreen wrapper, so the letterboxed
+    // black bars on narrow screens are tappable too.
+    const surface = canvas.parentElement || canvas;
 
     const st = {
       running: false,
@@ -62,7 +65,7 @@ function FlappyBlock() {
     };
     const onPointer = () => flap();
     window.addEventListener("keydown", onKey);
-    canvas.addEventListener("pointerdown", onPointer);
+    surface.addEventListener("pointerdown", onPointer);
 
     const endGame = () => {
       st.running = false;
@@ -283,7 +286,7 @@ function FlappyBlock() {
     return () => {
       cancelAnimationFrame(st.raf);
       window.removeEventListener("keydown", onKey);
-      canvas.removeEventListener("pointerdown", onPointer);
+      surface.removeEventListener("pointerdown", onPointer);
     };
   }, []);
 
@@ -310,7 +313,7 @@ function FlappyBlock() {
         <span className="text-gray-400 text-sm">Best: {highScore}</span>
       </div>
 
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full h-full flex items-center justify-center touch-none">
         <canvas
           ref={canvasRef}
           width={W}

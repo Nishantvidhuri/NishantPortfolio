@@ -17,6 +17,9 @@ function SkyHopper() {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
+    // Input surface = the fullscreen wrapper, so the letterboxed
+    // black bars on narrow screens are tappable too.
+    const surface = canvas.parentElement || canvas;
 
     const st = {
       running: false,
@@ -69,13 +72,13 @@ function SkyHopper() {
     const onKeyUp = (e) => onKey(e, false);
     const onPointer = (e) => {
       if (!st.running) return;
-      const rect = canvas.getBoundingClientRect();
+      const rect = surface.getBoundingClientRect();
       st.vx = e.clientX - rect.left < rect.width / 2 ? -240 : 240;
     };
     const onPointerUp = () => (st.vx = 0);
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
-    canvas.addEventListener("pointerdown", onPointer);
+    surface.addEventListener("pointerdown", onPointer);
     window.addEventListener("pointerup", onPointerUp);
 
     const endGame = () => {
@@ -284,7 +287,7 @@ function SkyHopper() {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("pointerup", onPointerUp);
-      canvas.removeEventListener("pointerdown", onPointer);
+      surface.removeEventListener("pointerdown", onPointer);
     };
   }, []);
 
@@ -313,7 +316,7 @@ function SkyHopper() {
         <span className="text-gray-400 text-sm">Best: {highScore}</span>
       </div>
 
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full h-full flex items-center justify-center touch-none">
         <canvas
           ref={canvasRef}
           width={W}

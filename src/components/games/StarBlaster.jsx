@@ -17,6 +17,9 @@ function StarBlaster() {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
+    // Input surface = the fullscreen wrapper, so the letterboxed
+    // black bars on narrow screens are tappable too.
+    const surface = canvas.parentElement || canvas;
 
     const st = {
       running: false,
@@ -68,8 +71,8 @@ function StarBlaster() {
     };
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
-    canvas.addEventListener("mousemove", onMouse);
-    canvas.addEventListener("touchmove", onTouch, { passive: false });
+    surface.addEventListener("mousemove", onMouse);
+    surface.addEventListener("touchmove", onTouch, { passive: false });
 
     const endGame = () => {
       st.running = false;
@@ -311,8 +314,8 @@ function StarBlaster() {
       cancelAnimationFrame(st.raf);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
-      canvas.removeEventListener("mousemove", onMouse);
-      canvas.removeEventListener("touchmove", onTouch);
+      surface.removeEventListener("mousemove", onMouse);
+      surface.removeEventListener("touchmove", onTouch);
     };
   }, []);
 
@@ -342,7 +345,7 @@ function StarBlaster() {
         <span className="text-gray-400 text-sm">Best: {highScore}</span>
       </div>
 
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full h-full flex items-center justify-center touch-none">
         <canvas
           ref={canvasRef}
           width={W}

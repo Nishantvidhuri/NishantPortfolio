@@ -223,7 +223,7 @@ function TapTiles() {
         <span className="text-gray-400 text-sm">Best: {highScore}</span>
       </div>
 
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full h-full flex items-center justify-center touch-none">
         <canvas
           ref={canvasRef}
           width={W}
