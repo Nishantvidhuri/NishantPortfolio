@@ -577,12 +577,12 @@ function GullyCricket() {
         ctx.fill();
       }
 
-      // batsman's stumps — drawn before the batsman so he stands in front of them
+      // batsman first, then the stumps on top, so the wicket stays fully visible
+      drawBatsman();
       const fallNow = st.stumpFall
         ? { ...st.stumpFall, lean: st.stumpFall.lean.map((a, i) => a * st.stumpFall.leanT[i]) }
         : null;
       drawStumps(CX, STUMP_Y, 1, 1, fallNow);
-      drawBatsman();
 
       /* particles */
       st.particles.forEach((p) => {
