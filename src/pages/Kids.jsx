@@ -10,6 +10,7 @@ import StarBlaster from '../components/games/StarBlaster';
 import SkyHopper from '../components/games/SkyHopper';
 import DinoDash from '../components/games/DinoDash';
 import TapTiles from '../components/games/TapTiles';
+import GullyCricket from '../components/games/GullyCricket';
 import { FaPlay, FaInfoCircle, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -19,6 +20,7 @@ const NEW_GAMES = [
   { id: 'stack-tower', title: 'Stack Tower 3D', emoji: '🏗️', tagline: 'Stack blocks sky-high', gradient: 'from-blue-600 via-cyan-500 to-teal-400', badge: '3D', category: '3d', component: StackTower },
   { id: 'orb-hunt', title: 'Orb Hunt 3D', emoji: '🔮', tagline: 'Roll & grab orbs against the clock', gradient: 'from-indigo-600 via-violet-500 to-purple-400', badge: '3D', category: '3d', component: OrbHunt },
   // — Arcade —
+  { id: 'gully-cricket', title: 'Gully Cricket', emoji: '🏏', tagline: 'Time your shot, smash a six', gradient: 'from-green-600 via-emerald-600 to-lime-500', badge: 'NEW', category: 'arcade', component: GullyCricket },
   { id: 'flappy-block', title: 'Flappy Block', emoji: '🐦', tagline: 'Fly between the pipes', gradient: 'from-purple-600 via-fuchsia-500 to-pink-400', badge: 'NEW', category: 'arcade', component: FlappyBlock },
   { id: 'dino-dash', title: 'Dino Dash', emoji: '🦖', tagline: 'Jump the cacti, go far', gradient: 'from-amber-600 via-orange-500 to-red-400', badge: 'NEW', category: 'arcade', component: DinoDash },
   { id: 'sky-hopper', title: 'Sky Hopper', emoji: '🪂', tagline: 'Bounce your way to space', gradient: 'from-sky-600 via-blue-500 to-indigo-400', badge: 'NEW', category: 'arcade', component: SkyHopper },
