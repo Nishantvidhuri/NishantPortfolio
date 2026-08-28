@@ -10,6 +10,15 @@ const BAT_Y = 500;     // batsman's contact height on screen
 const CX = 200;
 const WICKETS = 3;
 
+// Fielders scattered around the outfield (x, y, scale)
+const FIELDERS = [
+  { x: 58,  y: 196, s: 0.46 }, { x: 132, y: 170, s: 0.40 },
+  { x: 268, y: 168, s: 0.40 }, { x: 344, y: 200, s: 0.46 },
+  { x: 34,  y: 268, s: 0.56 }, { x: 366, y: 274, s: 0.56 },
+  { x: 96,  y: 360, s: 0.66 }, { x: 306, y: 366, s: 0.66 },
+  { x: 250, y: 470, s: 0.80 },
+];
+
 function GullyCricket() {
   const canvasRef = useRef(null);
   const stRef = useRef({ running: false });
@@ -175,6 +184,64 @@ function GullyCricket() {
 
     /* ---------- drawing ---------- */
 
+    // A fielder: small figure in whites, idling in a crouch
+    const drawFielder = (x, y, s, kit = "#dfe3ec") => {
+      ctx.save();
+      // shadow
+      ctx.fillStyle = "rgba(0,0,0,0.28)";
+      ctx.beginPath();
+      ctx.ellipse(x, y + 2 * s, 9 * s, 3 * s, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // legs
+      ctx.fillStyle = kit;
+      ctx.fillRect(x - 4 * s, y - 16 * s, 3.2 * s, 16 * s);
+      ctx.fillRect(x + 1 * s, y - 16 * s, 3.2 * s, 16 * s);
+      // torso
+      ctx.beginPath();
+      ctx.roundRect(x - 5.5 * s, y - 30 * s, 11 * s, 15 * s, 3 * s);
+      ctx.fill();
+      // arms out, ready
+      ctx.strokeStyle = kit;
+      ctx.lineWidth = 2.6 * s;
+      ctx.beginPath();
+      ctx.moveTo(x - 5 * s, y - 26 * s);
+      ctx.lineTo(x - 10 * s, y - 18 * s);
+      ctx.moveTo(x + 5 * s, y - 26 * s);
+      ctx.lineTo(x + 10 * s, y - 18 * s);
+      ctx.stroke();
+      // head
+      ctx.fillStyle = "#e8b48c";
+      ctx.beginPath();
+      ctx.arc(x, y - 35 * s, 4.4 * s, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    // Umpire in a wide-brimmed hat and dark trousers
+    const drawUmpire = (x, y, s) => {
+      ctx.save();
+      ctx.fillStyle = "rgba(0,0,0,0.28)";
+      ctx.beginPath();
+      ctx.ellipse(x, y + 2 * s, 9 * s, 3 * s, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#2b3245";
+      ctx.fillRect(x - 4 * s, y - 16 * s, 3.4 * s, 16 * s);
+      ctx.fillRect(x + 1 * s, y - 16 * s, 3.4 * s, 16 * s);
+      ctx.fillStyle = "#f0f2f7";
+      ctx.beginPath();
+      ctx.roundRect(x - 6 * s, y - 31 * s, 12 * s, 16 * s, 3 * s);
+      ctx.fill();
+      ctx.fillStyle = "#e8b48c";
+      ctx.beginPath();
+      ctx.arc(x, y - 36 * s, 4.4 * s, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#22283a";          // hat
+      ctx.beginPath();
+      ctx.ellipse(x, y - 39 * s, 8.5 * s, 2.4 * s, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    };
+
     const drawStumps = (x, y, scale, alpha = 1) => {
       ctx.save();
       ctx.globalAlpha = alpha;
@@ -220,11 +287,36 @@ function GullyCricket() {
       ctx.arc(x + 2, y - 102, 12, Math.PI, Math.PI * 2);
       ctx.fill();
       ctx.fillRect(x + 9, y - 104, 7, 3);
+      // helmet grille
+      ctx.strokeStyle = "#c8ccd8";
+      ctx.lineWidth = 1.4;
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.moveTo(x + 8, y - 100 + i * 4);
+        ctx.lineTo(x + 15, y - 100 + i * 4);
+        ctx.stroke();
+      }
+      // batting gloves
+      ctx.fillStyle = "#f2f2ef";
+      ctx.beginPath();
+      ctx.roundRect(x + 17, y - 68, 9, 10, 3);
+      ctx.fill();
 
       // bat — swings on tap
       const swingAng = st.swing >= 0
         ? -1.15 + st.swing * 2.5          // whip through
         : -0.55 + Math.sin(st.t * 2) * 0.06; // idle waggle
+      // motion arc behind a live swing
+      if (st.swing >= 0) {
+        ctx.save();
+        ctx.translate(x + 22, y - 62);
+        ctx.strokeStyle = `rgba(255,255,255,${0.35 * (1 - st.swing)})`;
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.arc(0, 0, 46, -1.15, -1.15 + st.swing * 2.5);
+        ctx.stroke();
+        ctx.restore();
+      }
       ctx.save();
       ctx.translate(x + 22, y - 62);
       ctx.rotate(swingAng);
@@ -276,32 +368,86 @@ function GullyCricket() {
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, W, H);
 
-      /* stadium stands */
-      ctx.fillStyle = "#0f1836";
+      /* stadium: two tiers of stands */
+      ctx.fillStyle = "#0c1430";
       ctx.beginPath();
-      ctx.roundRect(-20, 40, W + 40, 84, 40);
+      ctx.roundRect(-30, 28, W + 60, 56, 30);
       ctx.fill();
-      // crowd speckle
-      for (let i = 0; i < 150; i++) {
+      ctx.fillStyle = "#101a3c";
+      ctx.beginPath();
+      ctx.roundRect(-20, 66, W + 40, 62, 26);
+      ctx.fill();
+      // upper-deck roof lip
+      ctx.fillStyle = "rgba(255,255,255,0.06)";
+      ctx.fillRect(-30, 28, W + 60, 5);
+
+      // crowd — denser near the front, with camera flashes
+      for (let i = 0; i < 260; i++) {
         const cx = (i * 53) % (W + 20) - 10;
-        const cy = 52 + ((i * 37) % 62);
-        ctx.fillStyle = `hsla(${(i * 47) % 360}, 55%, 62%, 0.5)`;
-        ctx.fillRect(cx, cy, 2.5, 2.5);
+        const cy = 36 + ((i * 37) % 90);
+        ctx.fillStyle = `hsla(${(i * 47) % 360}, 55%, ${52 + (i % 3) * 8}%, 0.55)`;
+        ctx.fillRect(cx, cy, 2.4, 2.4);
       }
-      // floodlights
-      [60, W - 60].forEach((fx) => {
+      for (let i = 0; i < 5; i++) {
+        const seed = Math.floor(st.t * 2.2 + i * 13);
+        const fx = ((seed * 97) % (W - 20)) + 10;
+        const fy = 38 + ((seed * 41) % 84);
+        const life = 1 - ((st.t * 2.2 + i * 13) % 1);
+        ctx.fillStyle = `rgba(255,255,255,${life * 0.85})`;
+        ctx.beginPath();
+        ctx.arc(fx, fy, 2.4 * life + 0.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // scoreboard in the stands
+      ctx.fillStyle = "#050a1c";
+      ctx.beginPath();
+      ctx.roundRect(W - 104, 40, 84, 34, 4);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,0.18)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(W - 104, 40, 84, 34);
+      ctx.fillStyle = "#ffb020";
+      ctx.font = "bold 17px 'Bebas Neue', monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(`${st.runs}-${st.wickets}`, W - 62, 63);
+      ctx.textAlign = "left";
+
+      // four floodlight towers, with cones washing the field
+      [36, 128, W - 128, W - 36].forEach((fx, i) => {
+        const tall = i === 0 || i === 3;
+        const topY = tall ? 0 : 8;
         ctx.fillStyle = "#243056";
-        ctx.fillRect(fx - 2, 6, 4, 40);
+        ctx.fillRect(fx - 2, topY + 8, 4, 34);
         ctx.fillStyle = "#fdf6c8";
         ctx.beginPath();
-        ctx.roundRect(fx - 16, 0, 32, 12, 3);
+        ctx.roundRect(fx - 15, topY, 30, 11, 3);
         ctx.fill();
-        const glow = ctx.createRadialGradient(fx, 8, 4, fx, 8, 90);
-        glow.addColorStop(0, "rgba(253,246,200,0.22)");
+        // bulb glow
+        const glow = ctx.createRadialGradient(fx, topY + 6, 3, fx, topY + 6, 80);
+        glow.addColorStop(0, "rgba(253,246,200,0.28)");
         glow.addColorStop(1, "rgba(253,246,200,0)");
         ctx.fillStyle = glow;
-        ctx.fillRect(fx - 90, 0, 180, 150);
+        ctx.fillRect(fx - 80, topY - 10, 160, 140);
+        // light cone onto the outfield
+        const cone = ctx.createLinearGradient(fx, topY + 10, CX, H);
+        cone.addColorStop(0, "rgba(253,246,200,0.10)");
+        cone.addColorStop(1, "rgba(253,246,200,0)");
+        ctx.fillStyle = cone;
+        ctx.beginPath();
+        ctx.moveTo(fx - 12, topY + 10);
+        ctx.lineTo(fx + 12, topY + 10);
+        ctx.lineTo(CX + (fx - CX) * 2.4 + 120, H);
+        ctx.lineTo(CX + (fx - CX) * 2.4 - 120, H);
+        ctx.closePath();
+        ctx.fill();
       });
+
+      // sightscreen behind the bowler's arm
+      ctx.fillStyle = "#e8e6df";
+      ctx.fillRect(CX - 40, 118, 80, 20);
+      ctx.fillStyle = "rgba(0,0,0,0.12)";
+      ctx.fillRect(CX - 40, 134, 80, 4);
 
       /* outfield */
       const grass = ctx.createLinearGradient(0, HORIZON - 24, 0, H);
@@ -320,6 +466,14 @@ function GullyCricket() {
         ctx.closePath();
         ctx.fill();
       }
+      // advertising boards ringing the boundary
+      const adColors = ["#e50914", "#1d4ed8", "#f59e0b", "#0f766e", "#7c3aed"];
+      for (let i = 0; i < 9; i++) {
+        ctx.fillStyle = adColors[i % adColors.length];
+        ctx.fillRect(i * (W / 9), HORIZON - 34, W / 9 - 3, 12);
+        ctx.fillStyle = "rgba(255,255,255,0.35)";
+        ctx.fillRect(i * (W / 9) + 5, HORIZON - 30, W / 9 - 15, 3);
+      }
       // boundary rope
       ctx.strokeStyle = "rgba(255,255,255,0.5)";
       ctx.lineWidth = 2;
@@ -327,6 +481,9 @@ function GullyCricket() {
       ctx.moveTo(0, HORIZON - 22);
       ctx.lineTo(W, HORIZON - 22);
       ctx.stroke();
+
+      // fielders spread around the outfield
+      FIELDERS.forEach((f) => drawFielder(f.x, f.y, f.s));
 
       /* pitch (perspective trapezoid) */
       ctx.fillStyle = "#c2a173";
@@ -339,6 +496,21 @@ function GullyCricket() {
       ctx.fill();
       ctx.fillStyle = "rgba(0,0,0,0.08)";
       ctx.fillRect(CX - 4, HORIZON, 8, H - HORIZON);
+      // worn patches + bowler footmarks scuffed into the pitch
+      ctx.fillStyle = "rgba(120,92,58,0.30)";
+      [[0.20, 12], [0.34, 16], [0.62, 22], [0.78, 26]].forEach(([zz, rw]) => {
+        const y = HORIZON + (H - HORIZON) * zz;
+        ctx.beginPath();
+        ctx.ellipse(CX + (zz * 20 - 10), y, rw, rw * 0.34, 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.fillStyle = "rgba(90,68,42,0.35)";
+      [[-16, 0.26], [10, 0.30], [-12, 0.36]].forEach(([dx, zz]) => {
+        const y = HORIZON + (H - HORIZON) * zz;
+        ctx.beginPath();
+        ctx.ellipse(CX + dx, y, 7, 3, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+      });
       // creases
       ctx.strokeStyle = "rgba(255,255,255,0.75)";
       ctx.lineWidth = 2;
@@ -350,6 +522,8 @@ function GullyCricket() {
       });
 
       drawStumps(CX, HORIZON + 12, 0.45, 0.85);   // bowler's end
+      drawUmpire(CX + 44, HORIZON + 14, 0.5);
+      drawFielder(CX - 40, HORIZON + 12, 0.42, "#f2f2ef"); // non-striker
       if (st.phase === "ready") drawBowler();
 
       /* the delivery */
@@ -369,6 +543,11 @@ function GullyCricket() {
           ctx.fill();
         }
         ctx.globalAlpha = 1;
+        // shadow cast on the pitch beneath the ball
+        ctx.fillStyle = "rgba(0,0,0,0.25)";
+        ctx.beginPath();
+        ctx.ellipse(bx, by + r * 1.5, r * 1.15, r * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
         // ball
         const bg = ctx.createRadialGradient(bx - r * 0.3, by - r * 0.3, r * 0.2, bx, by, r);
         bg.addColorStop(0, "#fff5f5");
