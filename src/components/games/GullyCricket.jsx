@@ -7,7 +7,7 @@ const H = 620;
 const HORIZON = 150;   // far (bowler's) end of the pitch
 const CONTACT_Z = 0.94; // where the ball meets the bat
 const BAT_Y = 500;     // batsman's contact height on screen
-const STUMP_Y = BAT_Y - 4;   // wicket sits BEHIND (further than) the batsman
+const STUMP_Y = BAT_Y + 100;   // wicket sits BEHIND (further than) the batsman
 const CX = 200;
 const WICKETS = 3;
 
@@ -582,7 +582,7 @@ function GullyCricket() {
       const fallNow = st.stumpFall
         ? { ...st.stumpFall, lean: st.stumpFall.lean.map((a, i) => a * st.stumpFall.leanT[i]) }
         : null;
-      drawStumps(CX, STUMP_Y, 0.92, 1, fallNow);
+      drawStumps(CX, STUMP_Y, 1.2, 1, fallNow);
 
       /* particles */
       st.particles.forEach((p) => {
