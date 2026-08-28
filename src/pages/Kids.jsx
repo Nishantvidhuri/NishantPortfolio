@@ -16,12 +16,12 @@ import { isMuted, setMuted } from '../components/games/gameFeel';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NEW_GAMES = [
+  { id: 'gully-cricket', title: 'Gully Cricket', emoji: '🏏', tagline: 'Time your shot, smash a six', gradient: 'from-green-600 via-emerald-600 to-lime-500', badge: 'NEW', category: 'arcade', component: GullyCricket },
   // — 3D showcase —
   { id: 'cube-runner', title: 'Cube Runner 3D', emoji: '🚀', tagline: 'Dodge blocks at warp speed', gradient: 'from-red-600 via-orange-500 to-yellow-400', badge: '3D', category: '3d', component: CubeRunner },
   { id: 'stack-tower', title: 'Stack Tower 3D', emoji: '🏗️', tagline: 'Stack blocks sky-high', gradient: 'from-blue-600 via-cyan-500 to-teal-400', badge: '3D', category: '3d', component: StackTower },
   { id: 'orb-hunt', title: 'Orb Hunt 3D', emoji: '🔮', tagline: 'Roll & grab orbs against the clock', gradient: 'from-indigo-600 via-violet-500 to-purple-400', badge: '3D', category: '3d', component: OrbHunt },
   // — Arcade —
-  { id: 'gully-cricket', title: 'Gully Cricket', emoji: '🏏', tagline: 'Time your shot, smash a six', gradient: 'from-green-600 via-emerald-600 to-lime-500', badge: 'NEW', category: 'arcade', component: GullyCricket },
   { id: 'flappy-block', title: 'Flappy Block', emoji: '🐦', tagline: 'Fly between the pipes', gradient: 'from-purple-600 via-fuchsia-500 to-pink-400', badge: 'NEW', category: 'arcade', component: FlappyBlock },
   { id: 'dino-dash', title: 'Dino Dash', emoji: '🦖', tagline: 'Jump the cacti, go far', gradient: 'from-amber-600 via-orange-500 to-red-400', badge: 'NEW', category: 'arcade', component: DinoDash },
   { id: 'sky-hopper', title: 'Sky Hopper', emoji: '🪂', tagline: 'Bounce your way to space', gradient: 'from-sky-600 via-blue-500 to-indigo-400', badge: 'NEW', category: 'arcade', component: SkyHopper },
@@ -143,7 +143,7 @@ function Kids() {
           </p>
           <div className="flex space-x-4 pt-2">
             <button
-              onClick={() => setActiveGame(NEW_GAMES[0])}
+              onClick={() => setActiveGame(NEW_GAMES.find((g) => g.id === 'cube-runner'))}
               className="flex items-center px-8 py-3 bg-white text-black rounded font-bold hover:bg-white/80 transition"
             >
               <FaPlay className="mr-2" /> Play Now
