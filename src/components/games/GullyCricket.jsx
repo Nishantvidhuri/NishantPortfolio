@@ -16,7 +16,7 @@ const FIELDERS = [
   { x: 268, y: 168, s: 0.40 }, { x: 344, y: 200, s: 0.46 },
   { x: 34,  y: 268, s: 0.56 }, { x: 366, y: 274, s: 0.56 },
   { x: 96,  y: 360, s: 0.66 }, { x: 306, y: 366, s: 0.66 },
-  { x: 250, y: 470, s: 0.80 },
+  { x: 336, y: 436, s: 0.74 },
 ];
 
 function GullyCricket() {
@@ -46,6 +46,7 @@ function GullyCricket() {
       shot: null,         // flying ball after a hit
       popup: null,        // { text, life, color }
       particles: [],
+      stumpFall: null,   // set when you're bowled
       runs: 0,
       wickets: 0,
       balls: 0,
@@ -83,6 +84,7 @@ function GullyCricket() {
     };
 
     const nextBall = () => {
+      st.stumpFall = null;
       st.phase = "ready";
       st.timer = 0.9;
       st.swing = -1;
@@ -105,6 +107,23 @@ function GullyCricket() {
 
     const outNow = (reason) => {
       sfx.fail(); haptic([50, 30, 70]); shake(surface, 11);
+      if (reason.startsWith("BOWLED")) {
+        // knock the stumps back and send both bails flying
+        const bx = CX, by = BAT_Y + 34 - 46;
+        st.stumpFall = {
+          lean: [
+            (Math.random() * 0.18 + 0.10) * (Math.random() < 0.5 ? -1 : 1),
+            Math.random() * 0.30 + 0.22,
+            (Math.random() * 0.22 + 0.12) * (Math.random() < 0.5 ? -1 : 1),
+          ],
+          leanT: [0, 0, 0],
+          bails: [
+            { x: bx - 4, y: by - 3, vx: -70 - Math.random() * 60, vy: -150 - Math.random() * 70, rot: 0, vrot: -7 },
+            { x: bx + 4, y: by - 3, vx: 70 + Math.random() * 60, vy: -140 - Math.random() * 70, rot: 0, vrot: 8 },
+          ],
+        };
+        burst(14, bx, by, "rgba(244,241,232,0.95)", 150);
+      }
       st.phase = "wicket";
       st.timer = 1.3;
       st.streak = 0;
@@ -242,24 +261,43 @@ function GullyCricket() {
       ctx.restore();
     };
 
-    const drawStumps = (x, y, scale, alpha = 1) => {
+    const drawStumps = (x, y, scale, alpha = 1, fall = null) => {
       ctx.save();
       ctx.globalAlpha = alpha;
       const h = 46 * scale;
       const w = 3.4 * scale;
       const gap = 7 * scale;
       ctx.fillStyle = "#f4f1e8";
+      // three stumps — each can lean back when the wicket is hit
       for (let i = -1; i <= 1; i++) {
-        ctx.fillRect(x + i * gap - w / 2, y - h, w, h);
+        const lean = fall ? fall.lean[i + 1] : 0;
+        ctx.save();
+        ctx.translate(x + i * gap, y);
+        ctx.rotate(lean);
+        ctx.fillRect(-w / 2, -h, w, h);
+        ctx.restore();
       }
-      // bails
-      ctx.fillRect(x - gap - w / 2, y - h - 2.5 * scale, gap * 2 + w, 2.2 * scale);
+      // bails: seated on top, or flying off after being bowled
+      if (fall) {
+        fall.bails.forEach((b) => {
+          ctx.save();
+          ctx.translate(b.x, b.y);
+          ctx.rotate(b.rot);
+          ctx.fillRect(-gap * 0.5, -1.1 * scale, gap, 2.2 * scale);
+          ctx.restore();
+        });
+      } else {
+        ctx.fillRect(x - gap - w / 2, y - h - 2.5 * scale, gap + w / 2, 2.2 * scale);
+        ctx.fillRect(x + w / 2, y - h - 2.5 * scale, gap + w / 2, 2.2 * scale);
+      }
       ctx.restore();
     };
 
     const drawBatsman = () => {
-      const x = CX - 46;
-      const y = BAT_Y + 26;
+      // stand him beside the stumps (not on top of them) and a touch in front,
+      // so the wicket stays visible behind the bat
+      const x = CX - 58;
+      const y = BAT_Y + 22;
       // shadow
       ctx.fillStyle = "rgba(0,0,0,0.3)";
       ctx.beginPath();
@@ -582,7 +620,11 @@ function GullyCricket() {
         ctx.fill();
       }
 
-      drawStumps(CX, BAT_Y + 34, 1, 1);           // batsman's stumps
+      // batsman's stumps — shattered if you've just been bowled
+      const fallNow = st.stumpFall
+        ? { ...st.stumpFall, lean: st.stumpFall.lean.map((a, i) => a * st.stumpFall.leanT[i]) }
+        : null;
+      drawStumps(CX, BAT_Y + 34, 1, 1, fallNow);
       drawBatsman();
 
       /* particles */
@@ -645,6 +687,17 @@ function GullyCricket() {
         p.life -= dt * 1.5;
         if (p.life <= 0) st.particles.splice(i, 1);
       }
+      if (st.stumpFall) {
+        const f = st.stumpFall;
+        f.bails.forEach((b) => {
+          b.x += b.vx * dt;
+          b.y += b.vy * dt;
+          b.vy += 520 * dt;
+          b.rot += b.vrot * dt;
+        });
+        // stumps topple over ~0.25s
+        f.leanT = f.leanT.map((v) => Math.min(1, v + dt * 4));
+      }
       if (st.shot) {
         st.shot.x += st.shot.vx * dt;
         st.shot.y += st.shot.vy * dt;
@@ -693,6 +746,7 @@ function GullyCricket() {
     st.wickets = 0;
     st.balls = 0;
     st.streak = 0;
+    st.stumpFall = null;
     st.particles.length = 0;
     st.popup = null;
     st.shot = null;
