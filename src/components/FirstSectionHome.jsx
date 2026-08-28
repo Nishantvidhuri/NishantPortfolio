@@ -141,7 +141,7 @@ function FirstSectionHome() {
       </div>
 
       {/* Mobile View */}
-      <div className="flex sm:hidden flex-col items-center justify-center w-full h-[600px] p-6 bg-[#141414] relative">
+      <div className="flex sm:hidden flex-col items-center justify-end w-full min-h-[560px] px-4 pt-24 pb-8 bg-[#141414] relative">
         {/* Background Image */}
         <div
           className="absolute  inset-0 bg-cover bg-center"
@@ -154,54 +154,54 @@ function FirstSectionHome() {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="absolute top-20  w-full  flex gap-4 text-xl">
-          <button 
+        <div className="absolute top-16 inset-x-0 px-4 flex gap-2 text-sm">
+          <button
             onClick={() => handleNavigation('projects')}
-            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+            className="flex-1 py-1.5 border rounded-full border-gray-300/70 text-gray-200 active:bg-white/10 transition-colors"
           >
             Projects
           </button>
-          <button 
+          <button
             onClick={() => handleNavigation('about')}
-            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+            className="flex-1 py-1.5 border rounded-full border-gray-300/70 text-gray-200 active:bg-white/10 transition-colors"
           >
             About Me
           </button>
-          <button 
+          <button
             onClick={() => handleNavigation('resume')}
-            className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors"
+            className="flex-1 py-1.5 border rounded-full border-gray-300/70 text-gray-200 active:bg-white/10 transition-colors"
           >
             Resume
           </button>
         </div>
 
-        {/* Project Content */}
-        <div className="relative w-[90%] h-[90%] translate-y-14 flex flex-col items-center justify-center text-center">
+        {/* Project Content — natural flow so nothing can overlap */}
+        <div className="relative z-10 w-full flex flex-col items-center text-center gap-3">
           {/* Project Logo */}
           <img
             src={projects[randomIndex].logo} // ✅ Fix Here
             alt={`${projects[randomIndex].name} Logo`}
-            className="w-60 absolute top-[10%] mb-4 object-contain"
+            className="w-40 max-h-28 object-contain"
           />
 
           {/* Project Name */}
-          <h2 className="text-5xl absolute top-[70%] font-['Bebas_Neue'] tracking-wide text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
+          <h2 className="text-4xl font-['Bebas_Neue'] tracking-wide leading-none text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
             {projects[randomIndex].name}
           </h2>
-          <div className="flex">
-            <h2 className="text-sm w-full absolute left-0 top-[78%] text-white flex items-center justify-center gap-2 flex-wrap">
-              <span className="text-[#46d369] font-semibold">98% Match</span>
-              <span className="text-gray-400">2026</span>
-              <span className="text-gray-300">{projects[randomIndex].genre}</span>
-            </h2>
+
+          <div className="text-xs text-white flex items-center justify-center gap-2 flex-wrap px-2">
+            <span className="text-[#46d369] font-semibold">98% Match</span>
+            <span className="text-gray-400">2026</span>
+            <span className="text-gray-300">{projects[randomIndex].genre}</span>
           </div>
+
           {/* Buttons */}
-          <div className="flex gap-4 absolute top-[85%]">
+          <div className="flex gap-3 w-full justify-center pt-1">
             <a
               href={projects[randomIndex].livelink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-white text-black font-semibold w-32 justify-center px-3 py-2 rounded transition"
+              className="flex items-center gap-2 bg-white text-black font-semibold flex-1 max-w-[150px] justify-center px-3 py-2.5 rounded transition"
             >
               <div className="w-4 sm:w-5 h-4">
                 <svg
@@ -227,7 +227,7 @@ function FirstSectionHome() {
               href={projects[randomIndex].githublink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#716A66] text-white font-semibold w-36 justify-center h-10 opacity-60 rounded transition hover:opacity-50"
+              className="flex items-center gap-2 bg-[rgba(109,109,110,0.7)] text-white font-semibold flex-1 max-w-[150px] justify-center py-2.5 rounded transition active:bg-[rgba(109,109,110,0.4)]"
             >
               <div className="w-6 sm:w-7 h-5">
                 <svg

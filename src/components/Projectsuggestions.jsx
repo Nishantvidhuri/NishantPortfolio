@@ -195,7 +195,7 @@ function Projectsuggestions() {
                     className="absolute bottom-[25%] left-[25%] z-20 w-20 h-20 object-contain mx-auto mt-3"
                   />
         {/* Project Name */}
-        <h2 className="absolute bottom-2 font-[teko] left-0 right-0 text-white text-center text-lg font-semibold z-10">
+        <h2 className="absolute bottom-2 left-0 right-0 px-1.5 font-['Bebas_Neue'] tracking-wide text-white text-center text-xl leading-tight z-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
           {project.name}
         </h2>
       </div>

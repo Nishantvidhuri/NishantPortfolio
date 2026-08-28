@@ -21,7 +21,7 @@ function About() {
       company: "Recrivio",
       title: "Associate Software Developer",
       period: "August 2025 - Present",
-      logo: "https://dev-surefy.s3.ap-south-1.amazonaws.com/upload/5edb22f4-f669-4c01-8518-c17a1a3bbda4_1758822235442.png",
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScqpp3Y5Duvh-v7pYI0lzo5lgFz2VIs7tSUvc2QEZeBg&s=10",
     },
     {
       company: "Vox Gauge",
@@ -48,10 +48,10 @@ function About() {
       <Navbar />
 
       {/* Mobile Navigation */}
-      <div className="absolute z-[1000] top-20 w-full flex gap-4 text-xl px-4 md:hidden">
-        <button onClick={() => handleNavigation('projects')} className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors">Projects</button>
-        <button onClick={() => handleNavigation('about')} className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors">About Me</button>
-        <button onClick={() => handleNavigation('resume')} className="w-[30%] py-0.5 border-2 rounded-full border-gray-300 text-gray-300 hover:bg-white/10 transition-colors">Resume</button>
+      <div className="absolute z-[1000] top-16 inset-x-0 flex gap-2 text-sm px-4 md:hidden">
+        <button onClick={() => handleNavigation('projects')} className="flex-1 py-1.5 border rounded-full border-gray-300/70 text-gray-200 active:bg-white/10 transition-colors">Projects</button>
+        <button onClick={() => handleNavigation('about')} className="flex-1 py-1.5 border rounded-full border-gray-300/70 text-gray-200 active:bg-white/10 transition-colors">About Me</button>
+        <button onClick={() => handleNavigation('resume')} className="flex-1 py-1.5 border rounded-full border-gray-300/70 text-gray-200 active:bg-white/10 transition-colors">Resume</button>
       </div>
 
       {/* Hero Banner */}
@@ -60,7 +60,7 @@ function About() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('https://dev-to-uploads.s3.amazonaws.com/i/jxx4zedqe3hkoysugr5j.jpg')" }}
         />
-        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute inset-0 bg-black/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/60 to-transparent" />
 
         <div className="relative z-10 w-full px-4 sm:px-10 pb-8 sm:pb-12">
