@@ -909,7 +909,7 @@ const MiniGames = () => {
             <FaChevronLeft className="text-white" size={20} />
           </button>
 
-          <div ref={sliderRef} className="flex gap-3 sm:gap-4 px-4 sm:px-10 overflow-x-auto no-scrollbar pb-4 cursor-grab active:cursor-grabbing"
+          <div ref={sliderRef} className="flex gap-3 sm:gap-4 px-4 sm:px-10 overflow-x-auto overflow-y-hidden no-scrollbar pb-4 cursor-grab active:cursor-grabbing"
             onMouseDown={startDrag} onMouseLeave={stopDrag} onMouseUp={stopDrag} onMouseMove={onDrag}
           >
             {games.map((game) => (

@@ -42,7 +42,7 @@ function SkillsShowcase() {
       <h2 className="px-4 md:px-12 text-lg md:text-2xl font-bold text-[#e5e5e5] mb-3">
         Technologies I Work With
       </h2>
-      <div className="flex overflow-x-auto no-scrollbar gap-3 px-4 md:px-12 pb-4 pt-2">
+      <div className="flex overflow-x-auto overflow-y-hidden no-scrollbar gap-3 px-4 md:px-12 pb-4 pt-2">
         {techStack.map((tech, index) => (
           <div
             key={index}

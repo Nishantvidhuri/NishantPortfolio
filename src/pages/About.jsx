@@ -116,7 +116,7 @@ function About() {
         <h2 className="ml-4 sm:ml-10 pb-4 text-lg sm:text-xl font-['Poppins'] text-white">
           Professional Experience
         </h2>
-        <div className="flex gap-2 px-4 sm:px-10 overflow-x-auto no-scrollbar">
+        <div className="flex gap-2 px-4 sm:px-10 overflow-x-auto overflow-y-hidden no-scrollbar">
           {experiences.map((exp, index) => (
             <div
               key={index}
@@ -136,7 +136,7 @@ function About() {
         <h2 className="ml-4 sm:ml-10 pb-4 text-lg sm:text-xl font-['Poppins'] text-white">
           Education
         </h2>
-        <div className="flex gap-2 px-4 sm:px-10 overflow-x-auto no-scrollbar">
+        <div className="flex gap-2 px-4 sm:px-10 overflow-x-auto overflow-y-hidden no-scrollbar">
           {education.map((edu, index) => (
             <div
               key={index}
