@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FaPlay, FaRedo, FaTrophy } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const BASE_SIZE = 3;
 const BLOCK_H = 0.55;
@@ -158,6 +159,7 @@ function StackTower() {
 
       if (overlap <= 0.02) {
         st.falling.push({ mesh: m.mesh, vy: 0 });
+        sfx.fail(); haptic([40, 30, 60]); shake(mount, 11);
         st.moving = null;
         st.running = false;
         setGameOver(true);
@@ -188,6 +190,7 @@ function StackTower() {
       placed.mesh.material = m.mesh.material; // keep color
 
       if (perfect) {
+        sfx.cheer(); haptic([12, 20, 12]);
         // white flash that decays in the loop
         placed.mesh.material.emissive = new THREE.Color(0xffffff);
         placed.mesh.material.emissiveIntensity = 0.9;
@@ -206,6 +209,7 @@ function StackTower() {
         st.falling.push({ mesh: chunk.mesh, vy: 0 });
       }
 
+      if (!perfect) { sfx.thud(); haptic(10); }
       st.topBlock = placed;
       setScore(st.level);
       spawnMoving();

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPlay, FaRedo, FaTrophy } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const W = 400;
 const H = 520;
@@ -83,6 +84,7 @@ function SkyHopper() {
 
     const endGame = () => {
       st.running = false;
+      sfx.fail(); haptic([40, 30, 60]); shake(surface, 9);
       setGameOver(true);
       setGameStarted(false);
       setHighScore((h) => {
@@ -248,6 +250,7 @@ function SkyHopper() {
             ) {
               st.vy = -430;
               st.squash = 1;
+              sfx.bounce(); haptic(8);
               puff(5, st.x, p.y + 2, "rgba(160,220,170,0.7)");
               break;
             }

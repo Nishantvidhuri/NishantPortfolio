@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FaPlay, FaRedo, FaTrophy, FaClock } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const ARENA = 15; // half-size of the play field
 const GAME_TIME = 60;
@@ -253,6 +254,7 @@ function OrbHunt() {
 
     const endGame = () => {
       st.running = false;
+      sfx.fail(); haptic([40, 30, 60]);
       setGameOver(true);
       setGameStarted(false);
       setHighScore((h) => {
@@ -336,6 +338,7 @@ function OrbHunt() {
             o.userData.ringMat.dispose();
             orbs.splice(i, 1);
             st.score += 1;
+            sfx.coin(); haptic(8);
             setScore(st.score);
             spawnOrb();
           }

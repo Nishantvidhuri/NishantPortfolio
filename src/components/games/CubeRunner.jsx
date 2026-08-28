@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FaPlay, FaRedo, FaTrophy } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const LANES = [-2.6, 0, 2.6];
 
@@ -229,6 +230,7 @@ function CubeRunner() {
 
     const endGame = () => {
       st.running = false;
+      sfx.explode(); haptic([50, 30, 70]); shake(mount, 14);
       setGameOver(true);
       setGameStarted(false);
       const final = Math.floor(st.score);
@@ -322,7 +324,9 @@ function CubeRunner() {
 
     // Controls — keys + swipe left/right
     const move = (dirn) => {
+      const prev = st.lane;
       st.lane = Math.max(0, Math.min(2, st.lane + dirn));
+      if (st.lane !== prev && st.running) { sfx.swipe(); haptic(8); }
     };
     const onKey = (e) => {
       if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") move(-1);

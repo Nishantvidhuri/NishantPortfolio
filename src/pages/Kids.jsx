@@ -11,7 +11,8 @@ import SkyHopper from '../components/games/SkyHopper';
 import DinoDash from '../components/games/DinoDash';
 import TapTiles from '../components/games/TapTiles';
 import GullyCricket from '../components/games/GullyCricket';
-import { FaPlay, FaInfoCircle, FaTimes } from 'react-icons/fa';
+import { FaPlay, FaInfoCircle, FaTimes, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { isMuted, setMuted } from '../components/games/gameFeel';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NEW_GAMES = [
@@ -52,6 +53,7 @@ function Kids() {
   const [showArrows, setShowArrows] = useState(false);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
+  const [muted, setMutedState] = useState(() => isMuted());
 
   const updateArrows = () => {
     const el = rowRef.current;
@@ -178,13 +180,22 @@ function Kids() {
                   {activeGame.badge}
                 </span>
               </h2>
-              <button
-                className="pointer-events-auto text-gray-300 hover:text-white transition-colors bg-white/10 hover:bg-white/20 rounded-full p-2.5"
-                onClick={() => setActiveGame(null)}
-                aria-label="Close game"
-              >
-                <FaTimes size={20} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  className="pointer-events-auto text-gray-300 hover:text-white transition-colors bg-white/10 hover:bg-white/20 rounded-full p-2.5"
+                  onClick={() => { const m = !muted; setMuted(m); setMutedState(m); }}
+                  aria-label={muted ? "Unmute" : "Mute"}
+                >
+                  {muted ? <FaVolumeMute size={20} /> : <FaVolumeUp size={20} />}
+                </button>
+                <button
+                  className="pointer-events-auto text-gray-300 hover:text-white transition-colors bg-white/10 hover:bg-white/20 rounded-full p-2.5"
+                  onClick={() => setActiveGame(null)}
+                  aria-label="Close game"
+                >
+                  <FaTimes size={20} />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

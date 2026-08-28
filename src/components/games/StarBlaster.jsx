@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPlay, FaRedo, FaTrophy } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const W = 440;
 const H = 520;
@@ -76,6 +77,7 @@ function StarBlaster() {
 
     const endGame = () => {
       st.running = false;
+      sfx.explode(); haptic([50, 30, 70]); shake(surface, 12);
       st.exploded = true;
       boom(26, st.x, H - 46, "rgba(229,9,20,0.95)", 210);
       boom(14, st.x, H - 46, "rgba(255,170,60,0.9)", 150);
@@ -260,6 +262,7 @@ function StarBlaster() {
         st.fireTimer -= dt;
         if (st.fireTimer <= 0) {
           st.bullets.push({ x: st.x, y: H - 64 });
+          sfx.laser();
           st.fireTimer = 0.22;
         }
         st.bullets.forEach((b) => (b.y -= 480 * dt));
@@ -289,6 +292,7 @@ function StarBlaster() {
             const b = st.bullets[j];
             if ((b.x - r.x) ** 2 + (b.y - r.y) ** 2 < (r.size + 4) ** 2) {
               boom(10, r.x, r.y, r.color, 120);
+              sfx.brick();
               st.rocks.splice(i, 1);
               st.bullets.splice(j, 1);
               st.score += 10;

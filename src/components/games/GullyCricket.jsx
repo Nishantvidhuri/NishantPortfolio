@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPlay, FaRedo, FaTrophy } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const W = 400;
 const H = 620;
@@ -93,6 +94,7 @@ function GullyCricket() {
     };
 
     const outNow = (reason) => {
+      sfx.fail(); haptic([50, 30, 70]); shake(surface, 11);
       st.phase = "wicket";
       st.timer = 1.3;
       st.wickets += 1;
@@ -113,6 +115,10 @@ function GullyCricket() {
     };
 
     const scoreRuns = (n, label, color) => {
+      sfx.bat();
+      if (n === 6) { sfx.cheer(); haptic([15, 25, 15, 25, 30]); shake(surface, 8); }
+      else if (n === 4) { sfx.score(); haptic([12, 20, 20]); shake(surface, 5); }
+      else haptic(10);
       st.runs += n;
       setRuns(st.runs);
       say(label, color);

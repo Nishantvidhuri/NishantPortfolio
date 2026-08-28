@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPlay, FaRedo, FaTrophy, FaHeart } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const W = 440;
 const H = 520;
@@ -85,6 +86,7 @@ function BrickBreaker() {
     surface.addEventListener("touchmove", onTouch, { passive: false });
 
     const loseLife = () => {
+      sfx.fail(); haptic([30, 25, 50]); shake(surface, 8);
       st.lives -= 1;
       setLives(st.lives);
       if (st.lives <= 0) {
@@ -218,12 +220,14 @@ function BrickBreaker() {
         ) {
           st.bvy = -Math.abs(st.bvy);
           st.bvx += ((st.bx - st.px) / (PW / 2)) * 160;
+          sfx.blip(); haptic(6);
         }
 
         for (const b of st.bricks) {
           if (!b.alive) continue;
           if (st.bx > b.x - BR && st.bx < b.x + BW + BR && st.by > b.y - BR && st.by < b.y + BH + BR) {
             b.alive = false;
+            sfx.brick();
             boom(9, b.x + BW / 2, b.y + BH / 2, b.color);
             st.score += 10;
             setScore(st.score);

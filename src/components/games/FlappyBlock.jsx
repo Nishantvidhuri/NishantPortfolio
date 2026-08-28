@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPlay, FaRedo, FaTrophy } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const W = 400;
 const H = 520;
@@ -53,6 +54,7 @@ function FlappyBlock() {
       if (!st.running) return;
       st.vy = -320;
       st.flap = 1;
+      sfx.flap(); haptic(8);
       puff(4, 90 - 14, st.y + 10, "rgba(255,255,255,0.7)", 50, -20);
     };
     stRef.current.flap = flap;
@@ -69,6 +71,7 @@ function FlappyBlock() {
 
     const endGame = () => {
       st.running = false;
+      sfx.explode(); haptic([40, 30, 60]); shake(surface, 10);
       puff(20, 90, st.y, "rgba(229,9,20,0.9)", 190);
       setGameOver(true);
       setGameStarted(false);
@@ -267,6 +270,7 @@ function FlappyBlock() {
             p.passed = true;
             st.score += 1;
             setScore(st.score);
+            sfx.coin();
             puff(7, p.x + p.w / 2, p.top + p.gap / 2, "rgba(255,214,102,0.9)", 80);
           }
           if (p.x + p.w < -20) st.pipes.splice(i, 1);

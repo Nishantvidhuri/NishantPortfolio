@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPlay, FaRedo } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const W = 520;
 const H = 340;
@@ -203,17 +204,20 @@ function PongGame() {
         if (st.bvx < 0 && st.bx < 14 + PADDLE_W + 7 && st.bx > 14 && Math.abs(st.by - st.py) < PADDLE_H / 2 + 7) {
           st.bvx = Math.abs(st.bvx) * 1.05;
           st.bvy += ((st.by - st.py) / (PADDLE_H / 2)) * 140;
+          sfx.blip(); haptic(6);
           boom(5, st.bx, st.by, "rgba(229,9,20,0.8)");
         }
         if (st.bvx > 0 && st.bx > W - 14 - PADDLE_W - 7 && st.bx < W - 14 && Math.abs(st.by - st.ay) < PADDLE_H / 2 + 7) {
           st.bvx = -Math.abs(st.bvx) * 1.05;
           st.bvy += ((st.by - st.ay) / (PADDLE_H / 2)) * 140;
+          sfx.blip();
           boom(5, st.bx, st.by, "rgba(250,204,21,0.8)");
         }
 
         if (st.bx < -10) {
           st.as += 1;
           setAiScore(st.as);
+          sfx.fail(); shake(surface, 7);
           st.flash = 1;
           boom(14, 6, st.by, "rgba(250,204,21,0.9)");
           if (st.as >= WIN_SCORE) endGame(false);
@@ -221,6 +225,7 @@ function PongGame() {
         } else if (st.bx > W + 10) {
           st.ps += 1;
           setPlayerScore(st.ps);
+          sfx.score(); haptic(20); shake(surface, 5);
           st.flash = 1;
           boom(14, W - 6, st.by, "rgba(229,9,20,0.9)");
           if (st.ps >= WIN_SCORE) endGame(true);

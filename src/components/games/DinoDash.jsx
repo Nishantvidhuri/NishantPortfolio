@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPlay, FaRedo, FaTrophy } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const W = 560;
 const H = 280;
@@ -52,6 +53,7 @@ function DinoDash() {
     const jump = () => {
       if (st.running && st.y >= GROUND - 1) {
         st.vy = -560;
+        sfx.jump(); haptic(10);
         puff(6, 80, GROUND + 26, "rgba(180,160,200,0.7)", 70, 10);
       }
     };
@@ -69,6 +71,7 @@ function DinoDash() {
 
     const endGame = () => {
       st.running = false;
+      sfx.explode(); haptic([40, 30, 60]); shake(surface, 10);
       puff(18, 80, st.y - 18, "rgba(229,9,20,0.9)", 170, 60);
       setGameOver(true);
       setGameStarted(false);

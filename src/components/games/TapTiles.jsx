@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPlay, FaRedo, FaTrophy } from "react-icons/fa";
+import { sfx, haptic, shake } from './gameFeel';
 
 const W = 400;
 const H = 520;
@@ -43,6 +44,7 @@ function TapTiles() {
 
     const endGame = () => {
       st.running = false;
+      sfx.fail(); haptic([40, 30, 60]); shake(canvas.parentElement, 9);
       setGameOver(true);
       setGameStarted(false);
       setHighScore((h) => {
@@ -69,6 +71,7 @@ function TapTiles() {
         target.hit = true;
         st.score += 1;
         st.speed += 4;
+        sfx.note(st.score - 1); haptic(6);
         setScore(st.score);
         st.ripples.push({
           x: col * COL_W + COL_W / 2,
