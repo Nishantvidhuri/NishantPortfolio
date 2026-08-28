@@ -7,7 +7,7 @@ const H = 620;
 const HORIZON = 150;   // far (bowler's) end of the pitch
 const CONTACT_Z = 0.94; // where the ball meets the bat
 const BAT_Y = 500;     // batsman's contact height on screen
-const STUMP_Y = BAT_Y + 16;  // wicket sits BEHIND (further than) the batsman
+const STUMP_Y = BAT_Y - 4;   // wicket sits BEHIND (further than) the batsman
 const CX = 200;
 const WICKETS = 3;
 
@@ -256,8 +256,8 @@ function GullyCricket() {
     const drawBatsman = () => {
       // stand him beside the stumps (not on top of them) and a touch in front,
       // so the wicket stays visible behind the bat
-      const x = CX - 54;
-      const y = BAT_Y + 48;
+      const x = CX - 18;
+      const y = BAT_Y + 44;
       // shadow
       ctx.fillStyle = "rgba(0,0,0,0.3)";
       ctx.beginPath();
@@ -493,14 +493,14 @@ function GullyCricket() {
       ctx.fillStyle = "rgba(0,0,0,0.08)";
       ctx.fillRect(CX - 4, HORIZON, 8, H - HORIZON);
       // worn patches + bowler footmarks scuffed into the pitch
-      ctx.fillStyle = "rgba(120,92,58,0.30)";
+      ctx.fillStyle = "rgba(120,92,58,0.14)";
       [[0.20, 12], [0.34, 16], [0.62, 22], [0.78, 26]].forEach(([zz, rw]) => {
         const y = HORIZON + (H - HORIZON) * zz;
         ctx.beginPath();
         ctx.ellipse(CX + (zz * 20 - 10), y, rw, rw * 0.34, 0, 0, Math.PI * 2);
         ctx.fill();
       });
-      ctx.fillStyle = "rgba(90,68,42,0.35)";
+      ctx.fillStyle = "rgba(90,68,42,0.16)";
       [[-16, 0.26], [10, 0.30], [-12, 0.36]].forEach(([dx, zz]) => {
         const y = HORIZON + (H - HORIZON) * zz;
         ctx.beginPath();
