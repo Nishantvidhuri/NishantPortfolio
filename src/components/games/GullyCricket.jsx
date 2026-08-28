@@ -256,7 +256,7 @@ function GullyCricket() {
     const drawBatsman = () => {
       // stand him beside the stumps (not on top of them) and a touch in front,
       // so the wicket stays visible behind the bat
-      const x = CX - 18;
+      const x = CX - 44;
       const y = BAT_Y + 44;
       // shadow
       ctx.fillStyle = "rgba(0,0,0,0.3)";
@@ -582,7 +582,7 @@ function GullyCricket() {
       const fallNow = st.stumpFall
         ? { ...st.stumpFall, lean: st.stumpFall.lean.map((a, i) => a * st.stumpFall.leanT[i]) }
         : null;
-      drawStumps(CX, STUMP_Y, 1, 1, fallNow);
+      drawStumps(CX, STUMP_Y, 0.92, 1, fallNow);
 
       /* particles */
       st.particles.forEach((p) => {
