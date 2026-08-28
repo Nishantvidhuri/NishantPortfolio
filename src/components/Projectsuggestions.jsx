@@ -122,7 +122,7 @@ function Projectsuggestions() {
             {projects.map((project, index) => (
               <div key={index} className="flex items-end flex-shrink-0 mr-4 sm:mr-6">
                 {/* Netflix Top-10 rank number */}
-                <span className="rank-number font-['Bebas_Neue'] text-[219px] leading-[0.73] -mr-5 select-none">
+                <span className="rank-number font-['Bebas_Neue'] text-[150px] leading-[0.7] translate-y-[0.06em] -mr-4 select-none">
                   {index + 1}
                 </span>
                 <div
@@ -168,13 +168,13 @@ function Projectsuggestions() {
       </div>
 
       {/* Mobile View */}
-      <div className="sm:hidden w-full overflow-x-auto whitespace-nowrap py-4 no-scrollbar" ref={mobileScrollRef}>
+      <div className="sm:hidden w-full overflow-x-auto whitespace-nowrap pt-4 pb-6 no-scrollbar" ref={mobileScrollRef}>
       <div className="flex px-4 items-end"
       >
   {projects.map((project, index) => (
     <div key={index} className="flex items-end flex-shrink-0 mr-4">
       {/* Netflix Top-10 rank number */}
-      <span className="rank-number font-['Bebas_Neue'] text-[394px] leading-[0.73] -mr-8 select-none">
+      <span className="rank-number font-['Bebas_Neue'] text-[230px] leading-[0.7] translate-y-[0.06em] -mr-6 select-none">
         {index + 1}
       </span>
       <div className="w-44 flex-shrink-0 relative z-10" onClick={() => setSelectedProject(project)} >
