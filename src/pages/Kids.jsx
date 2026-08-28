@@ -219,13 +219,13 @@ function Kids() {
           {NEW_GAMES.map((game, index) => (
             <div key={game.id} className="flex items-end flex-shrink-0 mr-3 md:mr-5">
               {/* Netflix Top-10 rank number */}
-              <span className="rank-number font-['Bebas_Neue'] text-[90px] md:text-[135px] leading-[0.75] -mr-2 select-none">
+              <span className="rank-number font-['Bebas_Neue'] text-[130px] md:text-[135px] leading-[0.7] -mr-3 md:-mr-2 select-none">
                 {index + 1}
               </span>
               {/* Movie poster card */}
               <div
                 onClick={() => setActiveGame(game)}
-                className="group relative z-10 w-36 md:w-44 h-52 md:h-64 rounded-md overflow-hidden cursor-pointer border border-white/10 hover:border-white/50 shadow-[0_10px_30px_rgba(0,0,0,0.6)] transition-all duration-300 hover:scale-105"
+                className="group relative z-10 w-44 h-72 md:h-64 rounded-md overflow-hidden cursor-pointer border border-white/10 hover:border-white/50 shadow-[0_10px_30px_rgba(0,0,0,0.6)] transition-all duration-300 hover:scale-105"
               >
                 {/* Poster art */}
                 <div className={`absolute inset-0 bg-gradient-to-b ${game.gradient}`} />

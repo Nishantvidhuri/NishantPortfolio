@@ -174,15 +174,15 @@ function Projectsuggestions() {
   {projects.map((project, index) => (
     <div key={index} className="flex items-end flex-shrink-0 mr-4">
       {/* Netflix Top-10 rank number */}
-      <span className="rank-number font-['Bebas_Neue'] text-[80px] leading-[0.75] -mr-1 select-none">
+      <span className="rank-number font-['Bebas_Neue'] text-[130px] leading-[0.7] -mr-3 select-none">
         {index + 1}
       </span>
-      <div className="w-36 flex-shrink-0 relative z-10" onClick={() => setSelectedProject(project)} >
+      <div className="w-44 flex-shrink-0 relative z-10" onClick={() => setSelectedProject(project)} >
         {/* Background Image */}
         <img
           src={project.imageMob}
           alt={project.name}
-          className="w-40 h-50 object-cover rounded-xs"
+          className="w-full h-72 object-cover rounded-sm"
         />
 
         {/* Black Overlay */}
