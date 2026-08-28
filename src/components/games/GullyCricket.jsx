@@ -7,17 +7,10 @@ const H = 620;
 const HORIZON = 150;   // far (bowler's) end of the pitch
 const CONTACT_Z = 0.94; // where the ball meets the bat
 const BAT_Y = 500;     // batsman's contact height on screen
+const STUMP_Y = BAT_Y + 16;  // wicket sits BEHIND (further than) the batsman
 const CX = 200;
 const WICKETS = 3;
 
-// Fielders scattered around the outfield (x, y, scale)
-const FIELDERS = [
-  { x: 58,  y: 196, s: 0.46 }, { x: 132, y: 170, s: 0.40 },
-  { x: 268, y: 168, s: 0.40 }, { x: 344, y: 200, s: 0.46 },
-  { x: 34,  y: 268, s: 0.56 }, { x: 366, y: 274, s: 0.56 },
-  { x: 96,  y: 360, s: 0.66 }, { x: 306, y: 366, s: 0.66 },
-  { x: 336, y: 436, s: 0.74 },
-];
 
 function GullyCricket() {
   const canvasRef = useRef(null);
@@ -109,7 +102,7 @@ function GullyCricket() {
       sfx.fail(); haptic([50, 30, 70]); shake(surface, 11);
       if (reason.startsWith("BOWLED")) {
         // knock the stumps back and send both bails flying
-        const bx = CX, by = BAT_Y + 34 - 46;
+        const bx = CX, by = STUMP_Y - 46;
         st.stumpFall = {
           lean: [
             (Math.random() * 0.18 + 0.10) * (Math.random() < 0.5 ? -1 : 1),
@@ -203,39 +196,6 @@ function GullyCricket() {
 
     /* ---------- drawing ---------- */
 
-    // A fielder: small figure in whites, idling in a crouch
-    const drawFielder = (x, y, s, kit = "#dfe3ec") => {
-      ctx.save();
-      // shadow
-      ctx.fillStyle = "rgba(0,0,0,0.28)";
-      ctx.beginPath();
-      ctx.ellipse(x, y + 2 * s, 9 * s, 3 * s, 0, 0, Math.PI * 2);
-      ctx.fill();
-      // legs
-      ctx.fillStyle = kit;
-      ctx.fillRect(x - 4 * s, y - 16 * s, 3.2 * s, 16 * s);
-      ctx.fillRect(x + 1 * s, y - 16 * s, 3.2 * s, 16 * s);
-      // torso
-      ctx.beginPath();
-      ctx.roundRect(x - 5.5 * s, y - 30 * s, 11 * s, 15 * s, 3 * s);
-      ctx.fill();
-      // arms out, ready
-      ctx.strokeStyle = kit;
-      ctx.lineWidth = 2.6 * s;
-      ctx.beginPath();
-      ctx.moveTo(x - 5 * s, y - 26 * s);
-      ctx.lineTo(x - 10 * s, y - 18 * s);
-      ctx.moveTo(x + 5 * s, y - 26 * s);
-      ctx.lineTo(x + 10 * s, y - 18 * s);
-      ctx.stroke();
-      // head
-      ctx.fillStyle = "#e8b48c";
-      ctx.beginPath();
-      ctx.arc(x, y - 35 * s, 4.4 * s, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    };
-
     // Umpire in a wide-brimmed hat and dark trousers
     const drawUmpire = (x, y, s) => {
       ctx.save();
@@ -296,8 +256,8 @@ function GullyCricket() {
     const drawBatsman = () => {
       // stand him beside the stumps (not on top of them) and a touch in front,
       // so the wicket stays visible behind the bat
-      const x = CX - 58;
-      const y = BAT_Y + 22;
+      const x = CX - 54;
+      const y = BAT_Y + 48;
       // shadow
       ctx.fillStyle = "rgba(0,0,0,0.3)";
       ctx.beginPath();
@@ -520,8 +480,6 @@ function GullyCricket() {
       ctx.lineTo(W, HORIZON - 22);
       ctx.stroke();
 
-      // fielders spread around the outfield
-      FIELDERS.forEach((f) => drawFielder(f.x, f.y, f.s));
 
       /* pitch (perspective trapezoid) */
       ctx.fillStyle = "#c2a173";
@@ -561,7 +519,6 @@ function GullyCricket() {
 
       drawStumps(CX, HORIZON + 12, 0.45, 0.85);   // bowler's end
       drawUmpire(CX + 44, HORIZON + 14, 0.5);
-      drawFielder(CX - 40, HORIZON + 12, 0.42, "#f2f2ef"); // non-striker
       if (st.phase === "ready") drawBowler();
 
       /* the delivery */
@@ -620,11 +577,11 @@ function GullyCricket() {
         ctx.fill();
       }
 
-      // batsman's stumps — shattered if you've just been bowled
+      // batsman's stumps — drawn before the batsman so he stands in front of them
       const fallNow = st.stumpFall
         ? { ...st.stumpFall, lean: st.stumpFall.lean.map((a, i) => a * st.stumpFall.leanT[i]) }
         : null;
-      drawStumps(CX, BAT_Y + 34, 1, 1, fallNow);
+      drawStumps(CX, STUMP_Y, 1, 1, fallNow);
       drawBatsman();
 
       /* particles */
