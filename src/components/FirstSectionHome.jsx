@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useProjects } from "../context/ProjectContext"; // Import the context hook
 import { useNavigate } from 'react-router-dom';
+import HeroShowreel from "./HeroShowreel";
 
 function FirstSectionHome() {
   const { projects } = useProjects();
@@ -33,16 +34,12 @@ function FirstSectionHome() {
   return (
     <div className="w-full relative text-white overflow-hidden">
       {/* PC/Laptop View */}
-      <div
-        className="hidden sm:flex flex-col justify-end p-4 w-full h-screen"
-        style={{
-          backgroundImage: `url(${projects[randomIndex].image})`, // ✅ Fix Here
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+      <div className="hidden sm:flex flex-col justify-end p-4 w-full h-screen relative">
+        {/* The showreel plays behind the billboard, like a title's trailer on Netflix */}
+        {/* safeLeft: p-4 + md:ml-[40px] + the 500px text column, plus air */}
+        <HeroShowreel className="absolute inset-0 w-full h-full" safeLeft={580} />
+        {/* Legibility scrim behind the copy. No blur, so the reel stays sharp. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/10 to-transparent pointer-events-none"></div>
         {/* Netflix billboard fade into the rows below */}
         <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#141414] via-[#141414]/60 to-transparent pointer-events-none"></div>
 

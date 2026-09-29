@@ -557,7 +557,7 @@ function scene3(ctx, t) {
   // beat counter
   setFont(ctx, 15, { display: false, weight: 600 });
   ctx.fillStyle = "rgba(255,255,255,0.3)";
-  ctx.fillText(`0${i + 1} / 0${BEATS.length}`, 1770, 120);
+  ctx.fillText(`0${i + 1} / 0${BEATS.length}`, 1770, 176);
 }
 
 /* ============================================================================
@@ -929,15 +929,15 @@ function scene6(ctx, t) {
     ctx.save();
     ctx.globalAlpha = egg;
     ctx.fillStyle = "rgba(20,20,24,0.95)";
-    rrect(ctx, 1520, 120, 330, 62, 8);
+    rrect(ctx, 1520, 170, 330, 62, 8);
     ctx.fill();
     ctx.strokeStyle = rgba(GRN, 0.7);
     ctx.lineWidth = 1.5;
     ctx.stroke();
-    dot(ctx, 1552, 151, 7, rgba(GRN, 1));
+    dot(ctx, 1552, 201, 7, rgba(GRN, 1));
     setFont(ctx, 17, { display: false, weight: 600 });
     ctx.fillStyle = "rgba(255,255,255,0.92)";
-    ctx.fillText("PRODUCTION: STILL RUNNING", 1572, 157);
+    ctx.fillText("PRODUCTION: STILL RUNNING", 1572, 207);
     ctx.restore();
   }
 }
