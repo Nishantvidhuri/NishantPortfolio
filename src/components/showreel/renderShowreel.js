@@ -163,7 +163,7 @@ const drawSeed = (ctx, halfW, th, dotR, blur, a) => {
 const SEED_REST = [1.5, 2.8, 1.6, 12];
 
 function scene1(ctx, t) {
-  const SX = SEED_X, SY = SEED_Y;
+  const SY = SEED_Y;
 
   // the seed
   const seedIn = outCubic(inv(t, 0.06, 0.30));
