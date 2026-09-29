@@ -143,6 +143,25 @@ const project = (n, camZ, cx = AX - 90, cy = 540) => {
    A single red pixel becomes a line, the line scans the frame and leaves
    architecture fragments in its wake, the name resolves, a wipe clears it.
    ============================================================================ */
+/**
+ * The seed: a lit red pixel on a short horizontal stub. Scene 1 grows it into
+ * the opening line; scene 8 ends on it at rest. Both draw it through here, so
+ * the loop's last frame and first frame are the same pixels.
+ */
+const drawSeed = (ctx, halfW, th, dotR, blur, a) => {
+  const g = ctx.createLinearGradient(SEED_X - halfW, 0, SEED_X + halfW, 0);
+  g.addColorStop(0, rgba(RED, 0));
+  g.addColorStop(0.5, rgba(RED, 0.95 * a));
+  g.addColorStop(1, rgba(RED, 0));
+  glow(ctx, rgba(RED, 0.85 * a), blur * a, () => {
+    ctx.fillStyle = g;
+    ctx.fillRect(SEED_X - halfW, SEED_Y - th / 2, halfW * 2, th);
+    if (dotR > 0) dot(ctx, SEED_X, SEED_Y, dotR, rgba(RED, a));
+  });
+};
+// the seed at rest (halfW, th, dotR, blur) — exactly frame 0
+const SEED_REST = [1.5, 2.8, 1.6, 12];
+
 function scene1(ctx, t) {
   const SX = SEED_X, SY = SEED_Y;
 
@@ -150,22 +169,13 @@ function scene1(ctx, t) {
   const seedIn = outCubic(inv(t, 0.06, 0.30));
   const stretch = outExpo(inv(t, 0.26, 0.60));
 
-  // seed → horizontal line. Frame 0 must be exactly scene 8's last frame (a
-  // 1.6px dot on a 3px stub, 12px glow), so the seed is already lit here and
-  // grows from there rather than from nothing — otherwise it blinks at the loop.
+  // seed → horizontal line. Frame 0 is scene 8's last frame (the seed at rest),
+  // so the seed is already lit here and grows from there rather than from
+  // nothing — otherwise it would blink at the loop point.
   const halfW = lerp(1.5, 1180, stretch);
   const lineA = 1 - inCubic(inv(t, 1.34, 1.44));
   if (lineA > 0.01) {
-    const g = ctx.createLinearGradient(SX - halfW, 0, SX + halfW, 0);
-    g.addColorStop(0, rgba(RED, 0));
-    g.addColorStop(0.5, rgba(RED, 0.95 * lineA));
-    g.addColorStop(1, rgba(RED, 0));
-    glow(ctx, rgba(RED, 0.85 * lineA), lerp(12, 26, stretch) * lineA, () => {
-      ctx.fillStyle = g;
-      const th = lerp(2.8, 2.2, stretch);
-      ctx.fillRect(SX - halfW, SY - th / 2, halfW * 2, th);
-      if (seedIn < 1) dot(ctx, SX, SY, lerp(1.6, 4, seedIn), rgba(RED, 1));
-    });
+    drawSeed(ctx, halfW, lerp(2.8, 2.2, stretch), seedIn < 1 ? lerp(1.6, 4, seedIn) : 0, lerp(12, 26, stretch), lineA);
   }
 
   // scan head travelling right → left, revealing wireframe fragments
@@ -943,37 +953,160 @@ function scene6(ctx, t) {
 }
 
 /* ============================================================================
-   SCENE 7 — 12.0 → 14.0s  PEAK
-   The whole system returns at speed, then resolves into a monogram N.
+   THE N — drawn like the Netflix mark: two dark-red uprights, a brighter
+   diagonal ribbon folded over them, and the shadow that fold casts on each.
+   Scene 7 gathers it out of ribbons of light; scene 8 dives into its left
+   stroke, which comes apart into the spectrum ribbons of the Netflix intro.
    ============================================================================ */
-// three strokes of an N, as point-samplable segments
-const N_STROKES = [
-  [[-150, -180], [-150, 180]],
-  [[-150, -180], [150, 180]],
-  [[150, -180], [150, 180]],
+const N_W = 236, N_H = 420, N_T = 72;       // letter width, height, stroke width
+const N_CY = 440;                           // the letter's centre line on the stage
+const N_UP = "#b1060f";                     // the uprights sit a shade darker…
+const N_DIAG_TOP = "#f0101c", N_DIAG_BOT = "#d0070f";   // …than the ribbon over them
+// the ribbon's edges all run at one slope; its fold shadows fall perpendicular
+const N_RUN = N_W - N_T;
+const N_LEN = Math.hypot(N_RUN, N_H);
+const N_NX = N_H / N_LEN, N_NY = N_RUN / N_LEN;
+
+// red-led, like the intro's ribbons, with a few cool and warm strands
+const SPECTRUM = [
+  [229, 9, 20], [255, 61, 90], [214, 36, 126], [255, 107, 154], [155, 47, 174],
+  [106, 53, 217], [58, 91, 240], [43, 184, 224], [255, 176, 46], [178, 7, 16],
+  [255, 122, 47], [229, 9, 20],
 ];
-const nPoint = (i, n) => {
-  // spread i samples across the three strokes by length
-  const lens = N_STROKES.map(([a, b]) => Math.hypot(b[0] - a[0], b[1] - a[1]));
-  const total = lens.reduce((s, v) => s + v, 0);
-  let d = ((i + 0.5) / n) * total;
-  for (let k = 0; k < N_STROKES.length; k++) {
-    if (d <= lens[k]) {
-      const [a, b] = N_STROKES[k];
-      const p = d / lens[k];
-      return [lerp(a[0], b[0], p), lerp(a[1], b[1], p)];
-    }
-    d -= lens[k];
+const mix = (a, b, p) => [
+  Math.round(lerp(a[0], b[0], p)), Math.round(lerp(a[1], b[1], p)), Math.round(lerp(a[2], b[2], p)),
+];
+const spectrum = (i) => SPECTRUM[Math.floor(hash(i * 4.4) * SPECTRUM.length)];
+
+/** A vertical strand of light, bright at its middle and gone at its ends. */
+const strand = (ctx, x, cy, half, w, col, a) => {
+  const g = ctx.createLinearGradient(0, cy - half, 0, cy + half);
+  g.addColorStop(0, rgba(col, 0));
+  g.addColorStop(0.3, rgba(col, a * 0.55));
+  g.addColorStop(0.5, rgba(col, a));
+  g.addColorStop(0.7, rgba(col, a * 0.55));
+  g.addColorStop(1, rgba(col, 0));
+  ctx.fillStyle = g;
+  ctx.fillRect(x - w / 2, cy - half, w, half * 2);
+  if (w > 3) {
+    // a hotter core down the middle reads as light rather than paint
+    const hot = mix(col, [255, 255, 255], 0.45);
+    const g2 = ctx.createLinearGradient(0, cy - half * 0.8, 0, cy + half * 0.8);
+    g2.addColorStop(0, rgba(hot, 0));
+    g2.addColorStop(0.5, rgba(hot, a * 0.6));
+    g2.addColorStop(1, rgba(hot, 0));
+    ctx.fillStyle = g2;
+    ctx.fillRect(x - w / 6, cy - half * 0.8, w / 3, half * 1.6);
   }
-  return [0, 0];
 };
 
+/** A point inside the letter: where the ith gathering strand lands. */
+const nTarget = (i) => {
+  const u = hash(i * 5.13), v = hash(i * 9.71), L = -N_W / 2, T = -N_H / 2;
+  if (i % 3 === 0) return [L + v * N_T, T + u * N_H];
+  if (i % 3 === 2) return [N_W / 2 - N_T + v * N_T, T + u * N_H];
+  return [L + v * N_T + u * N_RUN, T + u * N_H];
+};
+
+/**
+ * The letter centred on (cx, cy), scaled k about its centre. rev is how far
+ * each stroke is drawn in: [left upright, ribbon, right upright].
+ */
+function drawN(ctx, cx, cy, { k = 1, rev = [1, 1, 1], a = 1, sheen = -1, bloom = 0 } = {}) {
+  if (a <= 0.001) return;
+  const L = -N_W / 2, R = N_W / 2, T = -N_H / 2, B = N_H / 2;
+  ctx.save();
+  ctx.globalAlpha *= a;
+  ctx.translate(cx, cy);
+  ctx.scale(k, k);
+
+  if (bloom > 0.001) {
+    const bg = ctx.createRadialGradient(0, 0, 10, 0, 0, N_H);
+    bg.addColorStop(0, rgba(RED, 0.32 * bloom));
+    bg.addColorStop(0.5, rgba(RED, 0.1 * bloom));
+    bg.addColorStop(1, rgba(RED, 0));
+    ctx.fillStyle = bg;
+    ctx.fillRect(-N_H, -N_H, N_H * 2, N_H * 2);
+  }
+
+  // an upright rises from the bottom, shaded where the ribbon folds over it
+  const upright = (x0, p, sx, sy, nx, ny) => {
+    if (p <= 0.001) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x0, B - N_H * p, N_T, N_H * p);
+    ctx.clip();
+    ctx.fillStyle = N_UP;
+    ctx.fillRect(x0, T, N_T, N_H);
+    const sg = ctx.createLinearGradient(sx, sy, sx + nx * 170, sy + ny * 170);
+    sg.addColorStop(0, "rgba(0,0,0,0.6)");
+    sg.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = sg;
+    ctx.fillRect(x0, T, N_T, N_H);
+    ctx.restore();
+  };
+  upright(L, rev[0], L, T, -N_NX, N_NY);          // shadow falls down-left from the fold
+  upright(R - N_T, rev[2], R, B, N_NX, -N_NY);    // …and up-right on the other side
+
+  // the ribbon unfurls top → bottom, over both uprights
+  const ribbon = () => {
+    ctx.beginPath();
+    ctx.moveTo(L, T);
+    ctx.lineTo(L + N_T, T);
+    ctx.lineTo(R, B);
+    ctx.lineTo(R - N_T, B);
+    ctx.closePath();
+  };
+  if (rev[1] > 0.001) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(L - 1, T, N_W + 2, N_H * rev[1]);
+    ctx.clip();
+    const dg = ctx.createLinearGradient(0, T, 0, B);
+    dg.addColorStop(0, N_DIAG_TOP);
+    dg.addColorStop(1, N_DIAG_BOT);
+    ctx.fillStyle = dg;
+    ribbon();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // one pass of light across the whole letter as it lands
+  if (sheen >= 0 && sheen <= 1) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(L, T, N_T, N_H);
+    ctx.rect(R - N_T, T, N_T, N_H);
+    ctx.moveTo(L, T);
+    ctx.lineTo(L + N_T, T);
+    ctx.lineTo(R, B);
+    ctx.lineTo(R - N_T, B);
+    ctx.closePath();
+    ctx.clip();
+    const x = lerp(L - 180, R + 180, inOutCubic(sheen));
+    const sg = ctx.createLinearGradient(x - 80, T, x + 80, T + 90);
+    sg.addColorStop(0, "rgba(255,255,255,0)");
+    sg.addColorStop(0.5, `rgba(255,255,255,${0.32 * Math.sin(sheen * Math.PI)})`);
+    sg.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = sg;
+    ctx.fillRect(L, T, N_W, N_H);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+/* ============================================================================
+   SCENE 7 — 12.0 → 14.0s  PEAK
+   The system rushes back, its light gathers into ribbons, and the ribbons
+   fold into the N — left upright, the diagonal, right upright — and it lands.
+   ============================================================================ */
 function scene7(ctx, t) {
   const lt = t - 12.0;                      // 0 → 2.0
   const back = outExpo(clamp01(lt / 0.72));
   const camZ = lerp(560, -640, back);
-  const form = inOutCubic(inv(lt, 0.60, 1.10));   // graph → N
-  const hold = band(lt, 1.05, 2.0, 0.1);
+  const form = inOutCubic(inv(lt, 0.40, 0.80));   // the graph hands over to the ribbons
+  const CXn = AX, CYn = N_CY;
 
   // the system, rushing backwards
   if (form < 1) {
@@ -983,51 +1116,43 @@ function scene7(ctx, t) {
     ctx.restore();
   }
 
-  // particles converging onto the N
-  const COUNT = 96;
-  const CXn = AX, CYn = 470;
-  for (let i = 0; i < COUNT; i++) {
-    const [nx, ny] = nPoint(i, COUNT);
-    // where it came from: scattered around the frame
-    const ax = AX - 760 + hash(i * 1.37) * 1380;
-    const ay = 120 + hash(i * 4.91) * 840;
-    const e = clamp01(form * 1.25 - hash(i * 8.3) * 0.25);
-    const ee = outCubic(e);
-    const x = lerp(ax, CXn + nx, ee);
-    const y = lerp(ay, CYn + ny, ee);
-    const a = clamp01(form * 2) * (0.45 + 0.55 * ee);
-    const r = lerp(1.6, 3.4, ee);
-    ctx.fillStyle = i % 7 === 0 ? rgba(GRN, a) : rgba(RED, a * 0.95);
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
+  // ribbons of light gather into the letter's shape, reddening as they land
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < 66; i++) {
+    const delay = hash(i * 8.3) * 0.22;
+    const p = clamp01((lt - 0.40 - delay) / 0.52);
+    if (p <= 0) continue;
+    const e = inOutCubic(p);
+    const a = Math.min(1, p * 3) * (1 - clamp01((lt - 1.0 - delay * 0.4) / 0.22));
+    if (a <= 0.01) continue;
+    const [nx, ny] = nTarget(i);
+    const x = lerp(AX - 520 + hash(i * 1.37) * 1140, CXn + nx, e);
+    const y = lerp(80 + hash(i * 4.91) * 920, CYn + ny, e);
+    strand(ctx, x, y, lerp(70, 18, e), lerp(3 + hash(i * 2.9) * 5, 2, e), mix(spectrum(i), RED, e), a * 0.9);
   }
+  ctx.restore();
 
-  // the N itself, drawn once the particles land
-  if (hold > 0.01) {
-    ctx.save();
-    ctx.globalAlpha = hold;
-    ctx.lineWidth = 19;
-    ctx.lineCap = "square";
-    glow(ctx, rgba(RED, 0.8), 40, () => {
-      ctx.strokeStyle = "#fff";
-      N_STROKES.forEach(([a, b]) => seg(ctx, CXn + a[0], CYn + a[1], CXn + b[0], CYn + b[1], "#fff", 19));
-    });
-    ctx.restore();
-  }
+  // the N folds together: left upright, the ribbon across, right upright…
+  const rev = [outCubic(inv(lt, 0.80, 0.98)), inOutCubic(inv(lt, 0.92, 1.12)), outCubic(inv(lt, 1.06, 1.24))];
+  // …then lands: a small pop, a sheen across it, and the camera starts creeping in
+  const land = inv(lt, 1.22, 1.52);
+  const k = (1 + Math.sin(land * Math.PI) * 0.035) * (1 + outCubic(inv(lt, 1.3, 2.0)) * 0.05);
+  const bloom = 0.5 * outCubic(inv(lt, 0.95, 1.3)) + 0.5 * arc(lt, 1.22, 1.62);
+  drawN(ctx, CXn, CYn, { k, rev, bloom, sheen: land > 0 && land < 1 ? land : -1 });
 
-  // titles
-  const tA = band(lt, 1.12, 2.0, 0.14);
+  // titles only fade in here; scene 8 takes them out, so there's no dip at the cut
+  const tA = outCubic(inv(lt, 1.22, 1.36));
   if (tA > 0.01) {
     ctx.save();
     ctx.globalAlpha = tA;
     setFont(ctx, 104);
     ctx.fillStyle = "#fff";
-    tracked(ctx, "NISHANT VIDHURI", AX, 790, lerp(24, 11, outExpo(inv(lt, 1.12, 1.52))), "center");
+    tracked(ctx, "NISHANT VIDHURI", AX, 790, lerp(24, 11, outExpo(inv(lt, 1.22, 1.62))), "center");
     setFont(ctx, 25, { display: false, weight: 600 });
     ctx.fillStyle = rgba(RED_T, 1);
     tracked(ctx, "FULL-STACK SOFTWARE ENGINEER", AX, 836, 9, "center");
-    const sub = band(lt, 1.42, 2.0, 0.16);
+    const sub = outCubic(inv(lt, 1.5, 1.66));
     if (sub > 0.01) {
       ctx.globalAlpha = tA * sub;
       setFont(ctx, 21, { display: false, weight: 400 });
@@ -1040,17 +1165,14 @@ function scene7(ctx, t) {
 
 /* ============================================================================
    SCENE 8 — 14.0 → 15.0s  LOOP CLOSE
-   The N collapses into the thin red line, the line collapses into the seed
-   pixel at exactly the position and size scene 1 starts from.
+   The Netflix-intro move: the camera dives into the N's left stroke and it
+   comes apart into ribbons of light. The ribbons draw back into one red line,
+   and the line comes to rest as the seed that opens scene 1.
    ============================================================================ */
 function scene8(ctx, t) {
   const lt = t - 14.0;                      // 0 → 1.0
-  const CXn = AX, CYn = 470;
+  const CXn = AX, CYn = N_CY;
   const SX = SEED_X, SY = SEED_Y;
-
-  const squash = inOutCubic(inv(lt, 0.0, 0.42));   // N → line
-  const travel = inOutCubic(inv(lt, 0.34, 0.74));  // line slides to seed position
-  const shrink = inCubic(inv(lt, 0.62, 0.96));     // line → pixel
 
   // titles falling away
   const outA = 1 - outCubic(inv(lt, 0.0, 0.26));
@@ -1069,35 +1191,64 @@ function scene8(ctx, t) {
     ctx.restore();
   }
 
-  // N squashing into a horizontal bar
-  if (squash < 0.99) {
-    // stroke width does not squash with the y-scale, so thin it by hand or the
-    // verticals leave two grey nubs behind
-    const lw = 19 * (1 - squash * 0.85);
+  // the dive, about the left upright as scene 7 left it (pushed in to 1.05)
+  const qx = CXn + (-N_W / 2 + N_T / 2) * 1.05;
+  const nA = 1 - inv(lt, 0.16, 0.30);
+  if (nA > 0.001) {
+    const dk = lerp(1, 4.4, inExpo(inv(lt, 0.0, 0.30)));
     ctx.save();
-    ctx.globalAlpha = (1 - squash) * (1 - squash);
-    ctx.translate(CXn, CYn);
-    ctx.scale(1, 1 - squash * 0.97);
-    glow(ctx, rgba(RED, 0.8), 40 * (1 - squash), () => {
-      N_STROKES.forEach(([a, b]) => seg(ctx, a[0], a[1], b[0], b[1], "#fff", lw));
-    });
+    ctx.translate(qx, CYn);
+    ctx.scale(dk, dk);
+    ctx.translate(-qx, -CYn);
+    drawN(ctx, CXn, CYn, { k: 1.05, a: nA, bloom: 0.5 * nA });
     ctx.restore();
   }
 
-  // the line: collapses, drifts to the seed anchor, then shrinks to a pixel
-  const lx = lerp(CXn, SX, travel);
-  const ly = lerp(CYn, SY, travel);
-  const halfW = lerp(165, 1.5, shrink) + (1 - squash) * 0 ;
-  const a = 1 - inCubic(inv(lt, 0.9, 1.0)) * 0.0;   // stays lit — matches frame 0
-  const g = ctx.createLinearGradient(lx - halfW, 0, lx + halfW, 0);
-  g.addColorStop(0, rgba(RED, 0));
-  g.addColorStop(0.5, rgba(RED, 0.95 * a));
-  g.addColorStop(1, rgba(RED, 0));
-  glow(ctx, rgba(RED, 0.85), lerp(34, 12, shrink), () => {
-    ctx.fillStyle = g;
-    ctx.fillRect(lx - halfW, ly - 1.4, halfW * 2, 2.8);
-    if (shrink > 0.8) dot(ctx, lx, ly, lerp(4, 1.6, inv(lt, 0.9, 1.0)), rgba(RED, a));
-  });
+  // …and the stroke comes apart into the spectrum, then draws back together
+  const spread = outCubic(inv(lt, 0.14, 0.50));
+  const conv = inOutCubic(inv(lt, 0.54, 0.82));
+  const ribA = Math.min(clamp01((lt - 0.14) / 0.08), 1 - inv(lt, 0.78, 0.86));
+  if (ribA > 0.001) {
+    const flight = inv(lt, 0.30, 0.62);     // still flying forward: strands keep fanning out
+    const cy = lerp(lerp(CYn, SY, spread), SY, conv);
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const N_STRANDS = 56;
+    for (let i = 0; i < N_STRANDS; i++) {
+      const h1 = hash(i * 2.17), h2 = hash(i * 6.31), h3 = hash(i * 3.77);
+      const x0 = qx + (h1 - 0.5) * N_T * 1.4;             // packed inside the stroke
+      // one strand per slot, jittered, so the fan has no holes or clumps
+      const xs = 820 + ((i + 0.5 + (h2 - 0.5) * 0.9) / N_STRANDS) * 1100;
+      const x = lerp(lerp(x0, xs + (xs - qx) * 0.05 * flight, spread), SX, conv);
+      const w = lerp(3 + h3 * 16, 2.4, conv);
+      const col = mix(RED, spectrum(i), spread * (1 - conv));
+      const half = lerp(lerp(260, 640 + h1 * 160, spread), 150, conv);
+      // the fan feathers off toward the hero copy instead of ending in a wall
+      const edge = 0.3 + 0.7 * clamp01((xs - 820) / 280);
+      // a quarter of them carry through into the line; the rest thin out
+      const a = ribA * edge * (0.5 + 0.5 * h3) * (i % 4 === 0 ? 1 : 1 - conv * 0.85);
+      strand(ctx, x, cy, half, w, col, a);
+    }
+    ctx.restore();
+  }
+
+  // one red line left standing, shrinking to a point
+  const lineA = Math.min(clamp01((lt - 0.74) / 0.06), 1 - inv(lt, 0.90, 0.95));
+  if (lineA > 0.001) {
+    const hh = lerp(150, 1.4, inCubic(inv(lt, 0.78, 0.93)));
+    glow(ctx, rgba(RED, 0.85 * lineA), 16 * lineA, () => {
+      const g = ctx.createLinearGradient(0, SY - hh, 0, SY + hh);
+      g.addColorStop(0, rgba(RED, 0));
+      g.addColorStop(0.5, rgba(RED, 0.95 * lineA));
+      g.addColorStop(1, rgba(RED, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(SX - 1.4, SY - hh, 2.8, hh * 2);
+    });
+  }
+
+  // …which comes to rest as the seed: exactly the frame scene 1 opens on
+  const seedA = clamp01((lt - 0.86) / 0.06);
+  if (seedA > 0.001) drawSeed(ctx, ...SEED_REST, seedA);
 }
 
 /* ============================================================================
