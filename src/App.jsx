@@ -3,6 +3,7 @@ import { Route, Routes, useLocation, Navigate } from "react-router-dom";
 import Intropage from "./components/IntroPage";
 import Developer from "./pages/Developer";
 import Kids from "./pages/Kids";
+import Showreel from "./pages/Showreel";
 import NotFound from "./pages/NotFound";
 import { ProjectProvider } from "./context/ProjectContext";
 import { ProfileProvider } from "./context/ProfileContext";
@@ -52,6 +53,7 @@ const AppContent = () => {
           <Route path="/kids" element={<Kids />} />
           <Route path="/projects" element={<MyProjects/>}/>
           <Route path="/about" element={<About />} />
+          <Route path="/showreel" element={<Showreel />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         {location.pathname === '/explorer' && <NishantChatBot />}
