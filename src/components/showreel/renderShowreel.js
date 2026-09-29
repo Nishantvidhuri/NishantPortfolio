@@ -1,5 +1,5 @@
 /* ============================================================================
-   HERO SHOWREEL RENDERER — a 15-second seamless cinematic loop.
+   HERO SHOWREEL RENDERER — a cinematic sequence that plays once and holds on its end card.
 
    renderFrame(ctx, t) is a pure function of time: the same t always paints the
    same frame. The live hero (HeroShowreel.jsx) and the video exporter below
@@ -14,6 +14,11 @@
    ============================================================================ */
 
 export const DUR = 15;
+// Every scene is authored on the 15s timeline above; playback runs it at this
+// speed. At 0.5 the reel plays over 30s: the first cut went by too fast to read.
+export const SPEED = 0.5;
+export const RUNTIME = DUR / SPEED;   // seconds of real playback before the end card
+export const HOLD = 2.5;              // seconds an exported file rests on the end card
 export const VW = 1920;
 export const VH = 1080;
 // Centre of gravity for the whole composition. The hero copy owns the left of
@@ -143,11 +148,7 @@ const project = (n, camZ, cx = AX - 90, cy = 540) => {
    A single red pixel becomes a line, the line scans the frame and leaves
    architecture fragments in its wake, the name resolves, a wipe clears it.
    ============================================================================ */
-/**
- * The seed: a lit red pixel on a short horizontal stub. Scene 1 grows it into
- * the opening line; scene 8 ends on it at rest. Both draw it through here, so
- * the loop's last frame and first frame are the same pixels.
- */
+/** The seed: a lit red pixel on a short horizontal stub, which scene 1 grows into the opening line. */
 const drawSeed = (ctx, halfW, th, dotR, blur, a) => {
   const g = ctx.createLinearGradient(SEED_X - halfW, 0, SEED_X + halfW, 0);
   g.addColorStop(0, rgba(RED, 0));
@@ -159,8 +160,6 @@ const drawSeed = (ctx, halfW, th, dotR, blur, a) => {
     if (dotR > 0) dot(ctx, SEED_X, SEED_Y, dotR, rgba(RED, a));
   });
 };
-// the seed at rest (halfW, th, dotR, blur) — exactly frame 0
-const SEED_REST = [1.5, 2.8, 1.6, 12];
 
 function scene1(ctx, t) {
   const SY = SEED_Y;
@@ -169,9 +168,7 @@ function scene1(ctx, t) {
   const seedIn = outCubic(inv(t, 0.06, 0.30));
   const stretch = outExpo(inv(t, 0.26, 0.60));
 
-  // seed → horizontal line. Frame 0 is scene 8's last frame (the seed at rest),
-  // so the seed is already lit here and grows from there rather than from
-  // nothing — otherwise it would blink at the loop point.
+  // seed → horizontal line: the reel opens on a single lit pixel
   const halfW = lerp(1.5, 1180, stretch);
   const lineA = 1 - inCubic(inv(t, 1.34, 1.44));
   if (lineA > 0.01) {
@@ -1143,53 +1140,50 @@ function scene7(ctx, t) {
 
   // titles only fade in here; scene 8 takes them out, so there's no dip at the cut
   const tA = outCubic(inv(lt, 1.22, 1.36));
-  if (tA > 0.01) {
-    ctx.save();
-    ctx.globalAlpha = tA;
-    setFont(ctx, 104);
-    ctx.fillStyle = "#fff";
-    tracked(ctx, "NISHANT VIDHURI", AX, 790, lerp(24, 11, outExpo(inv(lt, 1.22, 1.62))), "center");
-    setFont(ctx, 25, { display: false, weight: 600 });
-    ctx.fillStyle = rgba(RED_T, 1);
-    tracked(ctx, "FULL-STACK SOFTWARE ENGINEER", AX, 836, 9, "center");
-    const sub = outCubic(inv(lt, 1.5, 1.66));
-    if (sub > 0.01) {
-      ctx.globalAlpha = tA * sub;
-      setFont(ctx, 21, { display: false, weight: 400 });
-      ctx.fillStyle = "rgba(255,255,255,0.68)";
-      tracked(ctx, "BUILDING SYSTEMS THAT ACTUALLY SHIP", AX, 882, 6, "center");
-    }
-    ctx.restore();
+  drawTitles(ctx, tA, lerp(24, 11, outExpo(inv(lt, 1.22, 1.62))), outCubic(inv(lt, 1.5, 1.66)));
+}
+
+/** The name card under the N. a: opacity, trk: the name's tracking, subA: the tagline's, dy: drop. */
+function drawTitles(ctx, a, trk = 11, subA = 1, dy = 0) {
+  if (a <= 0.01) return;
+  ctx.save();
+  ctx.globalAlpha = a;
+  setFont(ctx, 104);
+  ctx.fillStyle = "#fff";
+  tracked(ctx, "NISHANT VIDHURI", AX, 790 + dy, trk, "center");
+  setFont(ctx, 25, { display: false, weight: 600 });
+  ctx.fillStyle = rgba(RED_T, 1);
+  tracked(ctx, "FULL-STACK SOFTWARE ENGINEER", AX, 836 + dy, 9, "center");
+  if (subA > 0.01) {
+    ctx.globalAlpha = a * subA;
+    setFont(ctx, 21, { display: false, weight: 400 });
+    ctx.fillStyle = "rgba(255,255,255,0.68)";
+    tracked(ctx, "BUILDING SYSTEMS THAT ACTUALLY SHIP", AX, 882 + dy, 6, "center");
   }
+  ctx.restore();
+}
+
+/** Where the reel comes to rest, and stays: the N over the name. */
+function endCard(ctx) {
+  drawN(ctx, AX, N_CY, { k: 1.05, bloom: 0.5 });
+  drawTitles(ctx, 1, 11);
 }
 
 /* ============================================================================
-   SCENE 8 — 14.0 → 15.0s  LOOP CLOSE
+   SCENE 8 — 14.0 → 15.0s  FINALE
    The Netflix-intro move: the camera dives into the N's left stroke and it
-   comes apart into ribbons of light. The ribbons draw back into one red line,
-   and the line comes to rest as the seed that opens scene 1.
+   comes apart into ribbons of light. The ribbons gather back into the letter,
+   the name returns, and the reel comes to rest on the end card for good.
    ============================================================================ */
+const N_STRANDS = 56;
+
 function scene8(ctx, t) {
   const lt = t - 14.0;                      // 0 → 1.0
   const CXn = AX, CYn = N_CY;
-  const SX = SEED_X, SY = SEED_Y;
 
   // titles falling away
   const outA = 1 - outCubic(inv(lt, 0.0, 0.26));
-  if (outA > 0.01) {
-    ctx.save();
-    ctx.globalAlpha = outA;
-    setFont(ctx, 104);
-    ctx.fillStyle = "#fff";
-    tracked(ctx, "NISHANT VIDHURI", AX, 790 + (1 - outA) * 26, 11, "center");
-    setFont(ctx, 25, { display: false, weight: 600 });
-    ctx.fillStyle = rgba(RED_T, 1);
-    tracked(ctx, "FULL-STACK SOFTWARE ENGINEER", AX, 836 + (1 - outA) * 26, 9, "center");
-    setFont(ctx, 21, { display: false, weight: 400 });
-    ctx.fillStyle = "rgba(255,255,255,0.68)";
-    tracked(ctx, "BUILDING SYSTEMS THAT ACTUALLY SHIP", AX, 882 + (1 - outA) * 26, 6, "center");
-    ctx.restore();
-  }
+  drawTitles(ctx, outA, 11, 1, (1 - outA) * 26);
 
   // the dive, about the left upright as scene 7 left it (pushed in to 1.05)
   const qx = CXn + (-N_W / 2 + N_T / 2) * 1.05;
@@ -1204,51 +1198,39 @@ function scene8(ctx, t) {
     ctx.restore();
   }
 
-  // …and the stroke comes apart into the spectrum, then draws back together
+  // …the stroke comes apart into the spectrum, then gathers back into the letter
   const spread = outCubic(inv(lt, 0.14, 0.50));
-  const conv = inOutCubic(inv(lt, 0.54, 0.82));
-  const ribA = Math.min(clamp01((lt - 0.14) / 0.08), 1 - inv(lt, 0.78, 0.86));
+  const gather = inOutCubic(inv(lt, 0.52, 0.84));
+  const ribA = Math.min(clamp01((lt - 0.14) / 0.08), 1 - inv(lt, 0.80, 0.94));
   if (ribA > 0.001) {
-    const flight = inv(lt, 0.30, 0.62);     // still flying forward: strands keep fanning out
-    const cy = lerp(lerp(CYn, SY, spread), SY, conv);
+    const flight = inv(lt, 0.30, 0.60);     // still flying forward: strands keep fanning out
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
-    const N_STRANDS = 56;
     for (let i = 0; i < N_STRANDS; i++) {
       const h1 = hash(i * 2.17), h2 = hash(i * 6.31), h3 = hash(i * 3.77);
       const x0 = qx + (h1 - 0.5) * N_T * 1.4;             // packed inside the stroke
-      // one strand per slot, jittered, so the fan has no holes or clumps
-      const xs = 820 + ((i + 0.5 + (h2 - 0.5) * 0.9) / N_STRANDS) * 1100;
-      const x = lerp(lerp(x0, xs + (xs - qx) * 0.05 * flight, spread), SX, conv);
-      const w = lerp(3 + h3 * 16, 2.4, conv);
-      const col = mix(RED, spectrum(i), spread * (1 - conv));
-      const half = lerp(lerp(260, 640 + h1 * 160, spread), 150, conv);
+      // one strand per slot, jittered, so the fan has no holes or clumps…
+      const slot = (i + 0.5 + (h2 - 0.5) * 0.9) / N_STRANDS;
+      const xs = 820 + slot * 1100;
+      // …and each returns to the same slot across the letter, so none cross
+      const xn = CXn + (-N_W / 2 + slot * N_W) * 1.05;
+      const x = lerp(lerp(x0, xs + (xs - qx) * 0.05 * flight, spread), xn, gather);
+      const w = lerp(3 + h3 * 16, 2 + h3 * 3, gather);
+      const col = mix(RED, spectrum(i), spread * (1 - gather));
+      const half = lerp(lerp(260, 640 + h1 * 160, spread), (N_H / 2) * 1.05, gather);
       // the fan feathers off toward the hero copy instead of ending in a wall
       const edge = 0.3 + 0.7 * clamp01((xs - 820) / 280);
-      // a quarter of them carry through into the line; the rest thin out
-      const a = ribA * edge * (0.5 + 0.5 * h3) * (i % 4 === 0 ? 1 : 1 - conv * 0.85);
-      strand(ctx, x, cy, half, w, col, a);
+      strand(ctx, x, CYn, half, w, col, ribA * lerp(edge, 1, gather) * (0.5 + 0.5 * h3));
     }
     ctx.restore();
   }
 
-  // one red line left standing, shrinking to a point
-  const lineA = Math.min(clamp01((lt - 0.74) / 0.06), 1 - inv(lt, 0.90, 0.95));
-  if (lineA > 0.001) {
-    const hh = lerp(150, 1.4, inCubic(inv(lt, 0.78, 0.93)));
-    glow(ctx, rgba(RED, 0.85 * lineA), 16 * lineA, () => {
-      const g = ctx.createLinearGradient(0, SY - hh, 0, SY + hh);
-      g.addColorStop(0, rgba(RED, 0));
-      g.addColorStop(0.5, rgba(RED, 0.95 * lineA));
-      g.addColorStop(1, rgba(RED, 0));
-      ctx.fillStyle = g;
-      ctx.fillRect(SX - 1.4, SY - hh, 2.8, hh * 2);
-    });
-  }
-
-  // …which comes to rest as the seed: exactly the frame scene 1 opens on
-  const seedA = clamp01((lt - 0.86) / 0.06);
-  if (seedA > 0.001) drawSeed(ctx, ...SEED_REST, seedA);
+  // the letter re-forms out of the light…
+  const nIn = outCubic(inv(lt, 0.70, 0.90));
+  if (nIn > 0.001) drawN(ctx, CXn, CYn, { k: lerp(1.1, 1.05, nIn), a: nIn, bloom: 0.5 * nIn + 0.35 * arc(lt, 0.76, 1.0) });
+  // …and the name comes back beneath it. At lt = 1 this is exactly endCard().
+  const tIn = outCubic(inv(lt, 0.80, 1.0));
+  drawTitles(ctx, tIn, lerp(20, 11, tIn));
 }
 
 /* ============================================================================
@@ -1285,8 +1267,11 @@ export function renderFrame(ctx, t, noiseTile, frame) {
   ctx.textAlign = "left";
   ctx.lineJoin = "round";
 
-  for (const [a, b, fn] of SCENES) {
-    if (t >= a && t < b) { fn(ctx, t); break; }
+  if (t >= DUR) endCard(ctx);
+  else {
+    for (const [a, b, fn] of SCENES) {
+      if (t >= a && t < b) { fn(ctx, t); break; }
+    }
   }
 
   // cut flash
@@ -1347,115 +1332,3 @@ export const makeNoise = (size = 180) => {
   g.putImageData(img, 0, 0);
   return c;
 };
-
-
-/* ============================================================================
-   Export — records exactly one loop to a video file, in the browser.
-
-   Each captured frame is rendered at t = n / fps and pushed to the encoder
-   with requestFrame(), so frame content is exact even if the page stutters.
-   MediaRecorder encodes in real time, so the tab must stay in front for the
-   15 seconds. H.264 MP4 is preferred (plays in QuickTime, Safari, <video>
-   everywhere); WebM is the fallback where MP4 recording isn't available.
-   ============================================================================ */
-const FORMATS = [
-  ["video/mp4;codecs=avc1.640028", "mp4"],
-  ["video/mp4;codecs=avc1.4d0028", "mp4"],
-  ["video/mp4;codecs=avc1", "mp4"],
-  ["video/mp4", "mp4"],
-  ["video/webm;codecs=vp9", "webm"],
-  ["video/webm;codecs=vp8", "webm"],
-  ["video/webm", "webm"],
-];
-
-export const pickVideoFormat = () => {
-  if (typeof MediaRecorder === "undefined") return null;
-  if (typeof HTMLCanvasElement === "undefined" || !("captureStream" in HTMLCanvasElement.prototype)) return null;
-  for (const [mime, ext] of FORMATS) {
-    if (MediaRecorder.isTypeSupported(mime)) return { mime, ext };
-  }
-  return null;
-};
-
-export function recordShowreel({ fps = 24, bitrate = 12_000_000, onProgress } = {}) {
-  return new Promise((resolve, reject) => {
-    const format = pickVideoFormat();
-    if (!format) {
-      reject(new Error("This browser can't record canvas video. Try Chrome or Safari."));
-      return;
-    }
-    const canvas = document.createElement("canvas");
-    canvas.width = VW;
-    canvas.height = VH;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    const noise = makeNoise();
-    const total = Math.round(DUR * fps);
-
-    // Manual pushes keep each frame exact; fall back to a fixed-rate stream
-    // where requestFrame() isn't implemented.
-    let stream = canvas.captureStream(0);
-    let track = stream.getVideoTracks()[0];
-    const manual = typeof track?.requestFrame === "function";
-    if (!manual) {
-      track?.stop();
-      stream = canvas.captureStream(fps);
-      track = stream.getVideoTracks()[0];
-    }
-
-    const chunks = [];
-    const rec = new MediaRecorder(stream, { mimeType: format.mime, videoBitsPerSecond: bitrate });
-    rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
-
-    let raf = 0;
-    let stopTimer = 0;
-    let last = 0;
-    let t0 = 0;
-    let wasHidden = document.hidden;
-    const onVis = () => { if (document.hidden) wasHidden = true; };
-    document.addEventListener("visibilitychange", onVis);
-
-    const draw = (n) => {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      renderFrame(ctx, Math.min(n / fps, DUR - 1e-4), noise, n);
-      if (manual) track.requestFrame();
-    };
-    const stop = () => { if (rec.state !== "inactive") rec.stop(); };
-    const tick = (now) => {
-      const n = Math.floor(((now - t0) / 1000) * fps);
-      if (n > last && n < total) {
-        last = n;
-        draw(n);
-        onProgress?.(n / total);
-      }
-      // stop a tick after the final push, never in the same one: requestFrame()
-      // hands the frame over asynchronously, so stopping immediately drops it
-      if (n >= total) { stop(); return; }
-      raf = requestAnimationFrame(tick);
-    };
-
-    const cleanup = () => {
-      cancelAnimationFrame(raf);
-      clearTimeout(stopTimer);
-      document.removeEventListener("visibilitychange", onVis);
-      track?.stop();
-    };
-    rec.onstop = () => {
-      cleanup();
-      onProgress?.(1);
-      resolve({ blob: new Blob(chunks, { type: format.mime.split(";")[0] }), ...format, wasHidden });
-    };
-    rec.onerror = (e) => { cleanup(); reject(e.error || new Error("Recording failed.")); };
-
-    rec.start(250);
-    t0 = performance.now();
-    draw(0);
-    raf = requestAnimationFrame(tick);
-    // Fallback for a throttled tab where rAF stalls: close the loop on the
-    // last frame and stop on a later task so that frame still lands.
-    stopTimer = setTimeout(() => {
-      if (rec.state === "inactive") return;
-      if (last < total - 1) { last = total - 1; draw(total - 1); }
-      stopTimer = setTimeout(stop, 100);
-    }, DUR * 1000 + 250);
-  });
-}

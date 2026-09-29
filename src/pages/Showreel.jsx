@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import HeroShowreel from "../components/HeroShowreel";
-import { DUR, pickVideoFormat, recordShowreel } from "../components/showreel/renderShowreel";
+import { HOLD, RUNTIME } from "../components/showreel/renderShowreel";
+import { pickVideoFormat, recordShowreel } from "../components/showreel/exportShowreel";
+import { getScore, unlockShowreelAudio } from "../components/showreel/showreelAudio";
 
 /**
  * Preview stage for the hero showreel. Shows the loop full-bleed, with an
@@ -20,8 +22,19 @@ function Showreel() {
   const [paused, setPaused] = useState(urlPaused);
   useEffect(() => { setPaused(urlPaused); setOverlay(urlOverlay); }, [urlPaused, urlOverlay]);
 
-  // Export: records one loop at 1920x1080 and downloads it.
-  const format = useMemo(() => pickVideoFormat(), []);
+  // Sound starts muted, like any autoplaying video; a click turns it on.
+  const [sound, setSound] = useState(false);
+  // It plays once and rests on the end card; Replay runs it again.
+  const [ended, setEnded] = useState(false);
+  const [replayKey, setReplayKey] = useState(0);
+  const replay = () => { setEnded(false); setReplayKey((k) => k + 1); };
+  const toggleSound = () => {
+    if (!sound) unlockShowreelAudio();        // must happen inside the click
+    setSound((on) => !on);
+  };
+
+  // Export: records one loop, with its soundtrack, at 1920x1080 and downloads it.
+  const format = useMemo(() => pickVideoFormat(true), []);
   const [rec, setRec] = useState(null);       // null, or { p: 0..1 } while recording
   const [note, setNote] = useState("");
 
@@ -54,7 +67,7 @@ function Showreel() {
 
   return (
     <div className="relative w-screen h-screen bg-[#050506] overflow-hidden">
-      <HeroShowreel className="absolute inset-0 w-full h-full" paused={paused} startAt={startAt} />
+      <HeroShowreel className="absolute inset-0 w-full h-full" paused={paused} startAt={startAt} sound={sound} onEnded={() => setEnded(true)} replayKey={replayKey} />
 
       {overlay && (
         <div className="absolute inset-0 pointer-events-none flex flex-col justify-end p-6 sm:p-10 md:pl-[40px] md:pb-[120px]">
@@ -79,6 +92,22 @@ function Showreel() {
         >
           {paused ? "Play" : "Pause"}
         </button>
+        {ended && (
+          <button
+            onClick={replay}
+            className="bg-black/70 border border-white/20 text-white px-3 py-1.5 rounded hover:bg-black"
+          >
+            Replay
+          </button>
+        )}
+        <button
+          onClick={toggleSound}
+          onPointerEnter={() => getScore().catch(() => {})}
+          aria-pressed={sound}
+          className="bg-black/70 border border-white/20 text-white px-3 py-1.5 rounded hover:bg-black"
+        >
+          {sound ? "Sound off" : "Sound on"}
+        </button>
         <button
           onClick={() => setOverlay((o) => !o)}
           className="bg-black/70 border border-white/20 text-white px-3 py-1.5 rounded hover:bg-black"
@@ -88,13 +117,13 @@ function Showreel() {
         <button
           onClick={exportVideo}
           disabled={!format || !!rec}
-          title={format ? `Records one ${DUR}s loop at 1920×1080 (${format.ext.toUpperCase()})` : "This browser can't record canvas video"}
+          title={format ? `Records the ${RUNTIME}s reel plus ${HOLD}s on the end card, at 1920×1080 with sound (${format.ext.toUpperCase()})` : "This browser can't record canvas video"}
           className="bg-black/70 border border-white/20 text-white px-3 py-1.5 rounded hover:bg-black disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {rec ? (
             <>
               <span className="w-2 h-2 rounded-full bg-[#e50914] animate-pulse" />
-              Recording {Math.floor(rec.p * DUR)}s / {DUR}s
+              Recording {Math.floor(rec.p * (RUNTIME + HOLD))}s / {RUNTIME + HOLD}s
             </>
           ) : (
             "Export video"
@@ -110,7 +139,7 @@ function Showreel() {
 
       {(rec || note) && (
         <div className="absolute top-16 right-4 max-w-xs text-xs leading-relaxed bg-black/85 border border-white/15 text-gray-200 px-3 py-2 rounded">
-          {rec ? "Recording in real time. Keep this tab in front until the file downloads." : note}
+          {rec ? "Recording picture and sound in real time. Keep this tab in front until the file downloads." : note}
         </div>
       )}
     </div>
