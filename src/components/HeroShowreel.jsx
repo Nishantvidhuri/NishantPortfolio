@@ -23,13 +23,17 @@ const clampT = (t) => Math.min(DUR, Math.max(0, t));
  * action is fitted into the space to its right — full cover where there's
  * room, scaled down a little where the copy takes a big share of the width.
  *
+ * safeTop / safeBottom: CSS px kept clear above and below, for layouts that
+ * stack copy under the reel (phones). The action is fitted into the band
+ * between them and centred in it.
+ *
  * sound: play the soundtrack. Turn it on from a click handler that first
  * calls unlockShowreelAudio(), since browsers only start audio on a gesture.
  *
  * onEnded: called once the reel reaches its end card. replayKey: change it
  * to play again from startAt.
  */
-function HeroShowreel({ className = "", startAt = 0, paused = false, safeLeft = 0, sound = false, onEnded, replayKey = 0 }) {
+function HeroShowreel({ className = "", startAt = 0, paused = false, safeLeft = 0, safeTop = 0, safeBottom = 0, sound = false, onEnded, replayKey = 0 }) {
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
   const tRef = useRef(clampT(startAt));     // the reel's clock (timeline time), kept across effect re-runs
@@ -78,24 +82,31 @@ function HeroShowreel({ className = "", startAt = 0, paused = false, safeLeft = 
     };
 
     /**
-     * Fit the 1920x1080 stage. Three limits, smallest wins:
+     * Fit the 1920x1080 stage. Limits, smallest wins:
      *  - cover, so on a normal desktop the stage fills the frame;
-     *  - MIN_VISIBLE_W, so a phone never crops to a sliver and cuts type;
-     *  - the action box (where every scene lives) must fit right of safeLeft.
-     * The action box is then right-aligned. Anything the stage doesn't reach
-     * is filled with the same near-black the composition vignettes to.
+     *  - the action box (where every scene lives) must fit right of safeLeft;
+     *  - with a safe band given, the action box must fit between its edges.
+     * The action box is then right-aligned (and centred in the band, if any).
+     * Anything the stage doesn't reach is filled with the same near-black the
+     * composition vignettes to.
      */
-    const MIN_VISIBLE_W = 1560;
-    const ACTION_L = 860, ACTION_R = 1900;
+    const ACTION_L = 860, ACTION_R = 1900, ACTION_T = 120, ACTION_B = 990;
     const paint = () => {
       const { w, h } = fit();
       const dpr = w / Math.max(1, wrap.getBoundingClientRect().width);
       // never give the copy more than 55% of the frame, or the reel gets tiny
       const safe = Math.min(safeLeft * dpr, w * 0.55);
-      const s = Math.min(Math.max(w / VW, h / VH), w / MIN_VISIBLE_W, (w - safe) / (ACTION_R - ACTION_L));
+      const banded = safeTop > 0 || safeBottom > 0;
+      const top = safeTop * dpr;
+      const band = Math.max(1, h - top - safeBottom * dpr);
+      const s = Math.min(
+        Math.max(w / VW, h / VH),
+        (w - safe) / (ACTION_R - ACTION_L),
+        banded ? band / (ACTION_B - ACTION_T) : Infinity
+      );
       let tx = w - ACTION_R * s;
       if (VW * s >= w) tx = Math.min(0, Math.max(w - VW * s, tx));
-      const ty = (h - VH * s) / 2;
+      const ty = banded ? top + (band - (ACTION_B - ACTION_T) * s) / 2 - ACTION_T * s : (h - VH * s) / 2;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.fillStyle = "#050506";
       ctx.fillRect(0, 0, w, h);
@@ -117,10 +128,14 @@ function HeroShowreel({ className = "", startAt = 0, paused = false, safeLeft = 
         ctx.fillStyle = g;
         ctx.fillRect(Math.min(x0, x0 + bw), Math.min(y0, y0 + bh), Math.abs(bw), Math.abs(bh));
       };
+      const bottom = ty + VH * s;
       if (ty > 0.5) {
         const f = Math.min(90, VH * s * 0.14);
         bar(0, ty, 0, ty + f, w, f);
-        bar(0, h - ty, 0, h - ty - f, w, -f);
+      }
+      if (bottom < h - 0.5) {
+        const f = Math.min(90, VH * s * 0.14);
+        bar(0, bottom, 0, bottom - f, w, -f);
       }
       const right = tx + VW * s;
       if (tx > 0.5) {
@@ -210,7 +225,7 @@ function HeroShowreel({ className = "", startAt = 0, paused = false, safeLeft = 
       io.disconnect();
       ro.disconnect();
     };
-  }, [startAt, paused, safeLeft, replayKey]);
+  }, [startAt, paused, safeLeft, safeTop, safeBottom, replayKey]);
 
   // The soundtrack: one pre-rendered buffer, started at the picture's current
   // time and then used as the picture's clock.

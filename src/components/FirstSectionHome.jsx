@@ -4,10 +4,56 @@ import { useNavigate } from 'react-router-dom';
 import HeroShowreel from "./HeroShowreel";
 import { getScore, unlockShowreelAudio } from "./showreel/showreelAudio";
 
+/** Tracks a media query, so the one reel can be framed per breakpoint. */
+function useMedia(query) {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setMatches(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, [query]);
+  return matches;
+}
+
+/** Netflix's billboard button: sound on/off while the reel plays, Replay once it's done. */
+function BillboardButton({ ended, sound, onClick, onWarm, className = "" }) {
+  return (
+    <button
+      onClick={onClick}
+      onPointerEnter={onWarm}
+      onFocus={onWarm}
+      aria-label={ended ? "Replay the showreel" : sound ? "Mute the showreel" : "Play the showreel with sound"}
+      aria-pressed={ended ? undefined : sound}
+      title={ended ? "Replay" : sound ? "Mute" : "Sound on"}
+      className={`shrink-0 rounded-full border border-white/70 bg-black/20 text-white flex items-center justify-center hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors ${className}`}
+    >
+      {ended ? (
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
+          <path d="M5.5 12a6.5 6.5 0 1 0 2.1-4.8" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+          <path d="M7.9 3.8v3.9H4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ) : sound ? (
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
+          <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" />
+          <path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
+          <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" />
+          <path d="M15.5 9.5l5 5m0-5l-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 function FirstSectionHome() {
   const { projects } = useProjects();
   const [randomIndex, setRandomIndex] = useState(0);
   const navigate = useNavigate();
+  const isDesktop = useMedia("(min-width: 640px)");
 
   // The showreel autoplays muted; sound is opt-in, like Netflix's billboard trailer
   const [sound, setSound] = useState(false);
@@ -53,11 +99,23 @@ function FirstSectionHome() {
 
   return (
     <div className="w-full relative text-white overflow-hidden">
+      {/* The showreel plays behind the billboard, like a title's trailer on
+          Netflix. One reel behind both layouts, so they can't both hold the
+          sound. Desktop: right of the copy (p-4 + md:ml-[40px] + the 500px
+          text column, plus air). Phones: in the band between the nav pills
+          and the copy stacked under it. */}
+      <HeroShowreel
+        className="absolute inset-0 w-full h-full"
+        safeLeft={isDesktop ? 580 : 0}
+        safeTop={isDesktop ? 0 : 104}
+        safeBottom={isDesktop ? 0 : 290}
+        sound={sound}
+        onEnded={() => setEnded(true)}
+        replayKey={replayKey}
+      />
+
       {/* PC/Laptop View */}
       <div className="hidden sm:flex flex-col justify-end p-4 w-full h-screen relative">
-        {/* The showreel plays behind the billboard, like a title's trailer on Netflix */}
-        {/* safeLeft: p-4 + md:ml-[40px] + the 500px text column, plus air */}
-        <HeroShowreel className="absolute inset-0 w-full h-full" safeLeft={580} sound={sound} onEnded={() => setEnded(true)} replayKey={replayKey} />
         {/* Legibility scrim behind the copy. No blur, so the reel stays sharp. */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/10 to-transparent pointer-events-none"></div>
         {/* Netflix billboard fade into the rows below */}
@@ -157,47 +215,14 @@ function FirstSectionHome() {
             </div>
           </div>
 
-          <button
-            onClick={onBillboardButton}
-            onPointerEnter={warmSound}
-            onFocus={warmSound}
-            aria-label={ended ? "Replay the showreel" : sound ? "Mute the showreel" : "Play the showreel with sound"}
-            aria-pressed={ended ? undefined : sound}
-            title={ended ? "Replay" : sound ? "Mute" : "Sound on"}
-            className="shrink-0 w-12 h-12 rounded-full border border-white/70 bg-black/20 text-white flex items-center justify-center hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors"
-          >
-            {ended ? (
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
-                <path d="M5.5 12a6.5 6.5 0 1 0 2.1-4.8" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-                <path d="M7.9 3.8v3.9H4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            ) : sound ? (
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
-                <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" />
-                <path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
-                <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" />
-                <path d="M15.5 9.5l5 5m0-5l-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            )}
-          </button>
+          <BillboardButton ended={ended} sound={sound} onClick={onBillboardButton} onWarm={warmSound} className="w-12 h-12" />
         </div>
       </div>
 
       {/* Mobile View */}
-      <div className="flex sm:hidden flex-col items-center justify-end w-full min-h-[560px] px-4 pt-24 pb-8 bg-[#141414] relative">
-        {/* Background Image */}
-        <div
-          className="absolute  inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${projects[randomIndex].imageMob})`, // ✅ Fix Here
-          }}
-        >
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-[3px]"></div>
-          <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-[#141414] to-transparent"></div>
-        </div>
+      <div className="flex sm:hidden flex-col items-center justify-end w-full min-h-[700px] px-4 pt-24 pb-8 relative">
+        {/* The reel plays in the band above; darken only under the copy, and fade into the rows */}
+        <div className="absolute bottom-0 inset-x-0 h-[320px] bg-gradient-to-t from-[#141414] via-[#141414]/90 to-transparent pointer-events-none"></div>
 
         {/* Navigation Buttons */}
         <div className="absolute top-16 inset-x-0 px-4 flex gap-2 text-sm">
@@ -297,6 +322,8 @@ function FirstSectionHome() {
 
               <span className="text-sm">GitHub</span>
             </a>
+
+            <BillboardButton ended={ended} sound={sound} onClick={onBillboardButton} onWarm={warmSound} className="w-10 h-10" />
           </div>
         </div>
       </div>
